@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import type { Response } from 'express';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UserResponseDto } from 'src/users/dto/user-response.dto';
-import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserResponseDto } from '../users/dto/user-response.dto';
+import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { HashingService } from './hashing.service';
 import { JwtService } from './jwt.service';

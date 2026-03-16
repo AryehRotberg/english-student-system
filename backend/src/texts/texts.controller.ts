@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from 'src/auth/auth.guard';
+import { TeacherGuard } from '../auth/auth.guard';
 import { CreateTextDto } from './dto/create-text.dto';
 import { TextsService } from './texts.service';
 

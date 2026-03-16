@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthGuard, TeacherGuard } from './auth.guard';
 import { AuthService } from './auth.service';

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from 'src/auth/auth.guard';
+import { TeacherGuard } from '../auth/auth.guard';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { QuizzesService } from './quizzes.service';
 

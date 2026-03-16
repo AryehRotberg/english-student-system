@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 import { CreateStudentAnswerDto } from './dto/create-student-answer.dto';
 import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
 import { UpdateStudentAnswerDto } from './dto/update-student-answer.dto';

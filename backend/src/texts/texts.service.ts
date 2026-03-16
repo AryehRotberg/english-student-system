@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 import { CreateTextDto } from './dto/create-text.dto';
 import { TextResponseDto } from './dto/text-response.dto';
 import { Text } from './entities/text.entity';

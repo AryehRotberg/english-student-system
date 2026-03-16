@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from 'src/auth/auth.guard';
+import { TeacherGuard } from '../auth/auth.guard';
 import { CreateWritingTaskDto } from './dto/create-writing-task.dto';
 import { WritingTasksService } from './writing-tasks.service';
 

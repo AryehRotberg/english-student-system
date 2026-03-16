@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 import { CreateWritingTaskDto } from './dto/create-writing-task.dto';
 import { WritingTaskResponseDto } from './dto/writing-task-response.dto';
 import { WritingTask } from './entities/writing-task.entity';

@@ -5,9 +5,9 @@ import {
     UnauthorizedException
 } from '@nestjs/common';
 import type { Request } from 'express';
-import Sentry from 'src/config/sentry';
-import { UserResponseDto } from 'src/users/dto/user-response.dto';
-import { UsersService } from 'src/users/users.service';
+import Sentry from '../config/sentry';
+import { UserResponseDto } from '../users/dto/user-response.dto';
+import { UsersService } from '../users/users.service';
 import { JwtService } from './jwt.service';
 
 @Injectable()

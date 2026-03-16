@@ -1,4 +1,4 @@
-import type { UserResponseDto } from 'src/users/dto/user-response.dto';
+import type { UserResponseDto } from '../../users/dto/user-response.dto';
 
 declare global {
     namespace Express {

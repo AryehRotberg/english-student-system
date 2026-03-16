@@ -1,5 +1,5 @@
 import { Controller, Delete, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from 'src/auth/auth.guard';
+import { TeacherGuard } from '../auth/auth.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')

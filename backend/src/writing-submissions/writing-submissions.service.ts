@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 import { CreateWritingSubmissionDto } from './dto/create-writing-submission.dto';
 import { GetWritingSubmissionsFilterDto } from './dto/get-writing-submissions-filter.dto';
 import { UpdateWritingSubmissionDto } from './dto/update-writing-submission.dto';

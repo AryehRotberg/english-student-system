@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { HashingService } from 'src/auth/hashing.service';
-import { PostgresService } from 'src/config/postgres.client';
+import { HashingService } from '../auth/hashing.service';
+import { PostgresService } from '../config/postgres.client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './entities/user.entity';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 import { createAssignmentItemQuery, getAssignmentItemsByUserIdQuery } from './assignment-items.queries';
 import { AssignmentItemResponseDto } from './dto/assignment-item-response.dto';
 import { CreateAssignmentItemDto } from './dto/create-assignment-item.dto';

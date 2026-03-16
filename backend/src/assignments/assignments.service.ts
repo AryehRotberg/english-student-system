@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
-import { UserResponseDto } from 'src/users/dto/user-response.dto';
+import { PostgresService } from '../config/postgres.client';
+import { UserResponseDto } from '../users/dto/user-response.dto';
 import { createAssignmentQuery, getAssignmentsByUserIdQuery } from './assignments.queries';
 import { AssignmentResponseDto } from './dto/assignment-response.dto';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';

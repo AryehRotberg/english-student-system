@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 import { CreateQuizQuestionDto } from './dto/create-quiz-question.dto';
 import { GetQuizQuestionsFilterDto } from './dto/get-quiz-questions-filter.dto';
 import { QuizQuestionResponseDto } from './dto/quiz-question-response.dto';

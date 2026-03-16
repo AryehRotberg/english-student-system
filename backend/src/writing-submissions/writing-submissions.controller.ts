@@ -9,7 +9,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from 'src/auth/auth.guard';
+import { TeacherGuard } from '../auth/auth.guard';
 import { CreateWritingSubmissionDto } from './dto/create-writing-submission.dto';
 import { GetWritingSubmissionsFilterDto } from './dto/get-writing-submissions-filter.dto';
 import { UpdateWritingSubmissionDto } from './dto/update-writing-submission.dto';
