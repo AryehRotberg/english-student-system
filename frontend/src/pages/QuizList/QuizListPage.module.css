@@ -1,0 +1,62 @@
+.panel {
+  background: var(--surface-0);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(37, 51, 105, 0.1);
+  padding: 1.1rem;
+}
+
+.heading {
+  color: var(--ink-900);
+  font-family: 'Sora', sans-serif;
+  font-size: 1.3rem;
+}
+
+.subtitle {
+  color: var(--ink-500);
+  margin-top: 0.35rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  margin-top: 1rem;
+}
+
+.card {
+  background: linear-gradient(145deg, #ecf2ff 0%, #e7fbff 100%);
+  border: 1px solid #b8c5eb;
+  border-radius: 16px;
+  cursor: pointer;
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem;
+  text-align: left;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 24px rgba(43, 73, 166, 0.18);
+  transform: translateY(-2px);
+}
+
+.title {
+  color: var(--ink-900);
+  font-size: 1.02rem;
+}
+
+.description {
+  color: var(--ink-700);
+  font-size: 0.92rem;
+}
+
+.cta {
+  color: var(--brand);
+  font-weight: 800;
+}
+
+.empty {
+  color: var(--ink-500);
+  margin-top: 1rem;
+}

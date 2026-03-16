@@ -1,0 +1,451 @@
+.page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+
+.pageTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 1.5rem;
+}
+
+.accessDenied {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* ─── Tabs ─────────────────────────────────────────────── */
+
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 2px solid #e5e7eb;
+    margin-bottom: 2rem;
+}
+
+.tab {
+    padding: 0.6rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+    border-radius: 6px 6px 0 0;
+}
+
+.tab:hover {
+    color: #4f46e5;
+}
+
+.tabActive {
+    color: #4f46e5;
+    border-bottom-color: #4f46e5;
+    background: #f5f3ff;
+}
+
+/* ─── Section ──────────────────────────────────────────── */
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sectionHeader h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+}
+
+.subHeading {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0.5rem 0 0.75rem;
+}
+
+/* ─── Button styles ────────────────────────────────────── */
+
+.addButton {
+    padding: 0.4rem 1rem;
+    border: 2px solid #4f46e5;
+    background: transparent;
+    color: #4f46e5;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.addButton:hover {
+    background: #4f46e5;
+    color: white;
+}
+
+.submitButton {
+    padding: 0.55rem 1.5rem;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    align-self: flex-start;
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.editBtn {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.editBtn:hover {
+    background: #f3f4f6;
+}
+
+.saveBtn {
+    padding: 0.25rem 0.6rem;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.cancelBtn {
+    padding: 0.25rem 0.6rem;
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.addOptionBtn {
+    padding: 0.3rem 0.8rem;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+}
+
+.addOptionBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ─── Forms ────────────────────────────────────────────── */
+
+.form {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.fieldRow {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.field label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.field input,
+.field select,
+.field textarea {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    color: #1a1a2e;
+    background: white;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.15s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.inlineForm {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.6rem;
+    background: #f3f4f6;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+.inlineForm input[type='text'],
+.inlineForm input:not([type='checkbox']):not([type='number']) {
+    flex: 1;
+    min-width: 160px;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background: white;
+}
+
+.inlineEdit {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.inlineEdit input:not([type='checkbox']) {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.3rem 0.55rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.numberInput {
+    width: 70px !important;
+    flex: 0 0 70px !important;
+    text-align: center;
+}
+
+.checkLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: #374151;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* ─── Lists ────────────────────────────────────────────── */
+
+.itemList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+}
+
+.expandable {
+    padding: 0;
+    overflow: hidden;
+}
+
+.expandRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    gap: 0.75rem;
+}
+
+.expandRowLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.expandRow:hover {
+    background: #f9fafb;
+}
+
+.chevron {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0.15rem 0 0;
+}
+
+.questionText {
+    font-size: 0.9rem;
+    color: #1a1a2e;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.typeBadge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    background: #ede9fe;
+    color: #6d28d9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.correctBadge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.empty {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    font-style: italic;
+    padding: 0.5rem 0;
+}
+
+.error {
+    font-size: 0.85rem;
+    color: #dc2626;
+    margin: 0;
+}
+
+/* ─── Sub-section (options/answers) ──────────────────────── */
+
+.subSection {
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.subSection h4 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.6rem;
+}
+
+.subList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.subItem {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.subItemRow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.subItemRow span:first-child {
+    flex: 1;
+    color: #374151;
+}
+
+/* ─── Builder ────────────────────────────────────────────── */
+
+.builderRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.builderRow .questionText {
+    flex: 1;
+}
+
+.builderActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}

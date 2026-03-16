@@ -1,0 +1,97 @@
+.shell {
+  align-items: center;
+  backdrop-filter: blur(8px);
+  background: linear-gradient(92deg, rgba(255, 255, 255, 0.96) 0%, rgba(241, 246, 255, 0.96) 100%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(27, 42, 93, 0.1);
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: 280px 1fr auto;
+  padding: 0.8rem 1rem;
+  position: sticky;
+  top: 0.55rem;
+  z-index: 10;
+}
+
+.static {
+  position: static;
+}
+
+.logoWrap {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.6rem;
+  font-weight: 800;
+}
+
+.logoText {
+  color: var(--ink-700);
+  font-family: 'Sora', 'Trebuchet MS', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logoutButton {
+  background: #ffffff;
+  border: 1px solid #c5cbdd;
+  border-radius: 999px;
+  color: #1f2937;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.42rem 0.85rem;
+  transition: all 140ms ease;
+}
+
+.logoutButton:hover {
+  background: #f8fafc;
+  border-color: #8b95ba;
+}
+
+.link {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-700);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.42rem 0.85rem;
+  text-decoration: none;
+  transition: all 140ms ease;
+}
+
+.link:hover {
+  background: linear-gradient(120deg, #f4efff 0%, #e9f7ff 100%);
+  border-color: #949ac0;
+  color: #161a35;
+}
+
+.active {
+  background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+    top: 0.4rem;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+}

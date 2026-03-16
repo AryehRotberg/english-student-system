@@ -1,0 +1,11 @@
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import type { UserResponseDto } from 'src/users/dto/user-response.dto';
+
+export const User = createParamDecorator(
+    (data: keyof UserResponseDto | undefined, ctx: ExecutionContext) => {
+        const request = ctx.switchToHttp().getRequest();
+        const user = request.user;
+
+        return data ? user?.[data] : user;
+    },
+);

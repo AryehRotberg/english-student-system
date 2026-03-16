@@ -1,0 +1,70 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PostgresService } from 'src/config/postgres.client';
+import { CreateQuizAttemptDto } from './dto/create-quiz-attempt.dto';
+import { GetQuizAttemptsFilterDto } from './dto/get-quiz-attempts-filter.dto';
+import { QuizAttemptResponseDto } from './dto/quiz-attempt-response.dto';
+import { UpdateQuizAttemptDto } from './dto/update-quiz-attempt.dto';
+import { QuizAttempt } from './entities/quiz-attempt.entity';
+import {
+    completeQuizAssignmentItemsForUserQuery,
+    createQuizAttemptQuery,
+    getQuizAttemptByIdQuery,
+    getQuizAttemptsByUserIdAndQuizIdQuery,
+    updateQuizAttemptQuery,
+} from './quiz-attempts.queries';
+
+@Injectable()
+export class QuizAttemptsService {
+    constructor(private readonly postgresService: PostgresService) { }
+
+    async findByUserIdAndQuizId(filter: GetQuizAttemptsFilterDto) {
+        const { userId, quizId } = filter;
+
+        const attempts = await this.postgresService.query<QuizAttempt>(
+            getQuizAttemptsByUserIdAndQuizIdQuery,
+            [userId, quizId]
+        );
+
+        return QuizAttemptResponseDto.fromEntities(attempts);
+    }
+
+    async create(createQuizAttemptDto: CreateQuizAttemptDto): Promise<QuizAttemptResponseDto> {
+        const { quizId, userId, points, startedAt, completedAt } = createQuizAttemptDto;
+
+        const [result] = await this.postgresService.query<QuizAttempt>(
+            createQuizAttemptQuery,
+            [quizId, userId, points ?? 0, startedAt ?? new Date(), completedAt ?? null],
+        );
+
+        return QuizAttemptResponseDto.fromEntity(result);
+    }
+
+    async update(id: string, updateQuizAttemptDto: UpdateQuizAttemptDto): Promise<QuizAttemptResponseDto> {
+        const [existingAttempt] = await this.postgresService.query<QuizAttempt>(getQuizAttemptByIdQuery, [id]);
+
+        if (!existingAttempt) {
+            throw new NotFoundException('Quiz attempt not found');
+        }
+
+        const [result] = await this.postgresService.query<QuizAttempt>(
+            updateQuizAttemptQuery,
+            [
+                id,
+                updateQuizAttemptDto.quizId ?? existingAttempt.quizId,
+                updateQuizAttemptDto.userId ?? existingAttempt.userId,
+                updateQuizAttemptDto.points ?? existingAttempt.points ?? 0,
+                updateQuizAttemptDto.startedAt ?? existingAttempt.startedAt,
+                updateQuizAttemptDto.completedAt ?? existingAttempt.completedAt,
+            ],
+        );
+
+        if (result.completedAt) {
+            await this.postgresService.query(
+                completeQuizAssignmentItemsForUserQuery,
+                [result.userId, result.quizId],
+            );
+        }
+
+        return QuizAttemptResponseDto.fromEntity(result);
+    }
+}

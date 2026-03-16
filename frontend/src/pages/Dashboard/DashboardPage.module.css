@@ -1,0 +1,22 @@
+.stack {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.welcomePanel {
+  background:
+    radial-gradient(circle at 95% 5%, rgba(255, 162, 66, 0.32), transparent 28%),
+    linear-gradient(122deg, #19244f 0%, #1f4889 48%, #008297 100%);
+  border: 1px solid #12203d;
+  border-radius: 20px;
+  box-shadow: 0 16px 34px rgba(19, 34, 73, 0.26);
+  padding: 1.25rem;
+}
+
+.welcome {
+  color: #f2f7ff;
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(1.25rem, 2.1vw, 1.9rem);
+  font-weight: 800;
+  margin: 0;
+}
