@@ -45,11 +45,11 @@ export const updateQuizAttemptQuery = `
     UPDATE
         QUIZ_ATTEMPTS
     SET
-        QUIZ_ID = $2,
-        USER_ID = $3,
-        POINTS = $4,
-        STARTED_AT = $5,
-        COMPLETED_AT = $6
+        QUIZ_ID = COALESCE($2, QUIZ_ID),
+        USER_ID = COALESCE($3, USER_ID),
+        POINTS = COALESCE($4, POINTS),
+        STARTED_AT = COALESCE($5, STARTED_AT),
+        COMPLETED_AT = COALESCE($6, COMPLETED_AT)
     WHERE
         ID = $1
     RETURNING

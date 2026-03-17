@@ -1,4 +1,5 @@
-import { httpClient } from './http-client.service';
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
 
 export type StudentAnswerApiItem = {
   id: string;
@@ -10,17 +11,45 @@ export type StudentAnswerApiItem = {
   feedback: string | null;
 };
 
-export const studentAnswersService = {
-  list: () => httpClient.get<StudentAnswerApiItem[]>('/student-answers'),
-  create: (payload: {
+class StudentAnswersService {
+  private readonly httpClient: AxiosInstance;
+
+  constructor() {
+    this.httpClient = httpClientService.getInstance();
+  }
+
+  public async list(): Promise<StudentAnswerApiItem[]> {
+    const response = await this.httpClient.get<StudentAnswerApiItem[]>('/student-answers');
+    return response.data;
+  }
+
+  public async listByAttempt(attemptId?: string): Promise<StudentAnswerApiItem[]> {
+    if (!attemptId) {
+      return [];
+    }
+
+    const answers = await this.list();
+    return answers.filter((answer) => answer.attemptId === attemptId);
+  }
+
+  public async create(payload: {
     attemptId: string;
     questionId: string;
     answerData: Record<string, unknown>;
     feedback?: string;
-  }) => httpClient.post('/student-answers', payload),
-  update: (id: string, payload: Partial<{
+  }) {
+    const response = await this.httpClient.post('/student-answers', payload);
+    return response.data;
+  }
+
+  public async update(id: string, payload: Partial<{
     answerData: Record<string, unknown>;
     feedback: string;
     points: number;
-  }>) => httpClient.patch(`/student-answers/${id}`, payload),
-};
+  }>) {
+    const response = await this.httpClient.patch(`/student-answers/${id}`, payload);
+    return response.data;
+  }
+}
+
+export const studentAnswersService = new StudentAnswersService();

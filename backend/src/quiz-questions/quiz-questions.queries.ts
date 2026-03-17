@@ -46,9 +46,9 @@ export const updateQuizQuestionQuery = `
     UPDATE
         QUIZ_QUESTIONS
     SET
-        QUIZ_ID = $2,
-        QUESTION_ID = $3,
-        MAX_POINTS = $4
+        QUIZ_ID = COALESCE($2, QUIZ_ID),
+        QUESTION_ID = COALESCE($3, QUESTION_ID),
+        MAX_POINTS = COALESCE($4, MAX_POINTS)
     WHERE
         ID = $1
     RETURNING

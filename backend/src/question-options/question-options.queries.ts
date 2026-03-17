@@ -41,9 +41,9 @@ export const updateQuestionOptionQuery = `
     UPDATE
         QUESTION_OPTIONS
     SET
-        QUESTION_ID = $2,
-        OPTION_TEXT = $3,
-        IS_CORRECT = $4
+        QUESTION_ID = COALESCE($2, QUESTION_ID),
+        OPTION_TEXT = COALESCE($3, OPTION_TEXT),
+        IS_CORRECT = COALESCE($4, IS_CORRECT)
     WHERE
         ID = $1
     RETURNING

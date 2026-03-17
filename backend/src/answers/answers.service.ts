@@ -1,9 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostgresService } from '../config/postgres.client';
-import { CreateAnswerDto } from './dto/create-answer.dto';
-import { AnswerResponseDto } from './dto/answer-response.dto';
-import { UpdateAnswerDto } from './dto/update-answer.dto';
-import { Answer } from './entities/answer.entity';
 import {
     createAnswerQuery,
     deleteAnswerQuery,
@@ -11,10 +7,14 @@ import {
     getAnswerByIdQuery,
     updateAnswerQuery,
 } from './answers.queries';
+import { AnswerResponseDto } from './dto/answer-response.dto';
+import { CreateAnswerDto } from './dto/create-answer.dto';
+import { UpdateAnswerDto } from './dto/update-answer.dto';
+import { Answer } from './entities/answer.entity';
 
 @Injectable()
 export class AnswersService {
-    constructor(private readonly postgresService: PostgresService) { }
+    constructor(private readonly postgresService: PostgresService) {}
 
     async create(createAnswerDto: CreateAnswerDto): Promise<AnswerResponseDto> {
         const { questionId, answer, blankIndex } = createAnswerDto;
@@ -28,12 +28,16 @@ export class AnswersService {
     }
 
     async findAll(): Promise<AnswerResponseDto[]> {
-        const answers = await this.postgresService.query<Answer>(getAllAnswersQuery);
+        const answers =
+            await this.postgresService.query<Answer>(getAllAnswersQuery);
         return AnswerResponseDto.fromEntities(answers);
     }
 
     async findOne(id: string): Promise<AnswerResponseDto> {
-        const [answer] = await this.postgresService.query<Answer>(getAnswerByIdQuery, [id]);
+        const [answer] = await this.postgresService.query<Answer>(
+            getAnswerByIdQuery,
+            [id],
+        );
 
         if (!answer) {
             throw new NotFoundException('Answer not found');
@@ -42,24 +46,32 @@ export class AnswersService {
         return AnswerResponseDto.fromEntity(answer);
     }
 
-    async update(id: string, updateAnswerDto: UpdateAnswerDto): Promise<AnswerResponseDto> {
-        const existingAnswer = await this.findOne(id);
-
+    async update(
+        id: string,
+        updateAnswerDto: UpdateAnswerDto,
+    ): Promise<AnswerResponseDto> {
         const [result] = await this.postgresService.query<Answer>(
             updateAnswerQuery,
             [
                 id,
-                updateAnswerDto.questionId ?? existingAnswer.questionId,
-                updateAnswerDto.answer ?? existingAnswer.answer,
-                updateAnswerDto.blankIndex ?? existingAnswer.blankIndex,
+                updateAnswerDto.questionId ?? null,
+                updateAnswerDto.answer ?? null,
+                updateAnswerDto.blankIndex ?? null,
             ],
         );
+
+        if (!result) {
+            throw new NotFoundException('Answer not found');
+        }
 
         return AnswerResponseDto.fromEntity(result);
     }
 
     async remove(id: string): Promise<AnswerResponseDto> {
-        const [result] = await this.postgresService.query<Answer>(deleteAnswerQuery, [id]);
+        const [result] = await this.postgresService.query<Answer>(
+            deleteAnswerQuery,
+            [id],
+        );
 
         if (!result) {
             throw new NotFoundException('Answer not found');

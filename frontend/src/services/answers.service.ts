@@ -1,9 +1,44 @@
-import { httpClient } from './http-client.service';
+import type { AxiosInstance } from "axios";
+import { httpClientService } from "./http-client.service";
+import type { AnswerAdminItem } from "../types/admin-query-items";
 
-export const answersService = {
-    list: () => httpClient.get('/answers'),
-    create: (payload: { questionId: string; answer: string; blankIndex: number }) =>
-        httpClient.post('/answers', payload),
-    update: (id: string, payload: Partial<{ questionId: string; answer: string; blankIndex: number }>) =>
-        httpClient.patch(`/answers/${id}`, payload),
-};
+class AnswersService {
+    private readonly httpClient: AxiosInstance;
+
+    constructor() {
+        this.httpClient = httpClientService.getInstance();
+    }
+
+    public async list() {
+        const response = await this.httpClient.get("/answers");
+        return response.data;
+    }
+
+    public async listAdmin(): Promise<AnswerAdminItem[]> {
+        const data = await this.list();
+        return Array.isArray(data) ? (data as AnswerAdminItem[]) : [];
+    }
+
+    public async create(payload: {
+        questionId: string;
+        answer: string;
+        blankIndex: number;
+    }) {
+        const response = await this.httpClient.post("/answers", payload);
+        return response.data;
+    }
+
+    public async update(
+        id: string,
+        payload: Partial<{
+            questionId: string;
+            answer: string;
+            blankIndex: number;
+        }>,
+    ) {
+        const response = await this.httpClient.patch(`/answers/${id}`, payload);
+        return response.data;
+    }
+}
+
+export const answersService = new AnswersService();

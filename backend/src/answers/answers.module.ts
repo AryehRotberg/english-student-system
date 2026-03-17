@@ -8,4 +8,4 @@ import { AnswersController } from './answers.controller';
     controllers: [AnswersController],
     providers: [AnswersService],
 })
-export class AnswersModule { }
+export class AnswersModule {}

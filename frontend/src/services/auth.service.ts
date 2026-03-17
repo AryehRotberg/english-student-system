@@ -1,16 +1,56 @@
-import { httpClient } from './http-client.service';
-import type { AuthUser } from '../types/auth';
+import type { AxiosInstance } from "axios";
+import { httpClientService } from "./http-client.service";
+import type { AuthUser } from "../types/auth";
 
 type LoginResponse = {
-  message: string;
-  user: AuthUser;
+    message: string;
+    user: AuthUser;
 };
 
-export const authService = {
-  login: (payload: { email: string; password: string }) =>
-    httpClient.post<LoginResponse>('/auth/login', payload),
-  register: (payload: { name: string; email: string; password: string }) =>
-    httpClient.post('/auth/register', payload),
-  me: () => httpClient.get<AuthUser>('/auth/user'),
-  logout: () => httpClient.post('/auth/logout', {}),
-};
+class AuthService {
+    private readonly httpClient: AxiosInstance;
+
+    constructor() {
+        this.httpClient = httpClientService.getInstance();
+    }
+
+    public async login(payload: {
+        email: string;
+        password: string;
+    }): Promise<LoginResponse> {
+        const response = await this.httpClient.post<LoginResponse>(
+            "/auth/login",
+            payload,
+        );
+        return response.data;
+    }
+
+    public async register(payload: {
+        name: string;
+        email: string;
+        password: string;
+    }) {
+        const response = await this.httpClient.post("/auth/register", payload);
+        return response.data;
+    }
+
+    public async me(): Promise<AuthUser> {
+        const response = await this.httpClient.get<AuthUser>("/auth/user");
+        return response.data;
+    }
+
+    public async getUserOrNull(): Promise<AuthUser | null> {
+        try {
+            return await this.me();
+        } catch {
+            return null;
+        }
+    }
+
+    public async logout() {
+        const response = await this.httpClient.post("/auth/logout", {});
+        return response.data;
+    }
+}
+
+export const authService = new AuthService();

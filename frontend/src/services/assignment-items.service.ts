@@ -1,10 +1,31 @@
-import { httpClient } from './http-client.service';
+import type { AxiosInstance } from "axios";
+import { httpClientService } from "./http-client.service";
 
-export const assignmentItemsService = {
-  listByUser: (userId: string) => httpClient.get(`/assignment-items?userId=${userId}`),
-  create: (payload: {
-    assignmentId: string;
-    contentType: 'quiz' | 'text' | 'writing';
-    contentId?: string;
-  }) => httpClient.post('/assignment-items', payload),
-};
+class AssignmentItemsService {
+    private readonly httpClient: AxiosInstance;
+
+    constructor() {
+        this.httpClient = httpClientService.getInstance();
+    }
+
+    public async listByUser(userId: string) {
+        const response = await this.httpClient.get(
+            `/assignment-items?userId=${userId}`,
+        );
+        return response.data;
+    }
+
+    public async create(payload: {
+        assignmentId: string;
+        contentType: "quiz" | "text" | "writing";
+        contentId?: string;
+    }) {
+        const response = await this.httpClient.post(
+            "/assignment-items",
+            payload,
+        );
+        return response.data;
+    }
+}
+
+export const assignmentItemsService = new AssignmentItemsService();

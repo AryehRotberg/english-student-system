@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useParams } from 'react-router-dom';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
-import { useParams } from 'react-router-dom';
 import { QuizCard } from '../../components/quiz/QuizCard';
-import { quizAttemptsService } from '../../services/quiz-attempts.service';
 import { useAuthUser, useQuizAttemptId, useQuizAttempts, useQuizQuestions, useQuizTopics, useStudentAnswersByAttempt } from '../../hooks/queries';
+import { quizAttemptsService } from '../../services/quiz-attempts.service';
 import type { QuizTopic } from '../../types/quiz';
 import styles from './QuizPage.module.css';
 

@@ -1,4 +1,4 @@
-import { IsUUID, IsString } from "class-validator";
+import { IsUUID, IsString } from 'class-validator';
 
 export class GetAssignmentItemsFilterDto {
     @IsUUID()

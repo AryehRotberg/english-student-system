@@ -4,13 +4,12 @@ import { CreateQuestionOptionDto } from './dto/create-question-option.dto';
 import { GetQuestionOptionsFilterDto } from './dto/get-question-options-filter.dto';
 import { QuestionOptionResponseDto } from './dto/question-option-response.dto';
 import { UpdateQuestionOptionDto } from './dto/update-question-option.dto';
+import { QuestionOption } from './entities/question-option.entity';
 import {
     createQuestionOptionQuery,
-    getQuestionOptionByIdQuery,
     getQuestionOptionsByQuestionIdQuery,
     updateQuestionOptionQuery,
 } from './question-options.queries';
-import { QuestionOption } from './entities/question-option.entity';
 
 @Injectable()
 export class QuestionOptionsService {
@@ -42,24 +41,19 @@ export class QuestionOptionsService {
         id: string,
         updateQuestionOptionDto: UpdateQuestionOptionDto,
     ): Promise<QuestionOptionResponseDto> {
-        const [existingQuestionOption] = await this.postgresService.query<QuestionOption>(
-            getQuestionOptionByIdQuery,
-            [id],
-        );
-
-        if (!existingQuestionOption) {
-            throw new NotFoundException('Question option not found');
-        }
-
         const [result] = await this.postgresService.query<QuestionOption>(
             updateQuestionOptionQuery,
             [
                 id,
-                updateQuestionOptionDto.questionId ?? existingQuestionOption.questionId,
-                updateQuestionOptionDto.optionText ?? existingQuestionOption.optionText,
-                updateQuestionOptionDto.isCorrect ?? existingQuestionOption.isCorrect,
+                updateQuestionOptionDto.questionId ?? null,
+                updateQuestionOptionDto.optionText ?? null,
+                updateQuestionOptionDto.isCorrect ?? null,
             ],
         );
+
+        if (!result) {
+            throw new NotFoundException('Question option not found');
+        }
 
         return QuestionOptionResponseDto.fromEntity(result);
     }

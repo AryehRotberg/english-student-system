@@ -6,7 +6,7 @@ import { GetAssignmentsFilterDto } from './dto/get-assignments-filter.dto';
 
 @Controller('assignments')
 export class AssignmentsController {
-    constructor(private readonly assignmentsService: AssignmentsService) { }
+    constructor(private readonly assignmentsService: AssignmentsService) {}
 
     @Get()
     async findByUserId(@Query() filter: GetAssignmentsFilterDto) {

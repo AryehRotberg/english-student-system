@@ -1,5 +1,16 @@
-import { httpClient } from './http-client.service';
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
 
-export const usersService = {
-  remove: (id: string) => httpClient.delete(`/users/${id}`),
-};
+class UsersService {
+  private readonly httpClient: AxiosInstance;
+
+  constructor() {
+    this.httpClient = httpClientService.getInstance();
+  }
+
+  public async remove(id: string): Promise<void> {
+    await this.httpClient.delete(`/users/${id}`);
+  }
+}
+
+export const usersService = new UsersService();

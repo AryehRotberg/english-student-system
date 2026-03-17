@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useQuestions, type QuestionAdminItem } from '../../../hooks/queries';
+import { useQuestions } from '../../../hooks/queries';
 import { useCreateQuestion } from '../../../hooks/mutations';
+import type { QuestionAdminItem } from '../../../types/admin-query-items';
 import { QuestionDetail } from './QuestionDetail';
 import styles from '../AdminPage.module.css';
 

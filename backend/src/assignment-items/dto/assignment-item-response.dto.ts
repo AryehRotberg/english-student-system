@@ -1,4 +1,4 @@
-import { AssignmentItem } from "../entities/assignment-item.entity";
+import { AssignmentItem } from '../entities/assignment-item.entity';
 
 export class AssignmentItemResponseDto {
     readonly id: string;
@@ -14,7 +14,9 @@ export class AssignmentItemResponseDto {
         Object.assign(this, props);
     }
 
-    static fromEntity(assignmentItem: AssignmentItem): AssignmentItemResponseDto {
+    static fromEntity(
+        assignmentItem: AssignmentItem,
+    ): AssignmentItemResponseDto {
         const props: AssignmentItemResponseDto = {
             id: assignmentItem.id,
             assignmentId: assignmentItem.assignmentId,
@@ -28,7 +30,9 @@ export class AssignmentItemResponseDto {
         return new AssignmentItemResponseDto(props);
     }
 
-    static fromEntities(assignmentItems: AssignmentItem[]): AssignmentItemResponseDto[] {
+    static fromEntities(
+        assignmentItems: AssignmentItem[],
+    ): AssignmentItemResponseDto[] {
         return assignmentItems.map(AssignmentItemResponseDto.fromEntity);
     }
 }

@@ -1,10 +1,10 @@
-export class AssignmentItem {
+export type AssignmentTopicApiItem = {
     id: string;
     assignmentId: string;
     assignmentTitle: string;
     assignmentDescription: string;
-    contentId: string;
-    contentType: string;
     status: 'assigned' | 'completed';
+    contentType: 'quiz' | 'text' | 'writing';
+    contentId: string;
     title: string;
-}
+};

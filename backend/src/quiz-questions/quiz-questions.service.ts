@@ -44,24 +44,19 @@ export class QuizQuestionsService {
     }
 
     async update(id: string, updateQuizQuestionDto: UpdateQuizQuestionDto): Promise<QuizQuestionResponseDto> {
-        const [existingQuizQuestion] = await this.postgresService.query<QuizQuestion>(
-            getQuizQuestionByIdQuery,
-            [id],
-        );
-
-        if (!existingQuizQuestion) {
-            throw new NotFoundException('Quiz question not found');
-        }
-
         const [updatedQuizQuestion] = await this.postgresService.query<QuizQuestion>(
             updateQuizQuestionQuery,
             [
                 id,
-                updateQuizQuestionDto.quizId ?? existingQuizQuestion.quizId,
-                updateQuizQuestionDto.questionId ?? existingQuizQuestion.questionId,
-                updateQuizQuestionDto.maxPoints ?? existingQuizQuestion.maxPoints,
+                updateQuizQuestionDto.quizId ?? null,
+                updateQuizQuestionDto.questionId ?? null,
+                updateQuizQuestionDto.maxPoints ?? null,
             ],
         );
+
+        if (!updatedQuizQuestion) {
+            throw new NotFoundException('Quiz question not found');
+        }
 
         const [result] = await this.postgresService.query<QuizQuestion>(
             getQuizQuestionByIdQuery,

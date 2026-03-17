@@ -8,7 +8,6 @@ import { QuizAttempt } from './entities/quiz-attempt.entity';
 import {
     completeQuizAssignmentItemsForUserQuery,
     createQuizAttemptQuery,
-    getQuizAttemptByIdQuery,
     getQuizAttemptsByUserIdAndQuizIdQuery,
     updateQuizAttemptQuery,
 } from './quiz-attempts.queries';
@@ -40,23 +39,21 @@ export class QuizAttemptsService {
     }
 
     async update(id: string, updateQuizAttemptDto: UpdateQuizAttemptDto): Promise<QuizAttemptResponseDto> {
-        const [existingAttempt] = await this.postgresService.query<QuizAttempt>(getQuizAttemptByIdQuery, [id]);
-
-        if (!existingAttempt) {
-            throw new NotFoundException('Quiz attempt not found');
-        }
-
         const [result] = await this.postgresService.query<QuizAttempt>(
             updateQuizAttemptQuery,
             [
                 id,
-                updateQuizAttemptDto.quizId ?? existingAttempt.quizId,
-                updateQuizAttemptDto.userId ?? existingAttempt.userId,
-                updateQuizAttemptDto.points ?? existingAttempt.points ?? 0,
-                updateQuizAttemptDto.startedAt ?? existingAttempt.startedAt,
-                updateQuizAttemptDto.completedAt ?? existingAttempt.completedAt,
+                updateQuizAttemptDto.quizId ?? null,
+                updateQuizAttemptDto.userId ?? null,
+                updateQuizAttemptDto.points ?? null,
+                updateQuizAttemptDto.startedAt ?? null,
+                updateQuizAttemptDto.completedAt ?? null,
             ],
         );
+
+        if (!result) {
+            throw new NotFoundException('Quiz attempt not found');
+        }
 
         if (result.completedAt) {
             await this.postgresService.query(

@@ -1,4 +1,4 @@
-import { Assignment } from "../entities/assignment.entity";
+import { Assignment } from '../entities/assignment.entity';
 
 export class AssignmentResponseDto {
     readonly id: string;

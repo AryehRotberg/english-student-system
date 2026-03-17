@@ -41,9 +41,9 @@ export const updateAnswerQuery = `
     UPDATE
         ANSWERS
     SET
-        QUESTION_ID = $2,
-        ANSWER = $3,
-        BLANK_INDEX = $4
+        QUESTION_ID = COALESCE($2, QUESTION_ID),
+        ANSWER = COALESCE($3, ANSWER),
+        BLANK_INDEX = COALESCE($4, BLANK_INDEX)
     WHERE
         ID = $1
     RETURNING
