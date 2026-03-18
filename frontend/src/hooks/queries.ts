@@ -17,6 +17,13 @@ import type {
     RawQuizQuestionAdminItem,
     TextAdminItem,
 } from "../types/admin-query-items";
+export type {
+    AnswerAdminItem,
+    QuestionAdminItem,
+    QuestionOptionAdminItem,
+    RawQuizQuestionAdminItem,
+    TextAdminItem,
+} from "../types/admin-query-items";
 import type { QuizAttemptApiItem } from "../types/api-items/quiz-attempt";
 import type { AuthUser } from "../types/auth";
 import type { DashboardData } from "../types/dashboard";
