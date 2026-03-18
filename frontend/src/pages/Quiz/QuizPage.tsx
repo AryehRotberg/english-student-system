@@ -33,8 +33,11 @@ export function QuizPage() {
     const { data: attemptId, isLoading: isAttemptLoading } = useQuizAttemptId(quizId, user?.id);
     const { data: attempts = [], refetch: refetchAttempts } = useQuizAttempts(quizId, user?.id);
 
+    // Always load active attempt answers so we can resume where the student left off.
+    const { data: activeAttemptAnswers = [] } = useStudentAnswersByAttempt(attemptId);
+
     const selectedAttemptId = viewAttemptId ?? (isCompleted ? attemptId : undefined);
-    const { data: studentAnswers = [] } = useStudentAnswersByAttempt(selectedAttemptId);
+    const { data: viewedStudentAnswers = [] } = useStudentAnswersByAttempt(selectedAttemptId);
 
     useEffect(() => {
         setCurrentIndex(0);
@@ -42,6 +45,21 @@ export function QuizPage() {
         setViewAttemptId(null);
         setSelectedTopic(null);
     }, [quizId]);
+
+    useEffect(() => {
+        if (!attemptId || !questions || isCompleted || Boolean(viewAttemptId)) {
+            return;
+        }
+
+        const answeredQuestionIds = new Set(activeAttemptAnswers.map((answer) => answer.questionId));
+        const firstUnansweredIndex = questions.findIndex(
+            (question) => !answeredQuestionIds.has(question.questionId),
+        );
+
+        // If everything is answered but attempt wasn't marked completed yet, keep user on last question.
+        const resumeIndex = firstUnansweredIndex === -1 ? questions.length - 1 : firstUnansweredIndex;
+        setCurrentIndex(Math.max(0, resumeIndex));
+    }, [attemptId, questions, activeAttemptAnswers, isCompleted, viewAttemptId]);
 
     if (!quizId || !questions || questions.length === 0 || isAttemptLoading || !attemptId) {
         return null;
@@ -75,7 +93,7 @@ export function QuizPage() {
     const selectedAttempt = attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
     const totalPossible = questions.reduce((sum, question) => sum + question.maxPoints, 0);
     const earned = questions.reduce((sum, question) => {
-        const studentAnswer = studentAnswers.find((answer) => answer.questionId === question.questionId);
+        const studentAnswer = viewedStudentAnswers.find((answer) => answer.questionId === question.questionId);
         return sum + Number(studentAnswer?.points ?? 0);
     }, 0);
 
@@ -126,7 +144,7 @@ export function QuizPage() {
 
                     <ul className={styles.resultList}>
                         {questions.map((question) => {
-                            const answer = studentAnswers.find((item) => item.questionId === question.questionId);
+                            const answer = viewedStudentAnswers.find((item) => item.questionId === question.questionId);
                             const isCorrect = Number(answer?.points ?? 0) >= question.maxPoints;
 
                             return (
