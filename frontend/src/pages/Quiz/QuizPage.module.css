@@ -216,7 +216,7 @@
   align-items: center;
   justify-content: center;
   padding: 18px;
-  z-index: 30;
+  z-index: 90;
   animation: overlayFadeIn 200ms ease both;
 }
 
