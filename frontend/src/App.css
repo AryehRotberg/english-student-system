@@ -1,33 +1,33 @@
 .appShell {
-  margin: 0 auto;
-  max-width: 1150px;
-  min-height: 100vh;
-  padding: 0 1rem 1.2rem;
+    margin: 0 auto;
+    max-width: 1150px;
+    min-height: 100vh;
+    padding: 0 1rem 1.2rem;
 }
 
 .appMain {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem 0;
+    display: grid;
+    gap: 1rem;
+    padding: 1rem 0;
 }
 
 .loadingState {
-  align-items: center;
-  color: var(--ink-700);
-  display: grid;
-  font-size: 1.2rem;
-  font-weight: 800;
-  height: 100vh;
-  justify-content: center;
-  left: 0;
-  place-items: center;
-  position: fixed;
-  top: 0;
-  width: 100%;
+    align-items: center;
+    color: var(--ink-700);
+    display: grid;
+    font-size: 1.2rem;
+    font-weight: 800;
+    height: 100vh;
+    justify-content: center;
+    left: 0;
+    place-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
 }
 
 @media (max-width: 740px) {
-  .appShell {
-    padding: 0 0.5rem 0.8rem;
-  }
+    .appShell {
+        padding: 0 0.5rem 0.8rem;
+    }
 }

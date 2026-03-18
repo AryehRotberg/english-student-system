@@ -23,31 +23,21 @@ class DashboardService {
         const activeAssignmentItems = assignmentItems.filter(
             (item) => item.status !== "completed",
         );
-        const activeAssignmentIds = new Set(
-            activeAssignmentItems.map((item) => item.assignmentId),
-        );
-
-        const tasks: DailyTask[] = assignments
-            .filter((assignment) => activeAssignmentIds.has(assignment.id))
-            .slice(0, 4)
-            .map((assignment) => ({
-                id: assignment.id,
-                title: assignment.title,
-                description: assignment.description ?? "No description.",
-                category: assignment.title.toLowerCase().includes("listen")
-                    ? "listening"
-                    : assignment.title.toLowerCase().includes("vocab")
-                      ? "vocabulary"
-                      : assignment.title.toLowerCase().includes("grammar")
-                        ? "grammar"
-                        : "reading",
-            }));
+        const tasks: DailyTask[] = activeAssignmentItems.map((item) => ({
+            id: item.id,
+            title: item.title,
+            description:
+                item.assignmentDescription ?? "No assignment description.",
+            category:
+                item.contentType === "quiz"
+                    ? "grammar"
+                    : item.contentType === "text"
+                      ? "reading"
+                      : "vocabulary",
+        }));
 
         const assignmentTopics: AssignmentTopic[] = activeAssignmentItems
-            .filter(
-                (item) =>
-                    item.contentType === "quiz" && Boolean(item.contentId),
-            )
+            .filter((item) => Boolean(item.contentId))
             .map((item) => ({
                 id: item.id,
                 assignmentTitle: item.assignmentTitle,
