@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { answersService } from "../services/answers.service";
 import { authService } from "../services/auth.service";
 import { dashboardService } from "../services/dashboard.service";
@@ -23,13 +23,17 @@ import type { AuthUser } from "../types/auth";
 import type { DashboardData } from "../types/dashboard";
 import type { QuizQuestion, QuizSummary, QuizTopic } from "../types/quiz";
 import type { ReadingItem } from "../types/reading";
-import type { VocabularyTopicWithWords } from "../types/vocabulary";
+import type {
+    VocabularyTopicPreview,
+    VocabularyTopicWithWords,
+    VocabularyWord,
+} from "../types/vocabulary";
 export type {
     AnswerAdminItem,
     QuestionAdminItem,
     QuestionOptionAdminItem,
     RawQuizQuestionAdminItem,
-    TextAdminItem,
+    TextAdminItem
 } from "../types/admin-query-items";
 
 export function useDashboardOverview() {
@@ -55,11 +59,49 @@ export function useAuthUser() {
 }
 
 export function useQuizAttemptId(quizId?: string, userId?: string) {
+    const queryClient = useQueryClient();
+
     return useQuery<string>({
         queryKey: ["quiz-attempt-id", quizId, userId],
         enabled: Boolean(userId) && Boolean(quizId),
-        queryFn: () =>
-            quizAttemptsService.getOrCreateActiveAttemptId(quizId, userId),
+        queryFn: async () => {
+            const attempts = await queryClient.ensureQueryData<
+                QuizAttemptApiItem[]
+            >({
+                queryKey: ["quiz-attempts", quizId, userId],
+                queryFn: () =>
+                    quizAttemptsService.listByUserAndQuizSorted(userId, quizId),
+            });
+
+            const activeAttempt =
+                attempts.find((attempt) => attempt.completedAt === null) ??
+                null;
+
+            if (activeAttempt) {
+                return activeAttempt.id;
+            }
+
+            const createdAttempt = (await quizAttemptsService.create({
+                quizId: quizId as string,
+                userId: userId as string,
+                points: 0,
+                startedAt: new Date().toISOString(),
+            })) as QuizAttemptApiItem;
+
+            queryClient.setQueryData<QuizAttemptApiItem[]>(
+                ["quiz-attempts", quizId, userId],
+                (current) => {
+                    const next = [createdAttempt, ...(current ?? [])];
+                    return next.sort(
+                        (left, right) =>
+                            new Date(right.startedAt).getTime() -
+                            new Date(left.startedAt).getTime(),
+                    );
+                },
+            );
+
+            return createdAttempt.id;
+        },
     });
 }
 
@@ -146,5 +188,20 @@ export function useVocabularyTopicsWithWords() {
     return useQuery<VocabularyTopicWithWords[]>({
         queryKey: ["vocabulary-topics-with-words"],
         queryFn: () => vocabularyService.listTopicsWithWords(),
+    });
+}
+
+export function useVocabularyTopics() {
+    return useQuery<VocabularyTopicPreview[]>({
+        queryKey: ["vocabulary-topics"],
+        queryFn: () => vocabularyService.listTopicsPreview(),
+    });
+}
+
+export function useVocabularyTopicWords(topicId?: string) {
+    return useQuery<VocabularyWord[]>({
+        queryKey: ["vocabulary-topic-words", topicId],
+        enabled: Boolean(topicId),
+        queryFn: () => vocabularyService.listWordsForTopic(topicId as string),
     });
 }

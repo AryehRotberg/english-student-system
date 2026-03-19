@@ -1,11 +1,22 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
-import { StudentAnswersService } from './student-answers.service';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseUUIDPipe,
+    Patch,
+    Post,
+} from '@nestjs/common';
 import { CreateStudentAnswerDto } from './dto/create-student-answer.dto';
 import { UpdateStudentAnswerDto } from './dto/update-student-answer.dto';
+import { StudentAnswersService } from './student-answers.service';
 
 @Controller('student-answers')
 export class StudentAnswersController {
-    constructor(private readonly studentAnswersService: StudentAnswersService) { }
+    constructor(
+        private readonly studentAnswersService: StudentAnswersService,
+    ) {}
 
     @Post()
     async create(@Body() createStudentAnswerDto: CreateStudentAnswerDto) {
@@ -27,7 +38,10 @@ export class StudentAnswersController {
         @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateStudentAnswerDto: UpdateStudentAnswerDto,
     ) {
-        return await this.studentAnswersService.update(id, updateStudentAnswerDto);
+        return await this.studentAnswersService.update(
+            id,
+            updateStudentAnswerDto,
+        );
     }
 
     @Delete(':id')

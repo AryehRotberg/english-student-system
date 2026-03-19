@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-// import * as Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 import * as fs from 'fs';
 import * as path from 'path';
 import pg from 'pg';
@@ -67,7 +67,7 @@ export class PostgresService {
         });
 
         this.pool.on('error', (err) => {
-            // Sentry.captureException(err);
+            Sentry.captureException(err);
             Logger.error('Unexpected error on idle client', err);
         });
     }
@@ -78,7 +78,7 @@ export class PostgresService {
             return result.rows as T[];
         } catch (error) {
             Logger.error(`Database query error: ${error.message}`, error.stack);
-            // Sentry.captureException(error);
+            Sentry.captureException(error);
             return Promise.reject(error);
         }
     }

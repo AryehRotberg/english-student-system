@@ -6,7 +6,6 @@ import { VocabularyTopicWordResponseDto } from './dto/vocabulary-topic-word-resp
 import { VocabularyTopicWord } from './entities/vocabulary-topic-word.entity';
 import {
     createVocabularyTopicWordQuery,
-    getVocabularyTopicWordByIdQuery,
     getVocabularyTopicWordsByTopicIdQuery,
 } from './vocabulary-topic-words.queries';
 
@@ -32,15 +31,9 @@ export class VocabularyTopicWordsService {
     ): Promise<VocabularyTopicWordResponseDto> {
         const { vocabularyId, topicId } = createVocabularyTopicWordDto;
 
-        const [createdTopicWord] =
-            await this.postgresService.query<VocabularyTopicWord>(
-                createVocabularyTopicWordQuery,
-                [vocabularyId, topicId],
-            );
-
         const [result] = await this.postgresService.query<VocabularyTopicWord>(
-            getVocabularyTopicWordByIdQuery,
-            [createdTopicWord.id],
+            createVocabularyTopicWordQuery,
+            [vocabularyId, topicId],
         );
 
         return VocabularyTopicWordResponseDto.fromEntity(result);

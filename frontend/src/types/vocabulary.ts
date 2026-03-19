@@ -7,6 +7,13 @@ export type VocabularyWord = {
     translation: string | null;
 };
 
+export type VocabularyTopicPreview = {
+    id: string;
+    topic: string;
+    description: string | null;
+    createdAt: string;
+};
+
 export type VocabularyTopicWithWords = {
     id: string;
     topic: string;

@@ -2,17 +2,26 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { VocabStudyPanel } from "../../components/vocab/VocabStudyPanel";
 import { VocabularyTopicGrid } from "../../components/vocab/VocabularyTopicGrid";
-import { useVocabularyTopicsWithWords } from "../../hooks/queries";
-import type { VocabularyTopicWithWords } from "../../types/vocabulary";
+import {
+    useVocabularyTopicWords,
+    useVocabularyTopics,
+} from "../../hooks/queries";
+import type {
+    VocabularyTopicPreview,
+    VocabularyTopicWithWords,
+} from "../../types/vocabulary";
 import styles from "./VocabPage.module.css";
 
 export function VocabPage() {
     const [searchParams, setSearchParams] = useSearchParams();
-    const { data: topics = [] } = useVocabularyTopicsWithWords();
-    const [selectedTopic, setSelectedTopic] =
-        useState<VocabularyTopicWithWords | null>(null);
+    const { data: topics = [] } = useVocabularyTopics();
+    const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
 
     const topicIdFromUrl = searchParams.get("topicId");
+    const activeTopicId = selectedTopicId ?? topicIdFromUrl;
+
+    const { data: words = [], isLoading: isWordsLoading } =
+        useVocabularyTopicWords(activeTopicId ?? undefined);
 
     useEffect(() => {
         if (!topicIdFromUrl) {
@@ -21,23 +30,32 @@ export function VocabPage() {
 
         const topic = topics.find((item) => item.id === topicIdFromUrl);
         if (topic) {
-            setSelectedTopic(topic);
+            setSelectedTopicId(topic.id);
         }
     }, [topicIdFromUrl, topics]);
 
-    const activeTopic =
-        selectedTopic === null
-            ? null
-            : topics.find((topic) => topic.id === selectedTopic.id) ||
-              selectedTopic;
+    const activeTopicMeta = activeTopicId
+        ? (topics.find((topic) => topic.id === activeTopicId) ?? null)
+        : null;
 
-    const handleSelectTopic = (topic: VocabularyTopicWithWords) => {
-        setSelectedTopic(topic);
+    const activeTopic: VocabularyTopicWithWords | null =
+        activeTopicMeta === null
+            ? null
+            : {
+                  id: activeTopicMeta.id,
+                  topic: activeTopicMeta.topic,
+                  description: activeTopicMeta.description,
+                  createdAt: activeTopicMeta.createdAt,
+                  words,
+              };
+
+    const handleSelectTopic = (topic: VocabularyTopicPreview) => {
+        setSelectedTopicId(topic.id);
         setSearchParams({ topicId: topic.id });
     };
 
     const handleBackToTopics = () => {
-        setSelectedTopic(null);
+        setSelectedTopicId(null);
         setSearchParams({});
     };
 
@@ -46,6 +64,7 @@ export function VocabPage() {
             {activeTopic ? (
                 <VocabStudyPanel
                     topic={activeTopic}
+                    isLoadingWords={isWordsLoading}
                     onBack={handleBackToTopics}
                 />
             ) : (

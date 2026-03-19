@@ -20,6 +20,7 @@ import { AnswersModule } from './answers/answers.module';
 import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { VocabularyTopicsModule } from './vocabulary-topics/vocabulary-topics.module';
 import { VocabularyTopicWordsModule } from './vocabulary-topic-words/vocabulary-topic-words.module';
+import { SendEmailModule } from './send-email/send-email.module';
 
 @Module({
     imports: [
@@ -44,6 +45,7 @@ import { VocabularyTopicWordsModule } from './vocabulary-topic-words/vocabulary-
         VocabularyModule,
         VocabularyTopicsModule,
         VocabularyTopicWordsModule,
+        SendEmailModule,
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -4,10 +4,15 @@ import styles from "./VocabStudyPanel.module.css";
 
 type VocabStudyPanelProps = {
     topic: VocabularyTopicWithWords;
+    isLoadingWords?: boolean;
     onBack: () => void;
 };
 
-export function VocabStudyPanel({ topic, onBack }: VocabStudyPanelProps) {
+export function VocabStudyPanel({
+    topic,
+    isLoadingWords = false,
+    onBack,
+}: VocabStudyPanelProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
 
@@ -39,6 +44,24 @@ export function VocabStudyPanel({ topic, onBack }: VocabStudyPanelProps) {
         setCurrentIndex((value) => value - 1);
         setIsFlipped(false);
     };
+
+    if (isLoadingWords) {
+        return (
+            <section className={styles.panel}>
+                <div className={styles.headerRow}>
+                    <h2 className={styles.topicTitle}>{topic.topic}</h2>
+                    <button
+                        className={styles.backButton}
+                        type="button"
+                        onClick={onBack}
+                    >
+                        Back to topics
+                    </button>
+                </div>
+                <p className={styles.emptyState}>Loading words...</p>
+            </section>
+        );
+    }
 
     if (!currentCard) {
         return (

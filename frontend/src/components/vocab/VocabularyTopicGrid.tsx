@@ -1,10 +1,10 @@
-import type { VocabularyTopicWithWords } from "../../types/vocabulary";
+import type { VocabularyTopicPreview } from "../../types/vocabulary";
 import { VocabularyTopicCard } from "./VocabularyTopicCard";
 import styles from "../../pages/Vocab/VocabPage.module.css";
 
 type VocabularyTopicGridProps = {
-    topics: VocabularyTopicWithWords[];
-    onSelectTopic: (topic: VocabularyTopicWithWords) => void;
+    topics: VocabularyTopicPreview[];
+    onSelectTopic: (topic: VocabularyTopicPreview) => void;
 };
 
 export function VocabularyTopicGrid({

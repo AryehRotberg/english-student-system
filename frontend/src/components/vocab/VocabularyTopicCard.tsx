@@ -1,9 +1,9 @@
-import type { VocabularyTopicWithWords } from "../../types/vocabulary";
+import type { VocabularyTopicPreview } from "../../types/vocabulary";
 import styles from "./VocabularyTopicCard.module.css";
 
 type VocabularyTopicCardProps = {
-    topic: VocabularyTopicWithWords;
-    onSelectTopic: (topic: VocabularyTopicWithWords) => void;
+    topic: VocabularyTopicPreview;
+    onSelectTopic: (topic: VocabularyTopicPreview) => void;
 };
 
 export function VocabularyTopicCard({
@@ -21,8 +21,6 @@ export function VocabularyTopicCard({
             {topic.description ? (
                 <p className={styles.description}>{topic.description}</p>
             ) : null}
-
-            <small className={styles.meta}>{topic.words.length} words</small>
         </button>
     );
 }
