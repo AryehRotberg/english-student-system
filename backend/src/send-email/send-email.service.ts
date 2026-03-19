@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NodemailerService } from 'src/config/nodemailer';
+import { NodemailerService } from '../config/nodemailer';
 import { SendEmailDto } from './dto/send-email.dto';
 import { htmlBody } from './templates/html-body.template';
 
