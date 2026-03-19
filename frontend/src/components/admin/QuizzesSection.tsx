@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useQuizzes } from '../../../hooks/queries';
-import { useCreateQuiz } from '../../../hooks/mutations';
-import styles from '../AdminPage.module.css';
+import { useQuizzes } from '../../hooks/queries';
+import { useCreateQuiz } from '../../hooks/mutations';
+import styles from '../../pages/Admin/AdminPage.module.css';
 
 export function QuizzesSection() {
     const { data: quizzes = [] } = useQuizzes();

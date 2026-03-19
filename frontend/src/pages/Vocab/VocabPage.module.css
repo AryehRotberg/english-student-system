@@ -1,43 +1,69 @@
-.panel {
-  background: #ffffff;
-  border: 1px solid #d9dbe3;
-  border-radius: 14px;
-  padding: 1rem;
+.stack {
+    display: grid;
+    gap: 1rem;
+}
+
+.topicSection {
+    background: #ffffff;
+    border: 1px solid #d9dbe3;
+    border-radius: 14px;
+    display: grid;
+    gap: 10px;
+    padding: 1rem;
 }
 
 .heading {
-  color: #11131a;
-  font-size: 1.2rem;
-  margin: 0 0 0.8rem;
+    color: #111827;
+    font-size: 1.2rem;
+    margin: 0;
 }
 
-.grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+.topicGrid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
-.card {
-  background: linear-gradient(145deg, #fff9e8 0%, #eff1ff 100%);
-  border: 1px solid #20242f;
-  border-radius: 12px;
-  padding: 0.9rem;
+.emptyState {
+    color: #6b7280;
+    margin: 0;
 }
 
-.card h3 {
-  margin: 0 0 0.5rem;
+@keyframes topicSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.card p {
-  color: #5f687a;
-  margin: 0 0 0.8rem;
+.topicGrid > * {
+    animation: topicSlideIn 280ms ease both;
 }
 
-.card button {
-  background: #111723;
-  border: 1px solid #111723;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 700;
-  padding: 0.42rem 0.85rem;
+.topicGrid > *:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.topicGrid > *:nth-child(2) {
+    animation-delay: 80ms;
+}
+
+.topicGrid > *:nth-child(3) {
+    animation-delay: 160ms;
+}
+
+.topicGrid > *:nth-child(4) {
+    animation-delay: 240ms;
+}
+
+.topicGrid > *:nth-child(5) {
+    animation-delay: 320ms;
+}
+
+.topicGrid > *:nth-child(6) {
+    animation-delay: 400ms;
 }

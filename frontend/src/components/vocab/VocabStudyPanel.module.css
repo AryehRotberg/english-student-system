@@ -1,0 +1,173 @@
+.panel {
+    background: #ffffff;
+    border: 1px solid #d9dbe3;
+    border-radius: 14px;
+    display: grid;
+    gap: 12px;
+    padding: 1rem;
+}
+
+.headerRow {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.topicTitle {
+    color: #111827;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.backButton {
+    background: #111827;
+    border: 1px solid #0f172a;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.5rem 0.8rem;
+}
+
+.backButton:hover {
+    background: #1f2937;
+}
+
+.cardCount {
+    color: #374151;
+    font-weight: 700;
+    margin: 0;
+}
+
+.progressBar {
+    background: #e5e7eb;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.progressFill {
+    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+    height: 100%;
+    transition: width 220ms ease;
+}
+
+.cardViewport {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    max-width: 760px;
+    padding: 0;
+    perspective: 1200px;
+    width: 100%;
+}
+
+.cardInner {
+    min-height: 300px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+    width: 100%;
+}
+
+.cardInnerFlipped {
+    transform: rotateY(180deg);
+}
+
+.cardFace {
+    backface-visibility: hidden;
+    background: linear-gradient(130deg, #ffffff 0%, #f7f9ff 100%);
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    inset: 0;
+    padding: 1rem;
+    position: absolute;
+}
+
+.cardFront {
+    display: grid;
+    place-content: center;
+    text-align: center;
+}
+
+.cardBack {
+    align-items: center;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    transform: rotateY(180deg);
+}
+
+.word {
+    color: #111827;
+    font-size: clamp(1.6rem, 3.2vw, 2.35rem);
+    margin: 0;
+}
+
+.hint {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0.7rem 0 0;
+}
+
+.details {
+    color: #1f2937;
+    display: grid;
+    gap: 0.9rem;
+    max-width: 62ch;
+    place-items: center;
+}
+
+.details p {
+    font-size: clamp(1rem, 1.25vw, 1.18rem);
+    line-height: 1.45;
+    margin: 0;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.arrowButton {
+    align-items: center;
+    background: #111827;
+    border: 1px solid #0f172a;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.08rem;
+    font-weight: 700;
+    height: 42px;
+    justify-content: center;
+    width: 52px;
+}
+
+.arrowButton:disabled {
+    background: #d1d5db;
+    border-color: #d1d5db;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+.emptyState {
+    color: #6b7280;
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .headerRow {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cardInner {
+        min-height: 340px;
+    }
+}

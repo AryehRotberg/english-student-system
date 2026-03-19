@@ -17,7 +17,7 @@ class AssignmentItemsService {
 
     public async create(payload: {
         assignmentId: string;
-        contentType: "quiz" | "text" | "writing";
+        contentType: "quiz" | "text" | "writing" | "vocabulary";
         contentId?: string;
     }) {
         const response = await this.httpClient.post(

@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
 import type { AuthUser } from "../types/auth";
+import { httpClientService } from "./http-client.service";
 
 type LoginResponse = {
     message: string;

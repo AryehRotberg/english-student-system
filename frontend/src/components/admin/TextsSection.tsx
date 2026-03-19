@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useTexts, type TextAdminItem } from '../../../hooks/queries';
-import { useCreateText } from '../../../hooks/mutations';
-import styles from '../AdminPage.module.css';
+import { useTexts, type TextAdminItem } from '../../hooks/queries';
+import { useCreateText } from '../../hooks/mutations';
+import styles from '../../pages/Admin/AdminPage.module.css';
 
 export function TextsSection() {
     const { data: texts = [] } = useTexts();

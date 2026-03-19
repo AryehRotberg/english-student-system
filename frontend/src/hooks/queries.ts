@@ -10,14 +10,8 @@ import { quizzesService } from "../services/quizzes.service";
 import type { StudentAnswerApiItem } from "../services/student-answers.service";
 import { studentAnswersService } from "../services/student-answers.service";
 import { textsService } from "../services/texts.service";
+import { vocabularyService } from "../services/vocabulary.service";
 import type {
-    AnswerAdminItem,
-    QuestionAdminItem,
-    QuestionOptionAdminItem,
-    RawQuizQuestionAdminItem,
-    TextAdminItem,
-} from "../types/admin-query-items";
-export type {
     AnswerAdminItem,
     QuestionAdminItem,
     QuestionOptionAdminItem,
@@ -29,6 +23,14 @@ import type { AuthUser } from "../types/auth";
 import type { DashboardData } from "../types/dashboard";
 import type { QuizQuestion, QuizSummary, QuizTopic } from "../types/quiz";
 import type { ReadingItem } from "../types/reading";
+import type { VocabularyTopicWithWords } from "../types/vocabulary";
+export type {
+    AnswerAdminItem,
+    QuestionAdminItem,
+    QuestionOptionAdminItem,
+    RawQuizQuestionAdminItem,
+    TextAdminItem,
+} from "../types/admin-query-items";
 
 export function useDashboardOverview() {
     return useQuery<DashboardData>({
@@ -137,5 +139,12 @@ export function useTexts() {
     return useQuery<TextAdminItem[]>({
         queryKey: ["texts"],
         queryFn: () => textsService.listAdmin(),
+    });
+}
+
+export function useVocabularyTopicsWithWords() {
+    return useQuery<VocabularyTopicWithWords[]>({
+        queryKey: ["vocabulary-topics-with-words"],
+        queryFn: () => vocabularyService.listTopicsWithWords(),
     });
 }

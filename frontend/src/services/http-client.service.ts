@@ -1,5 +1,5 @@
-import axios, { type AxiosInstance } from 'axios';
-import Sentry from '../config/sentry';
+import axios, { type AxiosInstance } from "axios";
+import Sentry from "../config/sentry";
 
 class HttpClientService {
     private readonly API_BASE_URL: string;
@@ -7,8 +7,8 @@ class HttpClientService {
 
     constructor() {
         this.API_BASE_URL = import.meta.env.PROD
-            ? '/api'
-            : 'http://localhost:3000';
+            ? "/api"
+            : "http://localhost:3000";
 
         this.instance = axios.create(this.getAxiosConfig());
         this.setupInterceptors();
@@ -23,30 +23,34 @@ class HttpClientService {
             baseURL: this.API_BASE_URL,
             withCredentials: true,
             headers: {
-                'Content-Type': 'application/json'
-            }
-        }
+                "Content-Type": "application/json",
+            },
+        };
     }
 
     private setupInterceptors() {
         this.instance.interceptors.response.use(
             (response) => response,
             (error) => {
-                this.handleError(error, 'httpRequest');
+                this.handleError(error, "httpRequest");
                 return Promise.reject(error);
-            }
+            },
         );
     }
 
-    private handleError(error: unknown, tag: string, extra: Record<string, any> = {}) {
+    private handleError(
+        error: unknown,
+        tag: string,
+        extra: Record<string, unknown> = {},
+    ) {
         if (axios.isAxiosError(error)) {
             Sentry.captureException(error, {
-                tags: { api_call: tag, error_type: 'network' },
+                tags: { api_call: tag, error_type: "network" },
                 extra: {
                     status: error.response?.status,
                     url: error.config?.url,
-                    ...extra
-                }
+                    ...extra,
+                },
             });
         } else {
             Sentry.captureException(error);

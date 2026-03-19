@@ -102,14 +102,14 @@ export function useUpdateQuestionOption() {
     return useMutation({
         mutationFn: ({
             id,
-            questionId,
-            ...payload
+            optionText,
+            isCorrect,
         }: {
             id: string;
             questionId: string;
             optionText?: string;
             isCorrect?: boolean;
-        }) => questionOptionsService.update(id, payload),
+        }) => questionOptionsService.update(id, { optionText, isCorrect }),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
                 queryKey: ["question-options", variables.questionId],
@@ -138,7 +138,6 @@ export function useUpdateAnswer() {
             ...payload
         }: {
             id: string;
-            questionId?: string;
             answer?: string;
             blankIndex?: number;
         }) => answersService.update(id, payload),

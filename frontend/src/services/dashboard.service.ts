@@ -1,13 +1,18 @@
+import type { AssignmentApiItem } from "../types/api-items/assignment";
+import type { AssignmentTopicApiItem } from "../types/api-items/assignment-topic";
+import type { QuizQuestionApiItem } from "../types/api-items/quiz-question";
+import type { DashboardData } from "../types/dashboard";
+import type { ProgressItem } from "../types/progress";
+import type { AssignmentTopic, DailyTask } from "../types/task";
 import { assignmentItemsService } from "./assignment-items.service";
 import { assignmentsService } from "./assignments.service";
 import { authService } from "./auth.service";
 import { quizAttemptsService } from "./quiz-attempts.service";
-import type { AssignmentApiItem } from "../types/api-items/assignment";
-import type { AssignmentTopicApiItem } from "../types/api-items/assignment-topic";
-import type { QuizAttemptApiItem } from "../types/api-items/quiz-attempt";
-import type { DashboardData } from "../types/dashboard";
-import type { ProgressItem } from "../types/progress";
-import type { AssignmentTopic, DailyTask } from "../types/task";
+import { quizQuestionsService } from "./quiz-questions.service";
+import {
+    studentAnswersService,
+    type StudentAnswerApiItem,
+} from "./student-answers.service";
 
 class DashboardService {
     public async getOverview(): Promise<DashboardData> {
@@ -33,7 +38,9 @@ class DashboardService {
                     ? "grammar"
                     : item.contentType === "text"
                       ? "reading"
-                      : "vocabulary",
+                      : item.contentType === "writing"
+                        ? "grammar"
+                        : "vocabulary",
         }));
 
         const assignmentTopics: AssignmentTopic[] = activeAssignmentItems
@@ -58,33 +65,93 @@ class DashboardService {
         const uniqueQuizIds = Array.from(
             new Set(assignedQuizItems.map((item) => item.contentId)),
         );
-        const attemptEntries = await Promise.all(
+
+        const quizProgressSources = await Promise.all(
             uniqueQuizIds.map(async (quizId) => {
-                const attempts = (await quizAttemptsService.listByUserAndQuiz(
-                    user.id,
+                const [attempts, quizQuestionsRaw] = await Promise.all([
+                    quizAttemptsService.listByUserAndQuizSorted(
+                        user.id,
+                        quizId,
+                    ),
+                    quizQuestionsService.listByQuiz(quizId),
+                ]);
+
+                const quizQuestions = quizQuestionsRaw as QuizQuestionApiItem[];
+                const totalQuestions = new Set(
+                    quizQuestions.map((question) => question.questionId),
+                ).size;
+                const activeAttempt =
+                    attempts.find((attempt) => attempt.completedAt === null) ??
+                    null;
+                const latestAttempt = attempts[0] ?? null;
+                const selectedAttempt = activeAttempt ?? latestAttempt;
+
+                return {
                     quizId,
-                )) as QuizAttemptApiItem[];
-                return [quizId, attempts] as const;
+                    totalQuestions,
+                    selectedAttempt,
+                };
             }),
         );
-        const attemptsByQuizId = new Map<string, QuizAttemptApiItem[]>(
-            attemptEntries,
+
+        const attemptIdsNeedingAnswerCounts = quizProgressSources
+            .filter(
+                (entry) =>
+                    Boolean(entry.selectedAttempt) &&
+                    entry.selectedAttempt?.completedAt === null &&
+                    entry.totalQuestions > 0,
+            )
+            .map((entry) => entry.selectedAttempt!.id);
+
+        const allStudentAnswers =
+            attemptIdsNeedingAnswerCounts.length > 0
+                ? ((await studentAnswersService.list()) as StudentAnswerApiItem[])
+                : [];
+
+        const answeredCountByAttemptId = new Map<string, number>();
+        for (const attemptId of attemptIdsNeedingAnswerCounts) {
+            const attemptAnswers = allStudentAnswers.filter(
+                (answer) => answer.attemptId === attemptId,
+            );
+            const answeredQuestionCount = new Set(
+                attemptAnswers.map((answer) => answer.questionId),
+            ).size;
+            answeredCountByAttemptId.set(attemptId, answeredQuestionCount);
+        }
+
+        const quizPercentByQuizId = new Map<string, number>(
+            quizProgressSources.map((entry) => {
+                if (!entry.selectedAttempt || entry.totalQuestions === 0) {
+                    return [entry.quizId, 0] as const;
+                }
+
+                if (entry.selectedAttempt.completedAt !== null) {
+                    return [entry.quizId, 100] as const;
+                }
+
+                const answeredCount =
+                    answeredCountByAttemptId.get(entry.selectedAttempt.id) ?? 0;
+                const relativePercent = Math.round(
+                    (answeredCount / entry.totalQuestions) * 100,
+                );
+
+                return [entry.quizId, Math.min(100, relativePercent)] as const;
+            }),
         );
-
-        const assignedQuizItemsCompleted = assignedQuizItems.filter((item) => {
-            if (item.status === "completed") {
-                return true;
-            }
-
-            const attempts = attemptsByQuizId.get(item.contentId) ?? [];
-            return attempts.some((attempt) => attempt.completedAt !== null);
-        }).length;
 
         const quizProgress =
             assignedQuizItems.length > 0
                 ? Math.round(
-                      (assignedQuizItemsCompleted / assignedQuizItems.length) *
-                          100,
+                      assignedQuizItems.reduce((sum, item) => {
+                          if (item.status === "completed") {
+                              return sum + 100;
+                          }
+
+                          return (
+                              sum +
+                              (quizPercentByQuizId.get(item.contentId) ?? 0)
+                          );
+                      }, 0) / assignedQuizItems.length,
                   )
                 : 0;
 

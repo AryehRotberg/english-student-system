@@ -1,6 +1,6 @@
-import styles from './PracticeCenter.module.css';
+import styles from "./PracticeCenter.module.css";
 
-const practiceModules = ['Grammar', 'Listening', 'Speaking', 'Writing'];
+const practiceModules = ["Grammar", "Listening", "Speaking", "Writing"];
 
 export function PracticeCenter() {
     return (

@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { useQuizzes } from '../../hooks/queries';
-import styles from './QuizListPage.module.css';
+import { useNavigate } from "react-router-dom";
+import { useQuizzes } from "../../hooks/queries";
+import styles from "./QuizListPage.module.css";
 
 export function QuizListPage() {
     const navigate = useNavigate();
@@ -13,7 +13,8 @@ export function QuizListPage() {
                     <div>
                         <h1 className={styles.heading}>Available Quizzes</h1>
                         <p className={styles.subtitle}>
-                            Select a quiz to test your knowledge and track your progress.
+                            Select a quiz to test your knowledge and track your
+                            progress.
                         </p>
                     </div>
                 </div>
@@ -23,7 +24,9 @@ export function QuizListPage() {
                         {quizzes.map((quiz) => (
                             <article className={styles.card} key={quiz.id}>
                                 <h3 className={styles.title}>{quiz.title}</h3>
-                                <p className={styles.description}>{quiz.description || 'No description.'}</p>
+                                <p className={styles.description}>
+                                    {quiz.description || "No description."}
+                                </p>
 
                                 <button
                                     className={styles.cta}

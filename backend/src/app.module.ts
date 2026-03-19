@@ -17,6 +17,9 @@ import { UsersModule } from './users/users.module';
 import { WritingSubmissionsModule } from './writing-submissions/writing-submissions.module';
 import { WritingTasksModule } from './writing-tasks/writing-tasks.module';
 import { AnswersModule } from './answers/answers.module';
+import { VocabularyModule } from './vocabulary/vocabulary.module';
+import { VocabularyTopicsModule } from './vocabulary-topics/vocabulary-topics.module';
+import { VocabularyTopicWordsModule } from './vocabulary-topic-words/vocabulary-topic-words.module';
 
 @Module({
     imports: [
@@ -38,8 +41,11 @@ import { AnswersModule } from './answers/answers.module';
         QuizAttemptsModule,
         StudentAnswersModule,
         AnswersModule,
+        VocabularyModule,
+        VocabularyTopicsModule,
+        VocabularyTopicWordsModule,
     ],
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

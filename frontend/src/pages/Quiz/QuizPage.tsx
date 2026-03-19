@@ -1,77 +1,116 @@
-import { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import { useParams } from 'react-router-dom';
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
-import { QuizCard } from '../../components/quiz/QuizCard';
-import { useAuthUser, useQuizAttemptId, useQuizAttempts, useQuizQuestions, useQuizTopics, useStudentAnswersByAttempt } from '../../hooks/queries';
-import { quizAttemptsService } from '../../services/quiz-attempts.service';
-import type { QuizTopic } from '../../types/quiz';
-import styles from './QuizPage.module.css';
+import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { useParams } from "react-router-dom";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
+import { QuizAttemptHistoryPanel } from "../../components/quiz/QuizAttemptHistoryPanel";
+import { QuizCard } from "../../components/quiz/QuizCard";
+import { QuizResultsPanel } from "../../components/quiz/QuizResultsPanel";
+import {
+    useAuthUser,
+    useQuizAttemptId,
+    useQuizAttempts,
+    useQuizQuestions,
+    useQuizTopics,
+    useStudentAnswersByAttempt,
+} from "../../hooks/queries";
+import { quizAttemptsService } from "../../services/quiz-attempts.service";
+import type { QuizTopic } from "../../types/quiz";
+import styles from "./QuizPage.module.css";
+
+const SANITIZE_SCHEMA = {
+    ...defaultSchema,
+    tagNames: [
+        ...(defaultSchema.tagNames || []),
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "td",
+        "th",
+    ],
+    attributes: {
+        ...defaultSchema.attributes,
+        th: ["align"],
+        td: ["align"],
+    },
+};
 
 export function QuizPage() {
     const { quizId } = useParams<{ quizId: string }>();
-    const [currentIndex, setCurrentIndex] = useState(0);
+
+    if (!quizId) {
+        return null;
+    }
+
+    return <QuizPageContent key={quizId} quizId={quizId} />;
+}
+
+type QuizPageContentProps = {
+    quizId: string;
+};
+
+function QuizPageContent({ quizId }: QuizPageContentProps) {
     const [isCompleted, setIsCompleted] = useState(false);
     const [viewAttemptId, setViewAttemptId] = useState<string | null>(null);
     const [selectedTopic, setSelectedTopic] = useState<QuizTopic | null>(null);
 
-    // Configure sanitize schema to allow table elements
-    const sanitizeSchema = {
-        ...defaultSchema,
-        tagNames: [...(defaultSchema.tagNames || []), 'table', 'thead', 'tbody', 'tr', 'td', 'th'],
-        attributes: {
-            ...defaultSchema.attributes,
-            th: ['align'],
-            td: ['align'],
-        },
-    };
-
     const { data: user } = useAuthUser();
     const { data: questions } = useQuizQuestions(quizId);
     const { data: topics = [] } = useQuizTopics(quizId);
-    const { data: attemptId, isLoading: isAttemptLoading } = useQuizAttemptId(quizId, user?.id);
-    const { data: attempts = [], refetch: refetchAttempts } = useQuizAttempts(quizId, user?.id);
+    const { data: attemptId, isLoading: isAttemptLoading } = useQuizAttemptId(
+        quizId,
+        user?.id,
+    );
+    const { data: attempts = [], refetch: refetchAttempts } = useQuizAttempts(
+        quizId,
+        user?.id,
+    );
 
     // Always load active attempt answers so we can resume where the student left off.
-    const { data: activeAttemptAnswers = [] } = useStudentAnswersByAttempt(attemptId);
+    const { data: activeAttemptAnswers = [] } =
+        useStudentAnswersByAttempt(attemptId);
 
-    const selectedAttemptId = viewAttemptId ?? (isCompleted ? attemptId : undefined);
-    const { data: viewedStudentAnswers = [] } = useStudentAnswersByAttempt(selectedAttemptId);
+    const selectedAttemptId =
+        viewAttemptId ?? (isCompleted ? attemptId : undefined);
+    const { data: viewedStudentAnswers = [] } =
+        useStudentAnswersByAttempt(selectedAttemptId);
 
-    useEffect(() => {
-        setCurrentIndex(0);
-        setIsCompleted(false);
-        setViewAttemptId(null);
-        setSelectedTopic(null);
-    }, [quizId]);
+    if (
+        !quizId ||
+        !questions ||
+        questions.length === 0 ||
+        isAttemptLoading ||
+        !attemptId
+    ) {
+        return null;
+    }
 
-    useEffect(() => {
-        if (!attemptId || !questions || isCompleted || Boolean(viewAttemptId)) {
-            return;
+    const currentIndex = (() => {
+        if (isCompleted || Boolean(viewAttemptId)) {
+            return Math.max(0, questions.length - 1);
         }
 
-        const answeredQuestionIds = new Set(activeAttemptAnswers.map((answer) => answer.questionId));
+        const answeredQuestionIds = new Set(
+            activeAttemptAnswers.map((answer) => answer.questionId),
+        );
         const firstUnansweredIndex = questions.findIndex(
             (question) => !answeredQuestionIds.has(question.questionId),
         );
 
-        // If everything is answered but attempt wasn't marked completed yet, keep user on last question.
-        const resumeIndex = firstUnansweredIndex === -1 ? questions.length - 1 : firstUnansweredIndex;
-        setCurrentIndex(Math.max(0, resumeIndex));
-    }, [attemptId, questions, activeAttemptAnswers, isCompleted, viewAttemptId]);
+        if (firstUnansweredIndex === -1) {
+            return Math.max(0, questions.length - 1);
+        }
 
-    if (!quizId || !questions || questions.length === 0 || isAttemptLoading || !attemptId) {
-        return null;
-    }
-
-    const currentQuestion = questions[Math.min(currentIndex, questions.length - 1)];
+        return firstUnansweredIndex;
+    })();
+    const currentQuestion =
+        questions[Math.min(currentIndex, questions.length - 1)];
 
     const handleQuestionSubmitted = async () => {
         const isLastQuestion = currentIndex >= questions.length - 1;
 
         if (!isLastQuestion) {
-            setCurrentIndex((previous) => previous + 1);
             return;
         }
 
@@ -90,10 +129,16 @@ export function QuizPage() {
         }
     };
 
-    const selectedAttempt = attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
-    const totalPossible = questions.reduce((sum, question) => sum + question.maxPoints, 0);
+    const selectedAttempt =
+        attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
+    const totalPossible = questions.reduce(
+        (sum, question) => sum + question.maxPoints,
+        0,
+    );
     const earned = questions.reduce((sum, question) => {
-        const studentAnswer = viewedStudentAnswers.find((answer) => answer.questionId === question.questionId);
+        const studentAnswer = viewedStudentAnswers.find(
+            (answer) => answer.questionId === question.questionId,
+        );
         return sum + Number(studentAnswer?.points ?? 0);
     }, 0);
 
@@ -102,12 +147,23 @@ export function QuizPage() {
     const finalScore = isCurrentAttemptResult
         ? earned
         : selectedAttemptPoints === null
-            ? earned
-            : Number(selectedAttemptPoints);
-    const gradePercent = totalPossible > 0 ? Math.round((finalScore / totalPossible) * 100) : 0;
+          ? earned
+          : Number(selectedAttemptPoints);
+    const gradePercent =
+        totalPossible > 0 ? Math.round((finalScore / totalPossible) * 100) : 0;
 
-    const completedAttempts = attempts.filter((attempt) => attempt.completedAt !== null);
+    const completedAttempts = attempts.filter(
+        (attempt) => attempt.completedAt !== null,
+    );
     const isViewingResults = Boolean(selectedAttemptId);
+    const handleViewAttempt = (selectedAttemptIdValue: string) => {
+        setViewAttemptId(selectedAttemptIdValue);
+        setIsCompleted(false);
+    };
+    const handleBackToCurrentQuiz = () => {
+        setViewAttemptId(null);
+        setIsCompleted(false);
+    };
 
     return (
         <div className={styles.stack}>
@@ -131,120 +187,39 @@ export function QuizPage() {
             ) : null}
 
             {isViewingResults ? (
-                <section className={styles.completedPanel}>
-                    <h2>{isCompleted ? 'Quiz completed' : 'Quiz results'}</h2>
-                    <p>{isCompleted ? `You answered all ${questions.length} questions.` : 'Review a previous attempt result.'}</p>
-
-                    <div className={styles.scoreSummary}>
-                        <p className={styles.gradeLabel}>Grade: {gradePercent}%</p>
-                        <p>
-                            Score: {finalScore.toFixed(2)} / {totalPossible.toFixed(2)}
-                        </p>
-                    </div>
-
-                    <ul className={styles.resultList}>
-                        {questions.map((question) => {
-                            const answer = viewedStudentAnswers.find((item) => item.questionId === question.questionId);
-                            const isCorrect = Number(answer?.points ?? 0) >= question.maxPoints;
-
-                            return (
-                                <li className={styles.resultRow} key={question.id}>
-                                    <div>
-                                        <span className={styles.resultQuestion}>Question {question.questionNumber}</span>
-                                        <p className={styles.resultPrompt}>{question.prompt}</p>
-                                    </div>
-                                    <span className={isCorrect ? styles.correct : styles.wrong}>
-                                        {isCorrect ? 'Correct' : 'Wrong'}
-                                    </span>
-                                </li>
-                            );
-                        })}
-                    </ul>
-
-                    <button
-                        className={styles.resumeButton}
-                        onClick={() => {
-                            setViewAttemptId(null);
-                            setIsCompleted(false);
-                        }}
-                        type="button"
-                    >
-                        Back to current quiz
-                    </button>
-
-                    {completedAttempts.length > 0 ? (
-                        <section className={styles.historyPanel}>
-                            <h3>Previous attempts</h3>
-                            <ul className={styles.historyList}>
-                                {completedAttempts.map((attempt) => {
-                                    const completedAt = attempt.completedAt ? new Date(attempt.completedAt) : null;
-
-                                    return (
-                                        <li className={styles.historyRow} key={attempt.id}>
-                                            <div>
-                                                <strong>{completedAt ? completedAt.toLocaleString() : 'Completed attempt'}</strong>
-                                                <p>Score: {Number(attempt.points ?? 0).toFixed(2)}</p>
-                                            </div>
-                                            <button
-                                                className={styles.viewButton}
-                                                onClick={() => {
-                                                    setViewAttemptId(attempt.id);
-                                                    setIsCompleted(false);
-                                                }}
-                                                type="button"
-                                            >
-                                                View results
-                                            </button>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </section>
-                    ) : null}
-                </section>
+                <QuizResultsPanel
+                    questions={questions}
+                    answers={viewedStudentAnswers}
+                    isCompleted={isCompleted}
+                    gradePercent={gradePercent}
+                    finalScore={finalScore}
+                    totalPossible={totalPossible}
+                    completedAttempts={completedAttempts}
+                    onBackToCurrentQuiz={handleBackToCurrentQuiz}
+                    onViewAttempt={handleViewAttempt}
+                />
             ) : (
                 <>
                     <QuizCard
+                        key={currentQuestion.id}
                         attemptId={attemptId}
                         question={currentQuestion}
                         onSubmitted={() => void handleQuestionSubmitted()}
                         isLastQuestion={currentIndex >= questions.length - 1}
                     />
-
-                    {completedAttempts.length > 0 ? (
-                        <section className={styles.historyPanel}>
-                            <h3>Previous attempts</h3>
-                            <ul className={styles.historyList}>
-                                {completedAttempts.map((attempt) => {
-                                    const completedAt = attempt.completedAt ? new Date(attempt.completedAt) : null;
-
-                                    return (
-                                        <li className={styles.historyRow} key={attempt.id}>
-                                            <div>
-                                                <strong>{completedAt ? completedAt.toLocaleString() : 'Completed attempt'}</strong>
-                                                <p>Score: {Number(attempt.points ?? 0).toFixed(2)}</p>
-                                            </div>
-                                            <button
-                                                className={styles.viewButton}
-                                                onClick={() => {
-                                                    setViewAttemptId(attempt.id);
-                                                    setIsCompleted(false);
-                                                }}
-                                                type="button"
-                                            >
-                                                View results
-                                            </button>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                        </section>
-                    ) : null}
+                    <QuizAttemptHistoryPanel
+                        attempts={completedAttempts}
+                        onViewAttempt={handleViewAttempt}
+                    />
                 </>
             )}
 
             {selectedTopic ? (
-                <div className={styles.topicModalOverlay} onClick={() => setSelectedTopic(null)} role="presentation">
+                <div
+                    className={styles.topicModalOverlay}
+                    onClick={() => setSelectedTopic(null)}
+                    role="presentation"
+                >
                     <section
                         aria-label="Topic explanation"
                         className={styles.topicModal}
@@ -264,7 +239,9 @@ export function QuizPage() {
 
                         <div className={styles.topicMarkdown}>
                             <ReactMarkdown
-                                rehypePlugins={[[rehypeSanitize, sanitizeSchema]]}
+                                rehypePlugins={[
+                                    [rehypeSanitize, SANITIZE_SCHEMA],
+                                ]}
                                 remarkPlugins={[remarkGfm]}
                             >
                                 {selectedTopic.explanation}

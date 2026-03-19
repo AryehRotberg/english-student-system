@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useSubmitStudentAnswer } from '../../hooks/mutations';
-import type { QuizQuestion } from '../../types/quiz';
-import styles from './QuizCard.module.css';
+import { useState } from "react";
+import { useSubmitStudentAnswer } from "../../hooks/mutations";
+import type { QuizQuestion } from "../../types/quiz";
+import styles from "./QuizCard.module.css";
 
 function isUuid(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        value,
+    );
 }
 
 type QuizCardProps = {
@@ -14,20 +16,24 @@ type QuizCardProps = {
     onSubmitted: () => void;
 };
 
-export function QuizCard({ attemptId, question, isLastQuestion, onSubmitted }: QuizCardProps) {
-    const [selectedOptionId, setSelectedOptionId] = useState<string>('');
+export function QuizCard({
+    attemptId,
+    question,
+    isLastQuestion,
+    onSubmitted,
+}: QuizCardProps) {
+    const [selectedOptionId, setSelectedOptionId] = useState<string>("");
     const [blankAnswers, setBlankAnswers] = useState<string[]>(
-        Array.from({ length: question.blankCount || 1 }, () => ''),
+        Array.from({ length: question.blankCount || 1 }, () => ""),
     );
     const submitMutation = useSubmitStudentAnswer();
     const isMultipleChoice = question.options.length > 0;
-    const hasOpenEndedAnswers = blankAnswers.every((answer) => answer.trim().length > 0);
-    const canSubmit = isUuid(attemptId) && (isMultipleChoice ? selectedOptionId.length > 0 : hasOpenEndedAnswers);
-
-    useEffect(() => {
-        setSelectedOptionId('');
-        setBlankAnswers(Array.from({ length: question.blankCount || 1 }, () => ''));
-    }, [question.id]);
+    const hasOpenEndedAnswers = blankAnswers.every(
+        (answer) => answer.trim().length > 0,
+    );
+    const canSubmit =
+        isUuid(attemptId) &&
+        (isMultipleChoice ? selectedOptionId.length > 0 : hasOpenEndedAnswers);
 
     const handleNext = async () => {
         if (!canSubmit) return;
@@ -90,17 +96,24 @@ export function QuizCard({ attemptId, question, isLastQuestion, onSubmitted }: Q
                 type="button"
                 disabled={!canSubmit || submitMutation.isPending}
             >
-                {submitMutation.isPending ? 'Submitting...' : isLastQuestion ? 'Finish Quiz' : 'Next'}
+                {submitMutation.isPending
+                    ? "Submitting..."
+                    : isLastQuestion
+                      ? "Finish Quiz"
+                      : "Next"}
             </button>
 
             {!isUuid(attemptId) ? (
                 <p className={styles.error}>
-                    Invalid quiz setup: missing a valid quiz attempt ID from backend.
+                    Invalid quiz setup: missing a valid quiz attempt ID from
+                    backend.
                 </p>
             ) : null}
 
             {submitMutation.isError ? (
-                <p className={styles.error}>Submission failed: {(submitMutation.error as Error).message}</p>
+                <p className={styles.error}>
+                    Submission failed: {(submitMutation.error as Error).message}
+                </p>
             ) : null}
         </section>
     );

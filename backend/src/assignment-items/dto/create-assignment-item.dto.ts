@@ -1,11 +1,11 @@
-import { IsIn, IsOptional, IsUUID } from "class-validator";
+import { IsIn, IsOptional, IsUUID } from 'class-validator';
 
 export class CreateAssignmentItemDto {
     @IsUUID()
     assignmentId: string;
 
-    @IsIn(['quiz', 'text', 'writing'])
-    contentType: 'quiz' | 'text' | 'writing';
+    @IsIn(['quiz', 'text', 'writing', 'vocabulary'])
+    contentType: 'quiz' | 'text' | 'writing' | 'vocabulary';
 
     @IsUUID()
     @IsOptional()

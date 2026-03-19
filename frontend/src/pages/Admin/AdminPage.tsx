@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { useAuthUser } from '../../hooks/queries';
-import { QuizzesSection } from './components/QuizzesSection';
-import { QuestionsSection } from './components/QuestionsSection';
-import { QuizBuilderSection } from './components/QuizBuilderSection';
-import { TextsSection } from './components/TextsSection';
-import styles from './AdminPage.module.css';
+import { useState } from "react";
+import { QuestionsSection } from "../../components/admin/QuestionsSection";
+import { QuizBuilderSection } from "../../components/admin/QuizBuilderSection";
+import { QuizzesSection } from "../../components/admin/QuizzesSection";
+import { TextsSection } from "../../components/admin/TextsSection";
+import { useAuthUser } from "../../hooks/queries";
+import styles from "./AdminPage.module.css";
 
-type Tab = 'quizzes' | 'questions' | 'quiz-builder' | 'texts';
+type Tab = "quizzes" | "questions" | "quiz-builder" | "texts";
 
 const tabs: { id: Tab; label: string }[] = [
-    { id: 'quizzes', label: 'Quizzes' },
-    { id: 'questions', label: 'Questions' },
-    { id: 'quiz-builder', label: 'Quiz Builder' },
-    { id: 'texts', label: 'Texts' },
+    { id: "quizzes", label: "Quizzes" },
+    { id: "questions", label: "Questions" },
+    { id: "quiz-builder", label: "Quiz Builder" },
+    { id: "texts", label: "Texts" },
 ];
 
 export function AdminPage() {
     const { data: user } = useAuthUser();
-    const [activeTab, setActiveTab] = useState<Tab>('quizzes');
+    const [activeTab, setActiveTab] = useState<Tab>("quizzes");
 
-    if (user?.role !== 'teacher') {
+    if (user?.role !== "teacher") {
         return (
             <div className={styles.accessDenied}>
                 <p>Access denied. This page is for teachers only.</p>
@@ -38,7 +38,11 @@ export function AdminPage() {
                         type="button"
                         role="tab"
                         aria-selected={activeTab === tab.id}
-                        className={activeTab === tab.id ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+                        className={
+                            activeTab === tab.id
+                                ? `${styles.tab} ${styles.tabActive}`
+                                : styles.tab
+                        }
                         onClick={() => setActiveTab(tab.id)}
                     >
                         {tab.label}
@@ -47,10 +51,10 @@ export function AdminPage() {
             </div>
 
             <div className={styles.tabContent}>
-                {activeTab === 'quizzes' && <QuizzesSection />}
-                {activeTab === 'questions' && <QuestionsSection />}
-                {activeTab === 'quiz-builder' && <QuizBuilderSection />}
-                {activeTab === 'texts' && <TextsSection />}
+                {activeTab === "quizzes" && <QuizzesSection />}
+                {activeTab === "questions" && <QuestionsSection />}
+                {activeTab === "quiz-builder" && <QuizBuilderSection />}
+                {activeTab === "texts" && <TextsSection />}
             </div>
         </div>
     );

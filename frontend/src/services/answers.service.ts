@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
 import type { AnswerAdminItem } from "../types/admin-query-items";
+import { httpClientService } from "./http-client.service";
 
 class AnswersService {
     private readonly httpClient: AxiosInstance;
