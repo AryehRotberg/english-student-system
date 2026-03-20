@@ -33,7 +33,7 @@ export type {
     QuestionAdminItem,
     QuestionOptionAdminItem,
     RawQuizQuestionAdminItem,
-    TextAdminItem
+    TextAdminItem,
 } from "../types/admin-query-items";
 
 export function useDashboardOverview() {
@@ -55,6 +55,10 @@ export function useAuthUser() {
         queryKey: ["auth-user"],
         queryFn: () => authService.getUserOrNull(),
         retry: false,
+        staleTime: 0,
+        refetchOnMount: "always",
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
     });
 }
 
