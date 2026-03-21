@@ -25,6 +25,7 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/swagger": "^11.2.6",
     "@sentry/nestjs": "^10.43.0",
     "@sentry/node": "^10.43.0",
     "@tanstack/react-query": "^5.90.21",

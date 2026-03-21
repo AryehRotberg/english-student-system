@@ -1,14 +1,24 @@
 import { VocabularyTopicWord } from '../entities/vocabulary-topic-word.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class VocabularyTopicWordResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly vocabularyId: string;
+    @ApiProperty()
     readonly topicId: string;
+    @ApiProperty()
     readonly word: string | null;
+    @ApiProperty()
     readonly meaning: string | null;
+    @ApiProperty()
     readonly example: string | null;
+    @ApiProperty()
     readonly translation: string | null;
+    @ApiProperty()
     readonly topic: string | null;
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: VocabularyTopicWordResponseDto) {

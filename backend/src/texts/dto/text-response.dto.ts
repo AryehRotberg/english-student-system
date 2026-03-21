@@ -1,10 +1,16 @@
 import { Text } from '../entities/text.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class TextResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly title: string;
+    @ApiProperty()
     readonly content: string;
+    @ApiProperty()
     readonly level: string;
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: TextResponseDto) {

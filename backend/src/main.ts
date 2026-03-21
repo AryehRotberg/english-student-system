@@ -1,10 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    const document = SwaggerModule.createDocument(
+        app,
+        new DocumentBuilder()
+            .setTitle('English Student System API')
+            .setDescription('API documentation for the English Student System')
+            .setVersion('1.0')
+            .build(),
+    );
+    SwaggerModule.setup('api', app, document);
 
     app.enableCors({
         origin: ['http://localhost:5173', process.env.FRONTEND_URL],

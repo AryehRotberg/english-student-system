@@ -1,10 +1,16 @@
 import { Answer } from '../entities/answer.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AnswerResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly questionId: string;
+    @ApiProperty()
     readonly answer: string;
+    @ApiProperty()
     readonly blankIndex: number;
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: AnswerResponseDto) {

@@ -1,10 +1,16 @@
 import { WritingTask } from '../entities/writing-task.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class WritingTaskResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly title: string;
+    @ApiProperty()
     readonly instructions: string;
+    @ApiProperty()
     readonly minWords: number;
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: WritingTaskResponseDto) {

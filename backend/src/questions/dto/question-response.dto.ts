@@ -1,10 +1,16 @@
 import { Question } from '../entities/question.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class QuestionResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly question: string;
+    @ApiProperty()
     readonly questionType: string;
+    @ApiProperty()
     readonly audioUrl: string | null;
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: QuestionResponseDto) {

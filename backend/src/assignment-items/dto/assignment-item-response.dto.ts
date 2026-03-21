@@ -1,13 +1,22 @@
 import { AssignmentItem } from '../entities/assignment-item.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class AssignmentItemResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly assignmentId: string;
+    @ApiProperty()
     readonly assignmentTitle: string;
+    @ApiProperty()
     readonly assignmentDescription: string;
+    @ApiProperty()
     readonly contentId: string;
+    @ApiProperty()
     readonly contentType: string;
+    @ApiProperty()
     readonly status: 'assigned' | 'completed';
+    @ApiProperty()
     readonly title: string;
 
     private constructor(props: AssignmentItemResponseDto) {

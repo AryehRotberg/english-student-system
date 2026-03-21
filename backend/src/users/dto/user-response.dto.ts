@@ -1,10 +1,16 @@
 import { User } from '../entities/user.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UserResponseDto {
+    @ApiProperty()
     readonly id: string;
+    @ApiProperty()
     readonly name: string;
+    @ApiProperty()
     readonly email: string;
+    @ApiProperty()
     readonly role: string;
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: UserResponseDto) {
