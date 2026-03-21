@@ -7,5 +7,6 @@ import { ConfigModule } from '../config/config.module';
     imports: [ConfigModule],
     controllers: [SendEmailController],
     providers: [SendEmailService],
+    exports: [SendEmailService],
 })
 export class SendEmailModule {}

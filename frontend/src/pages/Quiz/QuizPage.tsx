@@ -14,6 +14,7 @@ import {
     useQuizTopics,
     useStudentAnswersByAttempt,
 } from "../../hooks/queries";
+import { assignmentEmailService } from "../../services/assignment-email.service";
 import { quizAttemptsService } from "../../services/quiz-attempts.service";
 import type { QuizTopic } from "../../types/quiz";
 import styles from "./QuizPage.module.css";
@@ -122,6 +123,8 @@ function QuizPageContent({ quizId }: QuizPageContentProps) {
                 userId: user.id,
                 completedAt: new Date().toISOString(),
             });
+
+            await assignmentEmailService.sendCompletionEmail(attemptId);
 
             await refetchAttempts();
 

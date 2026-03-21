@@ -1,16 +1,64 @@
-interface HtmlBodyTemplateParams {
-    studentName: string;
-    assignment: string;
-    description: string;
-    portalUrl: string;
-}
+type HtmlBodyTemplateParams = {
+    name?: string;
+    title?: string;
+    body?: string;
+    assignmentTitle?: string;
+    quizTitle?: string;
+    earnedPoints?: string;
+    totalPoints?: string;
+    scorePercent?: number;
+    completedItems?: number;
+    totalItems?: number;
+    progressPercent?: number;
+};
 
-export const htmlBody = ({
-    studentName,
-    assignment,
-    description,
-    portalUrl,
-}: HtmlBodyTemplateParams): string => `
+export const htmlBody = (
+    {
+        name,
+        title,
+        body,
+        assignmentTitle,
+        quizTitle,
+        earnedPoints,
+        totalPoints,
+        scorePercent,
+        completedItems,
+        totalItems,
+        progressPercent,
+    }: HtmlBodyTemplateParams,
+    portalUrl: string,
+): string => {
+    const hasMetrics =
+        typeof scorePercent === 'number' && typeof progressPercent === 'number';
+
+    const metricsHtml = hasMetrics
+        ? `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p class="stat-label">Quiz score</p>
+                        <p class="stat-value">${scorePercent}%</p>
+                        <p class="stat-subtext">${earnedPoints ?? '0'}/${totalPoints ?? '0'} points</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Assignment progress</p>
+                        <p class="stat-value">${progressPercent}%</p>
+                        <p class="stat-subtext">${completedItems ?? 0}/${totalItems ?? 0} items completed</p>
+                    </div>
+                </div>
+`
+        : '';
+
+    const assignmentSummaryHtml =
+        assignmentTitle || quizTitle
+            ? `
+                <div class="assignment-box">
+                    <h2 class="assignment-title">${assignmentTitle ?? 'Assignment summary'}</h2>
+                    <p class="assignment-description">Quiz: ${quizTitle ?? 'Current quiz'}</p>
+                </div>
+`
+            : '';
+
+    return `
 <!doctype html>
 <html lang="en">
 <head>
@@ -109,6 +157,45 @@ export const htmlBody = ({
             word-break: break-word;
         }
 
+        .stats-grid {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            border-spacing: 10px;
+            margin: 0 0 20px;
+        }
+
+        .stat-card {
+            display: table-cell;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px;
+            vertical-align: top;
+        }
+
+        .stat-label {
+            margin: 0 0 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.35px;
+            color: #64748b;
+        }
+
+        .stat-value {
+            margin: 0;
+            font-size: 25px;
+            line-height: 1.15;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .stat-subtext {
+            margin: 8px 0 0;
+            font-size: 12px;
+            color: #475569;
+        }
+
         .note {
             margin: 0;
             font-size: 13px;
@@ -163,6 +250,15 @@ export const htmlBody = ({
                 padding-left: 16px;
                 padding-right: 16px;
             }
+
+            .stats-grid,
+            .stat-card {
+                display: block;
+            }
+
+            .stat-card {
+                margin: 0 0 10px;
+            }
         }
     </style>
 </head>
@@ -171,16 +267,15 @@ export const htmlBody = ({
         <div class="card">
             <div class="hero">
                 <span class="badge">English Student System</span>
-                <h1>You have a new assignment</h1>
+                <h1>${title}</h1>
             </div>
 
             <div class="content">
-                <p class="intro">Hello ${studentName},<br/>I have assigned new work. Please review the details below and submit on time.</p>
+                <p class="intro">Hello ${name ?? 'Student'},</p>
+                <p class="intro">${body ?? 'You have a new update from your teacher.'}</p>
 
-                <div class="assignment-box">
-                    <h2 class="assignment-title">${assignment}</h2>
-                    <p class="assignment-description">${description}</p>
-                </div>
+                ${assignmentSummaryHtml}
+                ${metricsHtml}
 
                 <div class="cta-wrap">
                     <a class="cta-btn" href="${portalUrl}">Open Student Portal</a>
@@ -195,3 +290,4 @@ export const htmlBody = ({
     </div>
 </body>
 </html>`;
+};

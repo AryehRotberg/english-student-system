@@ -8,8 +8,11 @@ export class SendEmailDto {
     email: string;
 
     @IsString()
-    assignment: string;
+    subject: string;
 
     @IsString()
-    description: string;
+    title: string;
+
+    @IsString()
+    body: string;
 }

@@ -1,8 +1,5 @@
-import {
-    Body,
-    Controller,
-    Post
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { AssignmentCompletionEmailDto } from './dto/assignment-completion-email.dto';
 import { SendEmailDto } from './dto/send-email.dto';
 import { SendEmailService } from './send-email.service';
 
@@ -13,5 +10,14 @@ export class SendEmailController {
     @Post()
     sendEmail(@Body() sendEmailDto: SendEmailDto) {
         return this.sendEmailService.sendEmail(sendEmailDto);
+    }
+
+    @Post('assignment-completion')
+    sendAssignmentCompletionEmail(
+        @Body() assignmentCompletionEmailDto: AssignmentCompletionEmailDto,
+    ) {
+        return this.sendEmailService.sendAssignmentCompletionEmail(
+            assignmentCompletionEmailDto,
+        );
     }
 }
