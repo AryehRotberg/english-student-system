@@ -3,8 +3,8 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { QuizAttemptResponseDto } from 'src/quiz-attempts/dto/quiz-attempt-response.dto';
-import { QuizAttempt } from 'src/quiz-attempts/entities/quiz-attempt.entity';
+import { QuizAttemptResponseDto } from '../quiz-attempts/dto/quiz-attempt-response.dto';
+import { QuizAttempt } from '../quiz-attempts/entities/quiz-attempt.entity';
 import { PostgresService } from '../config/postgres.client';
 import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
 import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
