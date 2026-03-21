@@ -3,6 +3,7 @@ import { answersService } from "../services/answers.service";
 import { authService } from "../services/auth.service";
 import { questionOptionsService } from "../services/question-options.service";
 import { questionsService } from "../services/questions.service";
+import { quizAttemptsService } from "../services/quiz-attempts.service";
 import { quizQuestionsService } from "../services/quiz-questions.service";
 import { quizzesService } from "../services/quizzes.service";
 import { studentAnswersService } from "../services/student-answers.service";
@@ -40,7 +41,7 @@ export function useSubmitStudentAnswer() {
                       answers: payload.answers ?? [],
                   };
 
-            return studentAnswersService.create({
+            return studentAnswersService.upsert({
                 attemptId: payload.attemptId,
                 questionId: payload.questionId,
                 answerData,
@@ -53,6 +54,34 @@ export function useSubmitStudentAnswer() {
             await queryClient.invalidateQueries({
                 queryKey: ["student-answers", variables.attemptId],
             });
+        },
+    });
+}
+
+export function useSubmitQuizAttempt() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (attemptId: string) =>
+            studentAnswersService.submitAttempt(attemptId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["quiz-attempts"] });
+            queryClient.invalidateQueries({ queryKey: ["quiz-attempt-id"] });
+        },
+    });
+}
+
+export function useStartQuizAttempt() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: { quizId: string; userId: string }) =>
+            quizAttemptsService.create({
+                ...payload,
+                points: 0,
+                startedAt: new Date().toISOString(),
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["quiz-attempts"] });
+            queryClient.invalidateQueries({ queryKey: ["quiz-attempt-id"] });
         },
     });
 }

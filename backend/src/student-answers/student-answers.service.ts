@@ -3,22 +3,20 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
+import { QuizAttemptResponseDto } from 'src/quiz-attempts/dto/quiz-attempt-response.dto';
+import { QuizAttempt } from 'src/quiz-attempts/entities/quiz-attempt.entity';
 import { PostgresService } from '../config/postgres.client';
-import { CreateStudentAnswerDto } from './dto/create-student-answer.dto';
 import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
-import { UpdateStudentAnswerDto } from './dto/update-student-answer.dto';
+import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
 import { StudentAnswer } from './entities/student-answer.entity';
 import {
-    createStudentAnswerQuery,
     deleteStudentAnswerQuery,
     getAllStudentAnswersQuery,
-    getCorrectQuestionOptionIdsQuery,
-    getGradingContextQuery,
-    getStudentAnswerByAttemptAndQuestionQuery,
     getStudentAnswerByIdQuery,
-    getValidAnswersByQuestionIdQuery,
-    recalculateQuizAttemptPointsQuery,
-    updateStudentAnswerQuery,
+    getUnifiedGradingDataQuery,
+    markQuizAssignmentCompletedQuery,
+    submitQuizAttemptQuery,
+    upsertStudentAnswerQuery,
 } from './student-answers.queries';
 
 type StudentAnswerData = {
@@ -27,29 +25,20 @@ type StudentAnswerData = {
     answers?: string[];
 };
 
-type GradingContext = {
-    attemptId: string;
-    quizId: string;
-    maxPoints: number | string | null;
-};
-
-type ValidAnswerRow = {
-    answer: string;
-    blankIndex: number | string;
-};
-
-type CorrectQuestionOptionRow = {
-    id: string;
+type UnifiedGradingData = {
+    maxPoints: number | string;
+    correctOptionIds: string[];
+    validAnswers: { answer: string; blankIndex: number | string }[];
 };
 
 @Injectable()
 export class StudentAnswersService {
     constructor(private readonly postgresService: PostgresService) {}
 
-    async create(
-        createStudentAnswerDto: CreateStudentAnswerDto,
+    async upsert(
+        upsertStudentAnswerDto: UpsertStudentAnswerDto,
     ): Promise<StudentAnswerResponseDto> {
-        const { attemptId, questionId, answerData } = createStudentAnswerDto;
+        const { attemptId, questionId, answerData } = upsertStudentAnswerDto;
         const normalizedAnswerData = this.validateAnswerData(
             questionId,
             answerData,
@@ -60,31 +49,16 @@ export class StudentAnswersService {
             normalizedAnswerData,
         );
 
-        const [existingAnswer] =
-            await this.postgresService.query<StudentAnswer>(
-                getStudentAnswerByAttemptAndQuestionQuery,
-                [attemptId, questionId],
-            );
-
-        if (existingAnswer) {
-            return await this.update(existingAnswer.id, {
-                answerData: normalizedAnswerData,
-                feedback: createStudentAnswerDto.feedback,
-            });
-        }
-
         const [result] = await this.postgresService.query<StudentAnswer>(
-            createStudentAnswerQuery,
+            upsertStudentAnswerQuery,
             [
                 attemptId,
                 questionId,
                 normalizedAnswerData,
                 computedPoints,
-                createStudentAnswerDto.feedback ?? null,
+                upsertStudentAnswerDto.feedback ?? null,
             ],
         );
-
-        await this.syncQuizAttemptPoints(attemptId);
 
         return StudentAnswerResponseDto.fromEntity(result);
     }
@@ -109,50 +83,27 @@ export class StudentAnswersService {
         return StudentAnswerResponseDto.fromEntity(answer);
     }
 
-    async update(
-        id: string,
-        updateStudentAnswerDto: UpdateStudentAnswerDto,
-    ): Promise<StudentAnswerResponseDto> {
-        const existingAnswer = await this.findOne(id);
-        const answerData = this.validateAnswerData(
-            existingAnswer.questionId,
-            updateStudentAnswerDto.answerData ?? existingAnswer.answerData,
-        );
-
-        const computedPoints =
-            updateStudentAnswerDto.points ??
-            (await this.calculateAutomaticPoints(
-                existingAnswer.attemptId,
-                existingAnswer.questionId,
-                answerData,
-            ));
-
-        const [result] = await this.postgresService.query<StudentAnswer>(
-            updateStudentAnswerQuery,
-            [
-                id,
-                answerData,
-                computedPoints,
-                updateStudentAnswerDto.feedback ?? existingAnswer.feedback,
-            ],
-        );
-
-        await this.syncQuizAttemptPoints(existingAnswer.attemptId);
-
-        return StudentAnswerResponseDto.fromEntity(result);
-    }
-
     async remove(id: string): Promise<StudentAnswerResponseDto> {
-        const existingAnswer = await this.findOne(id);
-
         const [result] = await this.postgresService.query<StudentAnswer>(
             deleteStudentAnswerQuery,
             [id],
         );
 
-        await this.syncQuizAttemptPoints(existingAnswer.attemptId);
-
         return StudentAnswerResponseDto.fromEntity(result);
+    }
+
+    async submitAttempt(attemptId: string): Promise<QuizAttempt> {
+        const [updatedAttempt] = await this.postgresService.query<QuizAttempt>(
+            submitQuizAttemptQuery,
+            [attemptId],
+        );
+
+        await this.postgresService.query(markQuizAssignmentCompletedQuery, [
+            updatedAttempt.userId,
+            updatedAttempt.quizId,
+        ]);
+
+        return QuizAttemptResponseDto.fromEntity(updatedAttempt);
     }
 
     private validateAnswerData(
@@ -210,46 +161,35 @@ export class StudentAnswersService {
         questionId: string,
         answerData: StudentAnswerData,
     ): Promise<number> {
-        const [gradingContext] =
-            await this.postgresService.query<GradingContext>(
-                getGradingContextQuery,
+        const [gradingData] =
+            await this.postgresService.query<UnifiedGradingData>(
+                getUnifiedGradingDataQuery,
                 [attemptId, questionId],
             );
 
-        if (!gradingContext || gradingContext.maxPoints === null) {
+        if (!gradingData || gradingData.maxPoints === null) {
             throw new BadRequestException(
                 'Question does not belong to the quiz attempt',
             );
         }
 
-        const maxPoints = Number(gradingContext.maxPoints);
+        const maxPoints = Number(gradingData.maxPoints);
 
         if (answerData.selectedOptionId) {
-            const correctOptions =
-                await this.postgresService.query<CorrectQuestionOptionRow>(
-                    getCorrectQuestionOptionIdsQuery,
-                    [questionId],
-                );
-
-            return correctOptions.some(
-                (option) => option.id === answerData.selectedOptionId,
+            return gradingData.correctOptionIds.includes(
+                answerData.selectedOptionId,
             )
                 ? maxPoints
                 : 0;
         }
 
-        const validAnswers = await this.postgresService.query<ValidAnswerRow>(
-            getValidAnswersByQuestionIdQuery,
-            [questionId],
-        );
-
-        if (validAnswers.length === 0) {
+        if (gradingData.validAnswers.length === 0) {
             return 0;
         }
 
         const expectedAnswersByBlank = new Map<number, Set<string>>();
 
-        for (const validAnswer of validAnswers) {
+        for (const validAnswer of gradingData.validAnswers) {
             const blankIndex = Number(validAnswer.blankIndex);
             const normalizedAnswer = this.normalizeAnswer(validAnswer.answer);
 
@@ -261,7 +201,7 @@ export class StudentAnswersService {
         }
 
         const blankIndexes = Array.from(expectedAnswersByBlank.keys()).sort(
-            (left, right) => left - right,
+            (a, b) => a - b,
         );
         const submittedAnswers = answerData.answers ?? [];
 
@@ -273,10 +213,7 @@ export class StudentAnswersService {
 
         for (const blankIndex of blankIndexes) {
             const submittedAnswer = submittedAnswers[blankIndex - 1];
-
-            if (!submittedAnswer) {
-                continue;
-            }
+            if (!submittedAnswer) continue;
 
             const normalizedAnswer = this.normalizeAnswer(submittedAnswer);
             const acceptedAnswers = expectedAnswersByBlank.get(blankIndex);
@@ -296,11 +233,5 @@ export class StudentAnswersService {
             .toLowerCase()
             .replace(/[’`]/g, "'")
             .replace(/\s+/g, ' ');
-    }
-
-    private async syncQuizAttemptPoints(attemptId: string): Promise<void> {
-        await this.postgresService.query(recalculateQuizAttemptPointsQuery, [
-            attemptId,
-        ]);
     }
 }

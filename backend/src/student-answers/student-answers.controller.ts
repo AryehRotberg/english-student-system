@@ -5,11 +5,9 @@ import {
     Get,
     Param,
     ParseUUIDPipe,
-    Patch,
     Post,
 } from '@nestjs/common';
-import { CreateStudentAnswerDto } from './dto/create-student-answer.dto';
-import { UpdateStudentAnswerDto } from './dto/update-student-answer.dto';
+import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
 import { StudentAnswersService } from './student-answers.service';
 
 @Controller('student-answers')
@@ -19,8 +17,8 @@ export class StudentAnswersController {
     ) {}
 
     @Post()
-    async create(@Body() createStudentAnswerDto: CreateStudentAnswerDto) {
-        return await this.studentAnswersService.create(createStudentAnswerDto);
+    async upsert(@Body() upsertStudentAnswerDto: UpsertStudentAnswerDto) {
+        return await this.studentAnswersService.upsert(upsertStudentAnswerDto);
     }
 
     @Get()
@@ -33,19 +31,15 @@ export class StudentAnswersController {
         return await this.studentAnswersService.findOne(id);
     }
 
-    @Patch(':id')
-    async update(
-        @Param('id', new ParseUUIDPipe()) id: string,
-        @Body() updateStudentAnswerDto: UpdateStudentAnswerDto,
-    ) {
-        return await this.studentAnswersService.update(
-            id,
-            updateStudentAnswerDto,
-        );
-    }
-
     @Delete(':id')
     async remove(@Param('id', new ParseUUIDPipe()) id: string) {
         return await this.studentAnswersService.remove(id);
+    }
+
+    @Post('submit-attempt/:attemptId')
+    async submitAttempt(
+        @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
+    ) {
+        return await this.studentAnswersService.submitAttempt(attemptId);
     }
 }

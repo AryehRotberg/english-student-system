@@ -37,7 +37,7 @@ class StudentAnswersService {
         return answers.filter((answer) => answer.attemptId === attemptId);
     }
 
-    public async create(payload: {
+    public async upsert(payload: {
         attemptId: string;
         questionId: string;
         answerData: Record<string, unknown>;
@@ -50,17 +50,9 @@ class StudentAnswersService {
         return response.data;
     }
 
-    public async update(
-        id: string,
-        payload: Partial<{
-            answerData: Record<string, unknown>;
-            feedback: string;
-            points: number;
-        }>,
-    ) {
-        const response = await this.httpClient.patch(
-            `/student-answers/${id}`,
-            payload,
+    public async submitAttempt(attemptId: string) {
+        const response = await this.httpClient.post(
+            `/student-answers/submit-attempt/${attemptId}`,
         );
         return response.data;
     }

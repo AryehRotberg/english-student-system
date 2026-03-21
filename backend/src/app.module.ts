@@ -21,6 +21,7 @@ import { VocabularyModule } from './vocabulary/vocabulary.module';
 import { VocabularyTopicsModule } from './vocabulary-topics/vocabulary-topics.module';
 import { VocabularyTopicWordsModule } from './vocabulary-topic-words/vocabulary-topic-words.module';
 import { SendEmailModule } from './send-email/send-email.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
     imports: [
@@ -46,6 +47,7 @@ import { SendEmailModule } from './send-email/send-email.module';
         VocabularyTopicsModule,
         VocabularyTopicWordsModule,
         SendEmailModule,
+        DashboardModule,
     ],
     controllers: [AppController],
     providers: [AppService],

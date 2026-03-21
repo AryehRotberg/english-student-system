@@ -17,7 +17,12 @@ import { QuizQuestionsService } from './quiz-questions.service';
 
 @Controller('quiz-questions')
 export class QuizQuestionsController {
-    constructor(private readonly quizQuestionsService: QuizQuestionsService) { }
+    constructor(private readonly quizQuestionsService: QuizQuestionsService) {}
+
+    @Get(':quizId/full')
+    async getFullQuiz(@Param('quizId', new ParseUUIDPipe()) quizId: string) {
+        return await this.quizQuestionsService.getFullQuiz(quizId);
+    }
 
     @Get()
     async findByUserId(@Query() filter: GetQuizQuestionsFilterDto) {
@@ -36,6 +41,9 @@ export class QuizQuestionsController {
         @Param('id', new ParseUUIDPipe()) id: string,
         @Body() updateQuizQuestionDto: UpdateQuizQuestionDto,
     ) {
-        return await this.quizQuestionsService.update(id, updateQuizQuestionDto);
+        return await this.quizQuestionsService.update(
+            id,
+            updateQuizQuestionDto,
+        );
     }
 }

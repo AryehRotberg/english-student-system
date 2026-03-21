@@ -1,6 +1,6 @@
 import { IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class CreateStudentAnswerDto {
+export class UpsertStudentAnswerDto {
 	@IsUUID()
 	attemptId: string;
 

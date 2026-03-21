@@ -65,7 +65,7 @@ export function useAuthUser() {
 export function useQuizAttemptId(quizId?: string, userId?: string) {
     const queryClient = useQueryClient();
 
-    return useQuery<string>({
+    return useQuery<string | null>({
         queryKey: ["quiz-attempt-id", quizId, userId],
         enabled: Boolean(userId) && Boolean(quizId),
         queryFn: async () => {
@@ -81,30 +81,7 @@ export function useQuizAttemptId(quizId?: string, userId?: string) {
                 attempts.find((attempt) => attempt.completedAt === null) ??
                 null;
 
-            if (activeAttempt) {
-                return activeAttempt.id;
-            }
-
-            const createdAttempt = (await quizAttemptsService.create({
-                quizId: quizId as string,
-                userId: userId as string,
-                points: 0,
-                startedAt: new Date().toISOString(),
-            })) as QuizAttemptApiItem;
-
-            queryClient.setQueryData<QuizAttemptApiItem[]>(
-                ["quiz-attempts", quizId, userId],
-                (current) => {
-                    const next = [createdAttempt, ...(current ?? [])];
-                    return next.sort(
-                        (left, right) =>
-                            new Date(right.startedAt).getTime() -
-                            new Date(left.startedAt).getTime(),
-                    );
-                },
-            );
-
-            return createdAttempt.id;
+            return activeAttempt ? activeAttempt.id : null;
         },
     });
 }
