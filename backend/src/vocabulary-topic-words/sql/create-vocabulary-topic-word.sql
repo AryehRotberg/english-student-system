@@ -1,0 +1,25 @@
+WITH inserted AS (
+    INSERT INTO
+        VOCABULARY_TOPIC_WORDS (VOCABULARY_ID, TOPIC_ID)
+    VALUES
+        ($1, $2)
+    RETURNING
+        ID,
+        VOCABULARY_ID,
+        TOPIC_ID,
+        CREATED_AT
+)
+SELECT
+    I.ID,
+    I.VOCABULARY_ID AS "vocabularyId",
+    I.TOPIC_ID AS "topicId",
+    V.WORD,
+    V.MEANING,
+    V.EXAMPLE,
+    V.TRANSLATION,
+    VT.TOPIC,
+    I.CREATED_AT AS "createdAt"
+FROM
+    inserted I
+    JOIN VOCABULARY V ON I.VOCABULARY_ID = V.ID
+    JOIN VOCABULARY_TOPICS VT ON I.TOPIC_ID = VT.ID;

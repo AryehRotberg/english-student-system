@@ -1,0 +1,9 @@
+DELETE FROM USERS
+WHERE ID = $1
+RETURNING
+    ID,
+    NAME,
+    EMAIL,
+    PASSWORD,
+    ROLE,
+    CREATED_AT AS "createdAt";

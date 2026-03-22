@@ -1,0 +1,10 @@
+SELECT
+    ID,
+    QUESTION,
+    QUESTION_TYPE AS "questionType",
+    AUDIO_URL AS "audioUrl",
+    CREATED_AT AS "createdAt"
+FROM
+    QUESTIONS
+ORDER BY
+    CREATED_AT DESC

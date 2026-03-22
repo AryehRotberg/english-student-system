@@ -1,0 +1,8 @@
+INSERT INTO
+    ANSWERS (QUESTION_ID, ANSWER, BLANK_INDEX)
+VALUES
+    ($1, $2, $3) RETURNING ID,
+    QUESTION_ID AS "questionId",
+    ANSWER,
+    BLANK_INDEX AS "blankIndex",
+    CREATED_AT AS "createdAt";

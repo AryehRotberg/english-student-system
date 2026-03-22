@@ -1,0 +1,13 @@
+INSERT INTO
+    WRITING_SUBMISSIONS (TASK_ID, USER_ID, CONTENT)
+VALUES
+    ($1, $2, $3)
+RETURNING
+    ID,
+    TASK_ID AS "taskId",
+    USER_ID AS "userId",
+    CONTENT,
+    FEEDBACK,
+    SCORE,
+    SUBMITTED_AT AS "submittedAt",
+    REVIEWED_AT AS "reviewedAt";

@@ -1,0 +1,17 @@
+UPDATE
+    WRITING_SUBMISSIONS
+SET
+    FEEDBACK = COALESCE($2, FEEDBACK),
+    SCORE = COALESCE($3, SCORE),
+    REVIEWED_AT = $4
+WHERE
+    ID = $1
+RETURNING
+    ID,
+    TASK_ID AS "taskId",
+    USER_ID AS "userId",
+    CONTENT,
+    FEEDBACK,
+    SCORE,
+    SUBMITTED_AT AS "submittedAt",
+    REVIEWED_AT AS "reviewedAt";

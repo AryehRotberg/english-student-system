@@ -7,14 +7,17 @@ import { createQuestionQuery, getAllQuestionsQuery } from './questions.queries';
 
 @Injectable()
 export class QuestionsService {
-    constructor(private readonly postgresService: PostgresService) { }
+    constructor(private readonly postgresService: PostgresService) {}
 
     async findAll(): Promise<QuestionResponseDto[]> {
-        const questions = await this.postgresService.query<Question>(getAllQuestionsQuery);
+        const questions =
+            await this.postgresService.query<Question>(getAllQuestionsQuery);
         return QuestionResponseDto.fromEntities(questions);
     }
 
-    async create(createQuestionDto: CreateQuestionDto): Promise<QuestionResponseDto> {
+    async create(
+        createQuestionDto: CreateQuestionDto,
+    ): Promise<QuestionResponseDto> {
         const { question, questionType, audioUrl } = createQuestionDto;
 
         const [result] = await this.postgresService.query<Question>(

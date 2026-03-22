@@ -5,7 +5,7 @@ import { QuestionsService } from './questions.service';
 
 @Controller('questions')
 export class QuestionsController {
-    constructor(private readonly questionsService: QuestionsService) { }
+    constructor(private readonly questionsService: QuestionsService) {}
 
     @Get()
     async findAll() {

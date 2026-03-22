@@ -1,0 +1,30 @@
+SELECT
+    AI.ID AS "itemId",
+    A.TITLE AS "assignmentTitle",
+    A.DESCRIPTION AS "assignmentDescription",
+    AI.CONTENT_TYPE AS "contentType",
+    AI.CONTENT_ID AS "contentId",
+    COALESCE(
+        Q.TITLE,
+        T.TITLE,
+        WT.TITLE,
+        VT.TOPIC,
+        'Untitled Task'
+    ) AS "contentTitle"
+FROM
+    ASSIGNMENT_ITEMS AI
+    JOIN ASSIGNMENTS A ON AI.ASSIGNMENT_ID = A.ID
+    LEFT JOIN QUIZZES Q ON AI.CONTENT_TYPE = 'quiz'
+    AND AI.CONTENT_ID = Q.ID
+    LEFT JOIN TEXTS T ON AI.CONTENT_TYPE = 'text'
+    AND AI.CONTENT_ID = T.ID
+    LEFT JOIN WRITING_TASKS WT ON AI.CONTENT_TYPE = 'writing'
+    AND AI.CONTENT_ID = WT.ID
+    LEFT JOIN VOCABULARY_TOPICS VT ON AI.CONTENT_TYPE = 'vocabulary'
+    AND AI.CONTENT_ID = VT.ID
+WHERE
+    A.USER_ID = $1
+    AND AI.STATUS != 'completed'
+ORDER BY
+    A.DUE_DATE ASC NULLS LAST,
+    A.CREATED_AT DESC;

@@ -1,0 +1,9 @@
+INSERT INTO USERS (NAME, EMAIL, PASSWORD, ROLE)
+VALUES ($1, $2, $3, $4)
+RETURNING
+    ID,
+    NAME,
+    EMAIL,
+    PASSWORD,
+    ROLE,
+    CREATED_AT AS "createdAt";

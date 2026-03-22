@@ -1,25 +1,11 @@
-export const getAllTextsQuery = `
-    SELECT
-        ID,
-        TITLE,
-        CONTENT,
-        LEVEL,
-        CREATED_AT AS "createdAt"
-    FROM
-        TEXTS
-    ORDER BY
-        CREATED_AT DESC
-`;
+import { PostgresService } from 'src/config/postgres.client';
 
-export const createTextQuery = `
-    INSERT INTO
-        TEXTS (TITLE, CONTENT, LEVEL)
-    VALUES
-        ($1, $2, $3)
-    RETURNING
-        ID,
-        TITLE,
-        CONTENT,
-        LEVEL,
-        CREATED_AT AS "createdAt"
-`;
+export const getAllTextsQuery = PostgresService.readSql(
+    __dirname,
+    'get-all-texts.sql',
+);
+
+export const createTextQuery = PostgresService.readSql(
+    __dirname,
+    'create-text.sql',
+);

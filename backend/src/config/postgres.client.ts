@@ -9,6 +9,7 @@ const { Pool } = pg;
 @Injectable()
 export class PostgresService {
     private pool: pg.Pool;
+    private static sqlCache = new Map<string, string>();
 
     constructor() {
         const requiredEnv = [
@@ -23,25 +24,19 @@ export class PostgresService {
             if (!process.env[key]) throw new Error(`${key} is required`);
         }
 
-        const possiblePaths = [
+        const certPaths = [
             path.join(process.cwd(), 'certs', 'prod-ca-2021.crt'),
             path.join(process.cwd(), 'dist', 'certs', 'prod-ca-2021.crt'),
             path.join(__dirname, '..', '..', 'certs', 'prod-ca-2021.crt'),
         ];
 
-        let caCert: string | undefined;
-
-        for (const certPath of possiblePaths) {
-            if (fs.existsSync(certPath)) {
-                try {
-                    caCert = fs.readFileSync(certPath).toString();
-                    Logger.log(`Loaded SSL certificate from: ${certPath}`);
-                    break;
-                } catch (e) {
-                    Logger.error(`Failed to read cert at ${certPath}`, e);
-                }
-            }
-        }
+        const caCert = certPaths.find(
+            (p) =>
+                fs.existsSync(p) &&
+                Logger.log(`Loaded SSL certificate from: ${p}`),
+        )
+            ? fs.readFileSync(certPaths.find(fs.existsSync)!, 'utf8')
+            : undefined;
 
         if (!caCert) {
             Logger.warn(
@@ -81,5 +76,16 @@ export class PostgresService {
             Sentry.captureException(error);
             return Promise.reject(error);
         }
+    }
+
+    static readSql(callerDir: string, fileName: string): string {
+        const fullPath = path.join(callerDir, 'sql', fileName);
+
+        if (!this.sqlCache.has(fullPath)) {
+            const content = fs.readFileSync(fullPath, 'utf8');
+            this.sqlCache.set(fullPath, content);
+        }
+
+        return this.sqlCache.get(fullPath)!;
     }
 }

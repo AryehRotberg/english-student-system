@@ -1,27 +1,11 @@
-export const getAllVocabularyQuery = `
-    SELECT
-        ID,
-        WORD,
-        MEANING,
-        EXAMPLE,
-        TRANSLATION,
-        CREATED_AT AS "createdAt"
-    FROM
-        VOCABULARY
-    ORDER BY
-        CREATED_AT DESC
-`;
+import { PostgresService } from 'src/config/postgres.client';
 
-export const createVocabularyQuery = `
-    INSERT INTO
-        VOCABULARY (WORD, MEANING, EXAMPLE, TRANSLATION)
-    VALUES
-        ($1, $2, $3, $4)
-    RETURNING
-        ID,
-        WORD,
-        MEANING,
-        EXAMPLE,
-        TRANSLATION,
-        CREATED_AT AS "createdAt"
-`;
+export const getAllVocabularyQuery = PostgresService.readSql(
+    __dirname,
+    'get-all-vocabulary.sql',
+);
+
+export const createVocabularyQuery = PostgresService.readSql(
+    __dirname,
+    'create-vocabulary.sql',
+);

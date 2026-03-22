@@ -1,35 +1,16 @@
-export const getAllQuizzesQuery = `
-    SELECT
-        ID,
-        TITLE,
-        DESCRIPTION,
-        CREATED_AT AS "createdAt"
-    FROM
-        QUIZZES;
-`;
+import { PostgresService } from 'src/config/postgres.client';
 
-export const createQuizQuery = `
-    INSERT INTO
-        QUIZZES (TITLE, DESCRIPTION)
-    VALUES
-        ($1, $2)
-    RETURNING
-        ID,
-        TITLE,
-        DESCRIPTION;
-`;
+export const getAllQuizzesQuery = PostgresService.readSql(
+    __dirname,
+    'get-all-quizzes.sql',
+);
 
-export const getQuizTopicsByQuizIdQuery = `
-    SELECT
-        T.ID,
-        T.TOPIC,
-        T.EXPLANATION
-    FROM
-        QUIZ_TOPICS QT
-    INNER JOIN
-        TOPICS T ON T.ID = QT.TOPIC_ID
-    WHERE
-        QT.QUIZ_ID = $1
-    ORDER BY
-        T.TOPIC ASC;
-`;
+export const createQuizQuery = PostgresService.readSql(
+    __dirname,
+    'create-quiz.sql',
+);
+
+export const getQuizTopicsByQuizIdQuery = PostgresService.readSql(
+    __dirname,
+    'get-quiz-topics-by-quiz-id.sql',
+);

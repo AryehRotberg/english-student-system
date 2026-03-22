@@ -1,0 +1,13 @@
+SELECT
+    QQ.ID,
+    QQ.QUIZ_ID AS "quizId",
+    QQ.QUESTION_ID AS "questionId",
+    Q.QUESTION,
+    Q.QUESTION_TYPE AS "questionType",
+    Q.AUDIO_URL AS "audioUrl",
+    QQ.MAX_POINTS AS "maxPoints"
+FROM
+    QUIZ_QUESTIONS QQ
+    JOIN QUESTIONS Q ON QQ.QUESTION_ID = Q.ID
+WHERE
+    QQ.QUIZ_ID = $1;

@@ -1,49 +1,21 @@
-export const insertUserQuery = `
-    INSERT INTO USERS (NAME, EMAIL, PASSWORD, ROLE)
-    VALUES ($1, $2, $3, $4)
-    RETURNING
-        ID,
-        NAME,
-        EMAIL,
-        PASSWORD,
-        ROLE,
-        CREATED_AT AS "createdAt"
-`;
+import { PostgresService } from 'src/config/postgres.client';
 
-export const getUserByEmailQuery = `
-    SELECT
-        ID,
-        NAME,
-        EMAIL,
-        PASSWORD,
-        ROLE,
-        CREATED_AT AS "createdAt"
-    FROM
-        USERS
-    WHERE
-        EMAIL = $1
-`;
+export const insertUserQuery = PostgresService.readSql(
+    __dirname,
+    'insert-user.sql',
+);
 
-export const getAllUsersQuery = `
-    SELECT
-        ID,
-        NAME,
-        EMAIL,
-        PASSWORD,
-        ROLE,
-        CREATED_AT AS "createdAt"
-    FROM
-        USERS
-`;
+export const getUserByEmailQuery = PostgresService.readSql(
+    __dirname,
+    'get-user-by-email.sql',
+);
 
-export const deleteUserQuery = `
-    DELETE FROM USERS
-    WHERE ID = $1
-    RETURNING
-        ID,
-        NAME,
-        EMAIL,
-        PASSWORD,
-        ROLE,
-        CREATED_AT AS "createdAt"
-`;
+export const getAllUsersQuery = PostgresService.readSql(
+    __dirname,
+    'get-all-users.sql',
+);
+
+export const deleteUserQuery = PostgresService.readSql(
+    __dirname,
+    'delete-user.sql',
+);

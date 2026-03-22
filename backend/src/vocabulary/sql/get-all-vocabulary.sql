@@ -1,0 +1,11 @@
+SELECT
+    ID,
+    WORD,
+    MEANING,
+    EXAMPLE,
+    TRANSLATION,
+    CREATED_AT AS "createdAt"
+FROM
+    VOCABULARY
+ORDER BY
+    CREATED_AT DESC;

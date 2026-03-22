@@ -1,25 +1,11 @@
-export const getAllWritingTasksQuery = `
-    SELECT
-        ID,
-        TITLE,
-        INSTRUCTIONS,
-        MIN_WORDS AS "minWords",
-        CREATED_AT AS "createdAt"
-    FROM
-        WRITING_TASKS
-    ORDER BY
-        CREATED_AT DESC
-`;
+import { PostgresService } from 'src/config/postgres.client';
 
-export const createWritingTaskQuery = `
-    INSERT INTO
-        WRITING_TASKS (TITLE, INSTRUCTIONS, MIN_WORDS)
-    VALUES
-        ($1, $2, $3)
-    RETURNING
-        ID,
-        TITLE,
-        INSTRUCTIONS,
-        MIN_WORDS AS "minWords",
-        CREATED_AT AS "createdAt"
-`;
+export const getAllWritingTasksQuery = PostgresService.readSql(
+    __dirname,
+    'get-all-writing-tasks.sql',
+);
+
+export const createWritingTaskQuery = PostgresService.readSql(
+    __dirname,
+    'create-writing-task.sql',
+);

@@ -22,6 +22,26 @@ english-student-system/
 └─ LICENSE
 ```
 
+## Directory Deep Dive
+
+### Backend (`backend/`)
+
+- `src/` contains all NestJS domain modules.
+- `src/config/` contains Postgres, Sentry, and Nodemailer setup.
+- `src/*/*.queries.ts` exports SQL query constants for each module.
+- `src/*/sql/*.sql` stores raw SQL files loaded through `PostgresService.readSql(...)`.
+- `test/` contains e2e test setup.
+- `certs/` contains optional DB SSL certificate assets.
+
+### Frontend (`frontend/`)
+
+- `src/pages/` contains route-level screens (`Admin`, `Dashboard`, `Login`, `Practice`, `Quiz`, `QuizList`, `Reading`, `Vocab`).
+- `src/components/` contains feature UI components.
+- `src/services/` contains API services and the Axios HTTP client.
+- `src/contexts/` contains auth/session context providers.
+- `src/hooks/`, `src/utils/`, and `src/types/` hold shared app logic.
+- `public/` contains static assets served by Vite.
+
 ## Core Product Features
 
 ### Student-facing
@@ -68,6 +88,7 @@ The backend is modularized by learning domain and content type:
 Base URL in local development: `http://localhost:3000`
 
 - `GET /health` - Health check
+- `GET /api` - Swagger/OpenAPI docs
 - `auth/*` - Login/register/logout/current user
 - `users/*` - User operations
 - `assignments/*` and `assignment-items/*`
@@ -82,8 +103,8 @@ Base URL in local development: `http://localhost:3000`
 
 - Login endpoint sets `access_token` cookie.
 - Cookie is HTTP-only and environment-sensitive:
-  - production: `secure: true`, `sameSite: none`
-  - development: `secure: false`, `sameSite: lax`
+    - production: `secure: true`, `sameSite: none`
+    - development: `secure: false`, `sameSite: lax`
 - Protected backend routes use guards that verify token + role.
 - Teacher-only routes are guarded by role checks.
 
@@ -110,6 +131,13 @@ Base URL in local development: `http://localhost:3000`
 - cookie-parser
 - Nodemailer
 - Sentry Node SDK
+
+## Backend Query Architecture
+
+- Query text is externalized into `.sql` files per module (for example: `backend/src/quizzes/sql/*.sql`).
+- Query constants are exported from each `*.queries.ts` file via `PostgresService.readSql(__dirname, fileName)`.
+- SQL files are copied into build output via Nest CLI assets configuration (`backend/nest-cli.json`).
+- This keeps service classes focused on orchestration and DTO mapping, while SQL stays versionable and readable.
 
 ## Prerequisites
 
@@ -144,9 +172,9 @@ Notes:
 
 - `FRONTEND_URL` is used by CORS and email templates.
 - SSL cert support is implemented in `backend/certs/prod-ca-2021.crt` if present.
-- Frontend can optionally use `VITE_API_BASE_URL`, but current HTTP client logic uses:
-  - development: `http://localhost:3000`
-  - production: `/api` (rewritten by Vercel)
+- Current frontend HTTP client logic uses:
+    - development: `http://localhost:3000`
+    - production: `/api` (rewritten by Vercel)
 
 ## Local Development
 
@@ -222,18 +250,18 @@ Frontend currently has lint/build validation via npm scripts.
 - Rotate any credentials that were previously committed or shared.
 - Use distinct credentials per environment (development/staging/production).
 - Consider adding:
-  - `backend/.env.example` with placeholder values
-  - secret scanning in CI
+    - `backend/.env.example` with placeholder values
+    - secret scanning in CI
 
 ## Troubleshooting
 
 - CORS/auth cookie issues:
-  - ensure `FRONTEND_URL` matches your active frontend origin
-  - ensure frontend requests use `withCredentials: true`
+    - ensure `FRONTEND_URL` matches your active frontend origin
+    - ensure frontend requests use `withCredentials: true`
 - Database connection issues:
-  - verify Postgres host/port/SSL cert and credentials
+    - verify Postgres host/port/SSL cert and credentials
 - Login token issues:
-  - verify `JWT_SECRET` is set and consistent
+    - verify `JWT_SECRET` is set and consistent
 
 ## License
 

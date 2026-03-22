@@ -1,0 +1,11 @@
+UPDATE ASSIGNMENT_ITEMS AI
+SET
+    STATUS = 'completed'
+FROM
+    ASSIGNMENTS A
+WHERE
+    AI.ASSIGNMENT_ID = A.ID
+    AND A.USER_ID = $1
+    AND AI.CONTENT_TYPE = 'quiz'
+    AND AI.CONTENT_ID = $2
+    AND AI.STATUS <> 'completed';

@@ -13,20 +13,25 @@ import {
 
 @Injectable()
 export class QuestionOptionsService {
-    constructor(private readonly postgresService: PostgresService) { }
+    constructor(private readonly postgresService: PostgresService) {}
 
-    async findByQuestionId(filter: GetQuestionOptionsFilterDto): Promise<QuestionOptionResponseDto[]> {
+    async findByQuestionId(
+        filter: GetQuestionOptionsFilterDto,
+    ): Promise<QuestionOptionResponseDto[]> {
         const { questionId } = filter;
 
-        const questionOptions = await this.postgresService.query<QuestionOption>(
-            getQuestionOptionsByQuestionIdQuery,
-            [questionId]
-        );
+        const questionOptions =
+            await this.postgresService.query<QuestionOption>(
+                getQuestionOptionsByQuestionIdQuery,
+                [questionId],
+            );
 
         return QuestionOptionResponseDto.fromEntities(questionOptions);
     }
 
-    async create(createQuestionOptionDto: CreateQuestionOptionDto): Promise<QuestionOptionResponseDto> {
+    async create(
+        createQuestionOptionDto: CreateQuestionOptionDto,
+    ): Promise<QuestionOptionResponseDto> {
         const { questionId, optionText, isCorrect } = createQuestionOptionDto;
 
         const [result] = await this.postgresService.query<QuestionOption>(

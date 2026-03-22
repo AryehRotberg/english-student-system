@@ -13,13 +13,15 @@ import {
 
 @Injectable()
 export class WritingSubmissionsService {
-    constructor(private readonly postgresService: PostgresService) { }
+    constructor(private readonly postgresService: PostgresService) {}
 
-    async findAll(filter: GetWritingSubmissionsFilterDto): Promise<WritingSubmissionResponseDto[]> {
+    async findAll(
+        filter: GetWritingSubmissionsFilterDto,
+    ): Promise<WritingSubmissionResponseDto[]> {
         const { userId, taskId } = filter;
 
         const submissions = await this.postgresService.query<WritingSubmission>(
-            getWritingSubmissionsQuery(filter),
+            getWritingSubmissionsQuery,
             [userId ?? null, taskId ?? null],
         );
 

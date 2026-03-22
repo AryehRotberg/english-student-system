@@ -14,31 +14,43 @@ import {
 
 @Injectable()
 export class QuizAttemptsService {
-    constructor(private readonly postgresService: PostgresService) { }
+    constructor(private readonly postgresService: PostgresService) {}
 
     async findByUserIdAndQuizId(filter: GetQuizAttemptsFilterDto) {
         const { userId, quizId } = filter;
 
         const attempts = await this.postgresService.query<QuizAttempt>(
             getQuizAttemptsByUserIdAndQuizIdQuery,
-            [userId, quizId]
+            [userId, quizId],
         );
 
         return QuizAttemptResponseDto.fromEntities(attempts);
     }
 
-    async create(createQuizAttemptDto: CreateQuizAttemptDto): Promise<QuizAttemptResponseDto> {
-        const { quizId, userId, points, startedAt, completedAt } = createQuizAttemptDto;
+    async create(
+        createQuizAttemptDto: CreateQuizAttemptDto,
+    ): Promise<QuizAttemptResponseDto> {
+        const { quizId, userId, points, startedAt, completedAt } =
+            createQuizAttemptDto;
 
         const [result] = await this.postgresService.query<QuizAttempt>(
             createQuizAttemptQuery,
-            [quizId, userId, points ?? 0, startedAt ?? new Date(), completedAt ?? null],
+            [
+                quizId,
+                userId,
+                points ?? 0,
+                startedAt ?? new Date(),
+                completedAt ?? null,
+            ],
         );
 
         return QuizAttemptResponseDto.fromEntity(result);
     }
 
-    async update(id: string, updateQuizAttemptDto: UpdateQuizAttemptDto): Promise<QuizAttemptResponseDto> {
+    async update(
+        id: string,
+        updateQuizAttemptDto: UpdateQuizAttemptDto,
+    ): Promise<QuizAttemptResponseDto> {
         const [result] = await this.postgresService.query<QuizAttempt>(
             updateQuizAttemptQuery,
             [

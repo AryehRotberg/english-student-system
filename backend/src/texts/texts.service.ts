@@ -7,7 +7,7 @@ import { createTextQuery, getAllTextsQuery } from './texts.queries';
 
 @Injectable()
 export class TextsService {
-    constructor(private readonly postgresService: PostgresService) { }
+    constructor(private readonly postgresService: PostgresService) {}
 
     async findAll(): Promise<TextResponseDto[]> {
         const texts = await this.postgresService.query<Text>(getAllTextsQuery);

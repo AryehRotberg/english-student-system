@@ -1,0 +1,8 @@
+INSERT INTO
+    QUESTIONS (QUESTION, QUESTION_TYPE, AUDIO_URL)
+VALUES
+    ($1, $2, $3) RETURNING ID,
+    QUESTION,
+    QUESTION_TYPE AS "questionType",
+    AUDIO_URL AS "audioUrl",
+    CREATED_AT AS "createdAt";

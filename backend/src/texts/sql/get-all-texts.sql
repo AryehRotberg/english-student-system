@@ -1,0 +1,10 @@
+SELECT
+    ID,
+    TITLE,
+    CONTENT,
+    LEVEL,
+    CREATED_AT AS "createdAt"
+FROM
+    TEXTS
+ORDER BY
+    CREATED_AT DESC;

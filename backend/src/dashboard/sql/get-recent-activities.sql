@@ -1,0 +1,12 @@
+SELECT
+    ID AS "id",
+    TITLE AS "title",
+    STATUS AS "status"
+FROM
+    ASSIGNMENTS
+WHERE
+    USER_ID = $1
+ORDER BY
+    CREATED_AT DESC
+LIMIT
+    5;
