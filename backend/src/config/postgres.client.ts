@@ -78,55 +78,8 @@ export class PostgresService {
         }
     }
 
-    // static readSql(callerDir: string, fileName: string): string {
-    //     const fullPath = path.join(callerDir, 'sql', fileName);
-
-    //     if (!this.sqlCache.has(fullPath)) {
-    //         const content = fs.readFileSync(fullPath, 'utf8');
-    //         this.sqlCache.set(fullPath, content);
-    //     }
-
-    //     return this.sqlCache.get(fullPath)!;
-    // }
-
     static readSql(callerDir: string, fileName: string): string {
-        const moduleName = path.basename(callerDir);
-
-        const candidates = [
-            path.join(callerDir, 'sql', fileName),
-            path.join(process.cwd(), 'src', moduleName, 'sql', fileName),
-            path.join(process.cwd(), 'dist', moduleName, 'sql', fileName),
-            path.join(
-                process.cwd(),
-                'backend',
-                'src',
-                moduleName,
-                'sql',
-                fileName,
-            ),
-            path.join(
-                process.cwd(),
-                'backend',
-                'dist',
-                moduleName,
-                'sql',
-                fileName,
-            ),
-        ];
-
-        const fullPath = candidates.find((p) => fs.existsSync(p));
-
-        if (!fullPath) {
-            throw new Error(
-                [
-                    'SQL file not found',
-                    `file: ${fileName}`,
-                    `callerDir: ${callerDir}`,
-                    'checked paths:',
-                    ...candidates.map((p) => ` - ${p}`),
-                ].join('\n'),
-            );
-        }
+        const fullPath = path.join(callerDir, 'sql', fileName);
 
         if (!this.sqlCache.has(fullPath)) {
             const content = fs.readFileSync(fullPath, 'utf8');
