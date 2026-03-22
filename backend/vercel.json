@@ -3,7 +3,6 @@
     "buildCommand": "npm run build",
     "functions": {
         "dist/main.js": {
-            "runtime": "@vercel/node",
             "includeFiles": "dist/**/*.sql"
         }
     },
