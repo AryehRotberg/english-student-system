@@ -1,4 +1,4 @@
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../config/postgres.client';
 
 export const getAssignmentCompletionSummaryQuery = PostgresService.readSql(
     __dirname,
