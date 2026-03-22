@@ -6,7 +6,7 @@
             "src": "dist/main.js",
             "use": "@vercel/node",
             "config": {
-                "includeFiles": ["dist/**/*.sql"]
+                "includeFiles": ["src/**/*.sql", "dist/**/*.sql"]
             }
         }
     ],
