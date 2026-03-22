@@ -14,7 +14,14 @@ async function bootstrap() {
             .setVersion('1.0')
             .build(),
     );
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('api', app, document, {
+        customCssUrl:
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui.min.css',
+        customJs: [
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-bundle.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.11.0/swagger-ui-standalone-preset.js',
+        ],
+    });
 
     app.enableCors({
         origin: ['http://localhost:5173', process.env.FRONTEND_URL],
