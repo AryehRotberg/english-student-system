@@ -7,7 +7,7 @@
         "assets": [
             {
                 "include": "**/*.sql",
-                "outDir": "dist"
+                "outDir": "dist/src"
             }
         ]
     }
