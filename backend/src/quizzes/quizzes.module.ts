@@ -1,6 +1,6 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { LlmModule } from 'src/llm/llm.module';
+import { LlmModule } from '../llm/llm.module';
 import { AuthModule } from '../auth/auth.module';
 import { QuizGeneratorWorker } from './quiz-generator.worker';
 import { QuizzesController } from './quizzes.controller';

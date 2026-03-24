@@ -1,7 +1,7 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { LlmService } from 'src/llm/llm.service';
-import { quizPipeline } from 'src/llm/pipelines/quiz/quiz.pipeline';
+import { LlmService } from '../llm/llm.service';
+import { quizPipeline } from '../llm/pipelines/quiz/quiz.pipeline';
 
 @Processor('generate-quiz')
 export class QuizGeneratorWorker extends WorkerHost {
