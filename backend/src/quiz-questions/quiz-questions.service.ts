@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { RedisService } from 'src/config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateQuizQuestionDto } from './dto/create-quiz-question.dto';
 import { GetQuizQuestionsFilterDto } from './dto/get-quiz-questions-filter.dto';
@@ -14,7 +15,10 @@ import {
 
 @Injectable()
 export class QuizQuestionsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(
+        private readonly postgresService: PostgresService,
+        private readonly redisService: RedisService,
+    ) {}
 
     async getFullQuiz(quizId: string) {
         const questionsRaw = await this.postgresService.query<any>(

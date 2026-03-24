@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { RedisService } from 'src/config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import {
     createAnswerQuery,
@@ -14,10 +15,14 @@ import { Answer } from './entities/answer.entity';
 
 @Injectable()
 export class AnswersService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(
+        private readonly postgresService: PostgresService,
+        private readonly redisService: RedisService,
+    ) {}
 
     async create(createAnswerDto: CreateAnswerDto): Promise<AnswerResponseDto> {
         const { questionId, answer, blankIndex } = createAnswerDto;
+        await this.redisService.invalidate('answers:*');
 
         const [result] = await this.postgresService.query<Answer>(
             createAnswerQuery,
@@ -28,28 +33,43 @@ export class AnswersService {
     }
 
     async findAll(): Promise<AnswerResponseDto[]> {
-        const answers =
-            await this.postgresService.query<Answer>(getAllAnswersQuery);
-        return AnswerResponseDto.fromEntities(answers);
+        return this.redisService.getOrFetch<AnswerResponseDto[]>(
+            'answers:all',
+            async () => {
+                const answers =
+                    await this.postgresService.query<Answer>(
+                        getAllAnswersQuery,
+                    );
+                return AnswerResponseDto.fromEntities(answers);
+            },
+        );
     }
 
     async findOne(id: string): Promise<AnswerResponseDto> {
-        const [answer] = await this.postgresService.query<Answer>(
-            getAnswerByIdQuery,
-            [id],
+        const cacheKey = `answers:${id}`;
+        return this.redisService.getOrFetch<AnswerResponseDto>(
+            cacheKey,
+            async () => {
+                const [answer] = await this.postgresService.query<Answer>(
+                    getAnswerByIdQuery,
+                    [id],
+                );
+
+                if (!answer) {
+                    throw new NotFoundException('Answer not found');
+                }
+
+                return AnswerResponseDto.fromEntity(answer);
+            },
         );
-
-        if (!answer) {
-            throw new NotFoundException('Answer not found');
-        }
-
-        return AnswerResponseDto.fromEntity(answer);
     }
 
     async update(
         id: string,
         updateAnswerDto: UpdateAnswerDto,
     ): Promise<AnswerResponseDto> {
+        await this.redisService.invalidate('answers:*');
+
         const [result] = await this.postgresService.query<Answer>(
             updateAnswerQuery,
             [
@@ -68,6 +88,8 @@ export class AnswersService {
     }
 
     async remove(id: string): Promise<AnswerResponseDto> {
+        await this.redisService.invalidate('answers:*');
+
         const [result] = await this.postgresService.query<Answer>(
             deleteAnswerQuery,
             [id],

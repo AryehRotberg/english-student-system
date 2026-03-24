@@ -1,0 +1,39 @@
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { Injectable } from '@nestjs/common';
+import { LlmPipeline } from './llm.types';
+
+@Injectable()
+export class LlmService {
+    private readonly model = new ChatGoogleGenerativeAI({
+        model: 'gemini-3.1-flash-lite-preview',
+        temperature: 0.3,
+        maxRetries: 2,
+    });
+
+    withStructuredOutput(schema: any) {
+        return this.model.withStructuredOutput(schema);
+    }
+
+    getRawModel() {
+        return this.model;
+    }
+
+    async runPipeline<TInput, TOutput>(
+        pipeline: LlmPipeline<TInput, TOutput>,
+        input: TInput,
+    ): Promise<TOutput> {
+        const prompt = pipeline.buildPrompt(input);
+
+        const structured = this.model.withStructuredOutput(pipeline.schema);
+
+        const result = await structured.invoke(prompt);
+
+        if (pipeline.validate) {
+            pipeline.validate(result);
+        }
+
+        return pipeline.transform
+            ? pipeline.transform(result)
+            : (result as TOutput);
+    }
+}

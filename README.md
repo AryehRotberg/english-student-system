@@ -8,6 +8,8 @@ This system supports student learning workflows (reading, vocabulary, quizzes, w
 
 - Frontend: React 19 + TypeScript + Vite
 - Backend: NestJS 11 + TypeScript + PostgreSQL
+- Background jobs: BullMQ + Redis
+- AI quiz generation: LangChain + Google Gemini
 - Auth: JWT stored in HTTP-only cookies
 - Data fetching: TanStack Query
 - Error monitoring: Sentry (frontend + backend)
@@ -28,6 +30,8 @@ english-student-system/
 
 - `src/` contains all NestJS domain modules.
 - `src/config/` contains Postgres, Sentry, and Nodemailer setup.
+- `src/config/redis.client.ts` provides shared Redis cache access and cache invalidation helpers.
+- `src/llm/` contains LLM integration and quiz generation pipelines.
 - `src/*/*.queries.ts` exports SQL query constants for each module.
 - `src/*/sql/*.sql` stores raw SQL files loaded through `PostgresService.readSql(...)`.
 - `test/` contains e2e test setup.
@@ -58,6 +62,7 @@ english-student-system/
 - Admin page with content management sections
 - Quiz and question management
 - Quiz builder workflows
+- AI-assisted quiz generation workflow (queued job)
 - Text management
 
 ## Backend Domain Modules
@@ -82,6 +87,7 @@ The backend is modularized by learning domain and content type:
 - vocabulary-topics
 - vocabulary-topic-words
 - send-email
+- llm
 
 ## Data Model Overview
 
@@ -178,6 +184,14 @@ erDiagram
 
 Teacher write operations are protected by `TeacherGuard`.
 
+### How AI quiz generation works
+
+1. Trigger generation with `POST /quizzes/generate` using `topic`, `multipleChoiceCount`, and `openEndedCount`.
+2. The API enqueues a BullMQ job in the `generate-quiz` queue.
+3. A worker (`quiz-generator.worker.ts`) runs the LLM quiz pipeline.
+4. The pipeline builds a prompt, validates output shape/rules, normalizes quiz questions, and returns generated content.
+5. Current behavior: the generated payload is returned by the worker and logged from worker lifecycle hooks; persistence into quiz tables is not implemented yet.
+
 ## API Surface (High-level)
 
 Base URL in local development: `http://localhost:3000`
@@ -198,6 +212,10 @@ Domain route groups:
 - `writing-tasks/*`, `writing-submissions/*`
 - `vocabulary/*`, `vocabulary-topics/*`, `vocabulary-topic-words/*`
 - `send-email/*`
+
+Additional quiz endpoint:
+
+- `POST /quizzes/generate` - Enqueue AI-based quiz generation job
 
 ### API examples
 
@@ -331,6 +349,9 @@ This separation keeps UI rendering concerns, data fetching, and API communicatio
 - NestJS 11
 - TypeScript
 - PostgreSQL (`pg` Pool)
+- Redis (Upstash Redis SDK for cache, Redis connection for BullMQ)
+- BullMQ (`@nestjs/bullmq` + `bullmq`)
+- LangChain + Google Gemini (`@langchain/google-genai`)
 - class-validator / class-transformer
 - Argon2 (password hashing)
 - jsonwebtoken
@@ -350,6 +371,7 @@ This separation keeps UI rendering concerns, data fetching, and API communicatio
 - Node.js 20+
 - npm 10+
 - PostgreSQL database (or managed Postgres such as Supabase)
+- Redis instance (Upstash Redis recommended for current cache setup)
 
 ## Environment Configuration
 
@@ -366,6 +388,12 @@ POSTGRES_PORT=5432
 
 JWT_SECRET=your_long_random_secret
 
+REDIS_URL=your_upstash_rest_url
+REDIS_TOKEN=your_upstash_rest_token
+REDIS_FULL_URL=your_redis_connection_url_for_bullmq
+
+GOOGLE_API_KEY=your_google_genai_api_key
+
 EMAIL_USER=your_email_address
 EMAIL_PASS=your_email_app_password
 
@@ -377,6 +405,9 @@ NODE_ENV=development
 Notes:
 
 - `FRONTEND_URL` is used by CORS and email templates.
+- `REDIS_URL`/`REDIS_TOKEN` are used by the cache layer (`RedisService`).
+- `REDIS_FULL_URL` is used by BullMQ queue workers.
+- `GOOGLE_API_KEY` is used by the LLM provider for quiz generation.
 - SSL cert support is implemented in `backend/certs/prod-ca-2021.crt` if present.
 - Current frontend HTTP client logic uses:
     - development: `http://localhost:3000`
@@ -466,6 +497,10 @@ Frontend currently has lint/build validation via npm scripts.
     - ensure frontend requests use `withCredentials: true`
 - Database connection issues:
     - verify Postgres host/port/SSL cert and credentials
+- Redis/queue issues:
+    - verify `REDIS_URL`, `REDIS_TOKEN`, and `REDIS_FULL_URL`
+- LLM generation issues:
+    - verify `GOOGLE_API_KEY` and outbound network access
 - Login token issues:
     - verify `JWT_SECRET` is set and consistent
 

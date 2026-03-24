@@ -51,15 +51,18 @@ export class QuizAttemptsService {
         id: string,
         updateQuizAttemptDto: UpdateQuizAttemptDto,
     ): Promise<QuizAttemptResponseDto> {
+        const { quizId, userId, points, startedAt, completedAt } =
+            updateQuizAttemptDto;
+
         const [result] = await this.postgresService.query<QuizAttempt>(
             updateQuizAttemptQuery,
             [
                 id,
-                updateQuizAttemptDto.quizId ?? null,
-                updateQuizAttemptDto.userId ?? null,
-                updateQuizAttemptDto.points ?? null,
-                updateQuizAttemptDto.startedAt ?? null,
-                updateQuizAttemptDto.completedAt ?? null,
+                quizId ?? null,
+                userId ?? null,
+                points ?? null,
+                startedAt ?? null,
+                completedAt ?? null,
             ],
         );
 

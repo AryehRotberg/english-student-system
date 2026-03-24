@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { RedisService } from 'src/config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateWritingTaskDto } from './dto/create-writing-task.dto';
 import { WritingTaskResponseDto } from './dto/writing-task-response.dto';
@@ -10,19 +11,29 @@ import {
 
 @Injectable()
 export class WritingTasksService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(
+        private readonly postgresService: PostgresService,
+        private readonly redisService: RedisService,
+    ) {}
 
     async findAll(): Promise<WritingTaskResponseDto[]> {
-        const tasks = await this.postgresService.query<WritingTask>(
-            getAllWritingTasksQuery,
+        return this.redisService.getOrFetch<WritingTaskResponseDto[]>(
+            'writing_tasks',
+            async () => {
+                const tasks = await this.postgresService.query<WritingTask>(
+                    getAllWritingTasksQuery,
+                );
+                return WritingTaskResponseDto.fromEntities(tasks);
+            },
         );
-        return WritingTaskResponseDto.fromEntities(tasks);
     }
 
     async create(
         createWritingTaskDto: CreateWritingTaskDto,
     ): Promise<WritingTaskResponseDto> {
         const { title, instructions, minWords } = createWritingTaskDto;
+
+        await this.redisService.invalidate('writing_tasks:*');
 
         const [result] = await this.postgresService.query<WritingTask>(
             createWritingTaskQuery,
