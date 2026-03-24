@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RedisService } from 'src/config/redis.client';
+import { RedisService } from '../config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionResponseDto } from './dto/question-response.dto';

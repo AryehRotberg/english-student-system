@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RedisService } from 'src/config/redis.client';
+import { RedisService } from '../config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateVocabularyTopicDto } from './dto/create-vocabulary-topic.dto';
 import { VocabularyTopicResponseDto } from './dto/vocabulary-topic-response.dto';

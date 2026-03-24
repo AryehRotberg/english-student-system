@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RedisService } from 'src/config/redis.client';
+import { RedisService } from '../config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateQuizQuestionDto } from './dto/create-quiz-question.dto';
 import { GetQuizQuestionsFilterDto } from './dto/get-quiz-questions-filter.dto';

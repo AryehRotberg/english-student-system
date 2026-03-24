@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RedisService } from 'src/config/redis.client';
+import { RedisService } from '../config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateWritingSubmissionDto } from './dto/create-writing-submission.dto';
 import { GetWritingSubmissionsFilterDto } from './dto/get-writing-submissions-filter.dto';

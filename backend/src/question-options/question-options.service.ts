@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { RedisService } from 'src/config/redis.client';
+import { RedisService } from '../config/redis.client';
 import { PostgresService } from '../config/postgres.client';
 import { CreateQuestionOptionDto } from './dto/create-question-option.dto';
 import { GetQuestionOptionsFilterDto } from './dto/get-question-options-filter.dto';
