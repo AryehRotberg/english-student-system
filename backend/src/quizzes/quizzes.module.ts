@@ -1,8 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { LlmModule } from '../llm/llm.module';
 import { AuthModule } from '../auth/auth.module';
-import { QuizGeneratorWorker } from './quiz-generator.worker';
+import { LlmModule } from '../llm/llm.module';
 import { QuizzesController } from './quizzes.controller';
 import { QuizzesService } from './quizzes.service';
 
@@ -14,8 +13,7 @@ import { QuizzesService } from './quizzes.service';
             name: 'generate-quiz',
         }),
     ],
-    exports: [BullModule],
     controllers: [QuizzesController],
-    providers: [QuizzesService, QuizGeneratorWorker],
+    providers: [QuizzesService],
 })
 export class QuizzesModule {}

@@ -1,9 +1,13 @@
+import { Logger } from '@nestjs/common';
+
 export function buildQuizPrompt(
     topic: string,
     openEndedCount: number,
     multipleChoiceCount: number,
 ): string {
-    console.log(`Building quiz prompt with topic="${topic}", openEndedCount=${openEndedCount}, multipleChoiceCount=${multipleChoiceCount}`);
+    Logger.debug(
+        `Building quiz prompt with topic="${topic}", openEndedCount=${openEndedCount}, multipleChoiceCount=${multipleChoiceCount}`,
+    );
     return `
         You are an expert English teacher.
 
