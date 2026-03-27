@@ -23,7 +23,7 @@ export class AssignmentItemsService {
         const { userId } = filter;
 
         return this.redisService.getOrFetch<AssignmentItemResponseDto[]>(
-            `assignment-items:user:${userId}`,
+            `assignment-items:v2:user:${userId}`,
             async () => {
                 const assignmentItems =
                     await this.postgresService.query<AssignmentItem>(

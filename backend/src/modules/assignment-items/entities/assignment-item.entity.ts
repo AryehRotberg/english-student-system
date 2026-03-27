@@ -3,6 +3,8 @@ export class AssignmentItem {
     assignmentId: string;
     assignmentTitle: string;
     assignmentDescription: string;
+    assignmentDueDate: string | null;
+    assignmentCreatedAt: string;
     contentId: string;
     contentType: string;
     status: 'assigned' | 'completed';

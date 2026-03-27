@@ -3,6 +3,8 @@ SELECT
     A.ID AS "assignmentId",
     A.TITLE AS "assignmentTitle",
     A.DESCRIPTION AS "assignmentDescription",
+    A.DUE_DATE AS "assignmentDueDate",
+    A.CREATED_AT AS "assignmentCreatedAt",
     AI.STATUS AS "status",
     AI.CONTENT_TYPE AS "contentType",
     AI.CONTENT_ID AS "contentId",
@@ -19,4 +21,7 @@ FROM
     LEFT JOIN VOCABULARY_TOPICS VT ON AI.CONTENT_TYPE = 'vocabulary'
     AND AI.CONTENT_ID = VT.ID
 WHERE
-    A.USER_ID = $1;
+    A.USER_ID = $1
+ORDER BY
+    A.CREATED_AT DESC,
+    A.DUE_DATE ASC NULLS LAST;

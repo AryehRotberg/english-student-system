@@ -1,52 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
+import { AssignmentItemsService } from '../assignment-items/assignment-items.service';
+import { AssignmentItemResponseDto } from '../assignment-items/dto/assignment-item-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import {
-    getActiveTasksQuery,
     getContentProgressQuery,
     getQuizProgressQuery,
-    getRecentActivitiesQuery,
 } from './dashboard.queries';
+
+const DEFAULT_ASSIGNMENT_DESCRIPTION = 'No assignment description.';
 
 @Injectable()
 export class DashboardService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(
+        private readonly postgresService: PostgresService,
+        private readonly assignmentItemsService: AssignmentItemsService,
+    ) {}
 
     async getOverview(user: UserResponseDto) {
         const userId = user.id;
 
-        const [tasksRaw, quizProgressRaw, contentProgressRaw, activitiesRaw] =
+        const [assignmentItems, quizProgressRaw, contentProgressRaw] =
             await Promise.all([
-                this.postgresService.query<any>(getActiveTasksQuery, [userId]),
+                this.assignmentItemsService.findByUserId({ userId }),
                 this.postgresService.query<any>(getQuizProgressQuery, [userId]),
                 this.postgresService.query<any>(getContentProgressQuery, [
                     userId,
                 ]),
-                this.postgresService.query<any>(getRecentActivitiesQuery, [
-                    userId,
-                ]),
             ]);
 
-        const tasks = tasksRaw.map((row) => ({
-            id: row.itemId,
-            title: row.contentTitle,
-            description:
-                row.assignmentDescription ?? 'No assignment description.',
-            dueDate: row.assignmentDueDate,
-            category: this.mapContentTypeToCategory(row.contentType),
-        }));
+        const activeAssignmentItems = assignmentItems.filter(
+            (item) => item.status !== 'completed',
+        );
 
-        const assignmentTopics = tasksRaw
-            .filter((row) => Boolean(row.contentId))
-            .map((row) => ({
-                id: row.itemId,
-                assignmentTitle: row.assignmentTitle,
-                assignmentDescription:
-                    row.assignmentDescription ?? 'No assignment description.',
-                topicTitle: row.contentTitle,
-                contentType: row.contentType,
-                contentId: row.contentId,
-            }));
+        const tasks = activeAssignmentItems.map((item) => this.toTask(item));
+
+        const assignmentTopics = activeAssignmentItems
+            .filter((item) => Boolean(item.contentId))
+            .map((item) => this.toAssignmentTopic(item));
 
         const progress: { id: string; label: string; percent: number }[] = [];
 
@@ -90,19 +81,35 @@ export class DashboardService {
             }
         }
 
-        const activities = activitiesRaw.map((row) => {
-            const dueDate = row.dueDate ?? row.due_date ?? null;
-            const topicDescription =
-                row.topicDescription ?? row.topicdescription;
+        const activities = [...assignmentItems]
+            .sort((a, b) => {
+                const createdAtDelta =
+                    this.toTimestamp(b.assignmentCreatedAt) -
+                    this.toTimestamp(a.assignmentCreatedAt);
 
-            return {
-                id: row.id,
-                title: `${row.status === 'completed' ? 'Completed' : 'Assigned'}: ${row.title}`,
-                dueDate,
-                topicDescription:
-                    topicDescription ?? 'No assignment description.',
-            };
-        });
+                if (createdAtDelta !== 0) {
+                    return createdAtDelta;
+                }
+
+                if (!a.assignmentDueDate && !b.assignmentDueDate) {
+                    return 0;
+                }
+
+                if (!a.assignmentDueDate) {
+                    return 1;
+                }
+
+                if (!b.assignmentDueDate) {
+                    return -1;
+                }
+
+                return (
+                    this.toTimestamp(a.assignmentDueDate) -
+                    this.toTimestamp(b.assignmentDueDate)
+                );
+            })
+            .slice(0, 5)
+            .map((item) => this.toActivity(item));
 
         return {
             studentName: user.name,
@@ -124,5 +131,54 @@ export class DashboardService {
             default:
                 return 'vocabulary';
         }
+    }
+
+    private toTask(item: AssignmentItemResponseDto) {
+        return {
+            id: item.id,
+            title: item.title,
+            description: this.getAssignmentDescription(
+                item.assignmentDescription,
+            ),
+            dueDate: item.assignmentDueDate,
+            category: this.mapContentTypeToCategory(item.contentType),
+        };
+    }
+
+    private toAssignmentTopic(item: AssignmentItemResponseDto) {
+        return {
+            id: item.id,
+            assignmentTitle: item.assignmentTitle,
+            assignmentDescription: this.getAssignmentDescription(
+                item.assignmentDescription,
+            ),
+            topicTitle: item.title,
+            contentType: item.contentType,
+            contentId: item.contentId,
+        };
+    }
+
+    private toActivity(item: AssignmentItemResponseDto) {
+        return {
+            id: item.id,
+            title: `${item.status === 'completed' ? 'Completed' : 'Assigned'}: ${item.assignmentTitle}`,
+            dueDate: item.assignmentDueDate,
+            topicDescription: this.getAssignmentDescription(
+                item.assignmentDescription,
+            ),
+        };
+    }
+
+    private getAssignmentDescription(description: string | null | undefined) {
+        return description ?? DEFAULT_ASSIGNMENT_DESCRIPTION;
+    }
+
+    private toTimestamp(value: string | null | undefined): number {
+        if (!value) {
+            return Number.MAX_SAFE_INTEGER;
+        }
+
+        const timestamp = new Date(value).getTime();
+        return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
     }
 }
