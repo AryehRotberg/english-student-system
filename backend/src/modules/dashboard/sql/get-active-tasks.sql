@@ -2,6 +2,7 @@ SELECT
     AI.ID AS "itemId",
     A.TITLE AS "assignmentTitle",
     A.DESCRIPTION AS "assignmentDescription",
+    A.DUE_DATE AS "assignmentDueDate",
     AI.CONTENT_TYPE AS "contentType",
     AI.CONTENT_ID AS "contentId",
     COALESCE(

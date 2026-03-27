@@ -1,12 +1,32 @@
 SELECT
-    ID AS "id",
-    TITLE AS "title",
-    STATUS AS "status"
+    AI.ID AS "id",
+    A.TITLE AS "title",
+    AI.STATUS AS "status",
+    A.DUE_DATE AS "dueDate",
+    COALESCE(
+        A.DESCRIPTION,
+        Q.TITLE,
+        T.TITLE,
+        WT.TITLE,
+        VT.TOPIC,
+        'No assignment description.'
+    ) AS "topicDescription"
 FROM
-    ASSIGNMENTS
+    ASSIGNMENT_ITEMS AI
+    JOIN ASSIGNMENTS A ON AI.ASSIGNMENT_ID = A.ID
+    LEFT JOIN QUIZZES Q ON AI.CONTENT_TYPE = 'quiz'
+    AND AI.CONTENT_ID = Q.ID
+    LEFT JOIN TEXTS T ON AI.CONTENT_TYPE = 'text'
+    AND AI.CONTENT_ID = T.ID
+    LEFT JOIN WRITING_TASKS WT ON AI.CONTENT_TYPE = 'writing'
+    AND AI.CONTENT_ID = WT.ID
+    LEFT JOIN VOCABULARY_TOPICS VT ON AI.CONTENT_TYPE = 'vocabulary'
+    AND AI.CONTENT_ID = VT.ID
 WHERE
-    USER_ID = $1
+    A.USER_ID = $1
+    AND AI.STATUS != 'completed'
 ORDER BY
-    CREATED_AT DESC
+    A.CREATED_AT DESC,
+    A.DUE_DATE ASC NULLS LAST
 LIMIT
     5;

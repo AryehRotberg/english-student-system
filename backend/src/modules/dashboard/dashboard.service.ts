@@ -32,6 +32,7 @@ export class DashboardService {
             title: row.contentTitle,
             description:
                 row.assignmentDescription ?? 'No assignment description.',
+            dueDate: row.assignmentDueDate,
             category: this.mapContentTypeToCategory(row.contentType),
         }));
 
@@ -89,10 +90,19 @@ export class DashboardService {
             }
         }
 
-        const activities = activitiesRaw.map((row) => ({
-            id: row.id,
-            title: `${row.status === 'completed' ? 'Completed' : 'Assigned'}: ${row.title}`,
-        }));
+        const activities = activitiesRaw.map((row) => {
+            const dueDate = row.dueDate ?? row.due_date ?? null;
+            const topicDescription =
+                row.topicDescription ?? row.topicdescription;
+
+            return {
+                id: row.id,
+                title: `${row.status === 'completed' ? 'Completed' : 'Assigned'}: ${row.title}`,
+                dueDate,
+                topicDescription:
+                    topicDescription ?? 'No assignment description.',
+            };
+        });
 
         return {
             studentName: user.name,

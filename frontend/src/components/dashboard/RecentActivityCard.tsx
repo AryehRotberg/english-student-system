@@ -8,6 +8,23 @@ type Props = {
 
 const activityIconMap = ["assignment", "verified", "star", "menu_book"];
 
+function formatDueDate(dueDate: string | null) {
+    if (!dueDate) {
+        return "No due date";
+    }
+
+    const parsedDate = new Date(dueDate);
+    if (Number.isNaN(parsedDate.getTime())) {
+        return "No due date";
+    }
+
+    return `Due ${parsedDate.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    })}`;
+}
+
 export function RecentActivityCard({ activities, onViewFullHistory }: Props) {
     return (
         <section className={styles.cardShell}>
@@ -33,7 +50,10 @@ export function RecentActivityCard({ activities, onViewFullHistory }: Props) {
                                     {activity.title}
                                 </p>
                                 <p className={styles.activityTime}>
-                                    From your latest assignments
+                                    {formatDueDate(activity.dueDate)}
+                                </p>
+                                <p className={styles.activityTime}>
+                                    {activity.topicDescription}
                                 </p>
                             </div>
                         </li>
