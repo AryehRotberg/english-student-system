@@ -2,12 +2,12 @@ import {
     CanActivate,
     ExecutionContext,
     Injectable,
-    UnauthorizedException
+    UnauthorizedException,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import Sentry from '../config/sentry';
-import { UserResponseDto } from '../users/dto/user-response.dto';
-import { UsersService } from '../users/users.service';
+import { UserResponseDto } from '../modules/users/dto/user-response.dto';
+import { UsersService } from '../modules/users/users.service';
 import { JwtService } from './jwt.service';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
     constructor(
         protected readonly usersService: UsersService,
         protected readonly jwtService: JwtService,
-    ) { }
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest<Request>();
@@ -30,7 +30,9 @@ export class AuthGuard implements CanActivate {
         return true;
     }
 
-    protected async authenticateUser(req: Request): Promise<UserResponseDto | null> {
+    protected async authenticateUser(
+        req: Request,
+    ): Promise<UserResponseDto | null> {
         const accessToken = req.cookies?.access_token;
 
         if (!accessToken) {

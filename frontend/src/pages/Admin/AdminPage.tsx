@@ -2,17 +2,24 @@ import { useState } from "react";
 import { QuestionsSection } from "../../components/admin/QuestionsSection";
 import { QuizBuilderSection } from "../../components/admin/QuizBuilderSection";
 import { QuizzesSection } from "../../components/admin/QuizzesSection";
+import { StudentProgressSection } from "../../components/admin/StudentProgressSection";
 import { TextsSection } from "../../components/admin/TextsSection";
 import { useAuthUser } from "../../hooks/queries";
 import styles from "./AdminPage.module.css";
 
-type Tab = "quizzes" | "questions" | "quiz-builder" | "texts";
+type Tab =
+    | "quizzes"
+    | "questions"
+    | "quiz-builder"
+    | "texts"
+    | "student-progress";
 
 const tabs: { id: Tab; label: string }[] = [
     { id: "quizzes", label: "Quizzes" },
     { id: "questions", label: "Questions" },
     { id: "quiz-builder", label: "Quiz Builder" },
     { id: "texts", label: "Texts" },
+    { id: "student-progress", label: "Student Progress" },
 ];
 
 export function AdminPage() {
@@ -55,6 +62,7 @@ export function AdminPage() {
                 {activeTab === "questions" && <QuestionsSection />}
                 {activeTab === "quiz-builder" && <QuizBuilderSection />}
                 {activeTab === "texts" && <TextsSection />}
+                {activeTab === "student-progress" && <StudentProgressSection />}
             </div>
         </div>
     );

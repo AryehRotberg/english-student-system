@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import type { Response } from 'express';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UserResponseDto } from '../users/dto/user-response.dto';
-import { UsersService } from '../users/users.service';
+import { CreateUserDto } from '../modules/users/dto/create-user.dto';
+import { UserResponseDto } from '../modules/users/dto/user-response.dto';
+import { UsersService } from '../modules/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { HashingService } from './hashing.service';
 import { JwtService } from './jwt.service';
@@ -18,8 +18,8 @@ export class AuthService {
     constructor(
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
-        private readonly hashingService: HashingService
-    ) { }
+        private readonly hashingService: HashingService,
+    ) {}
 
     async login(loginDto: LoginDto, res: Response): Promise<UserResponseDto> {
         const { email, password } = loginDto;
@@ -52,14 +52,22 @@ export class AuthService {
         }
     }
 
-    private async verifyPassword(hashedPassword: string, plainPassword: string) {
+    private async verifyPassword(
+        hashedPassword: string,
+        plainPassword: string,
+    ) {
         let isValid = false;
         try {
-            isValid = await this.hashingService.compare(plainPassword, hashedPassword);
+            isValid = await this.hashingService.compare(
+                plainPassword,
+                hashedPassword,
+            );
         } catch (error) {
             Sentry.captureException(error);
             Logger.error('Password verification error:', error);
-            throw new InternalServerErrorException('An error occurred during login');
+            throw new InternalServerErrorException(
+                'An error occurred during login',
+            );
         }
 
         if (!isValid) {

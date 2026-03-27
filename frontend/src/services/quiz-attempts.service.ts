@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
 import type { QuizAttemptApiItem } from "../types/api-items/quiz-attempt";
+import { httpClientService } from "./http-client.service";
 
 class QuizAttemptsService {
     private readonly httpClient: AxiosInstance;
@@ -34,6 +34,15 @@ class QuizAttemptsService {
                 new Date(b.startedAt).getTime() -
                 new Date(a.startedAt).getTime(),
         );
+    }
+
+    public async listByStudentId(
+        studentId: string,
+    ): Promise<QuizAttemptApiItem[]> {
+        const response = await this.httpClient.get(
+            `/quiz-attempts/student/${studentId}`,
+        );
+        return response.data;
     }
 
     public async create(payload: {

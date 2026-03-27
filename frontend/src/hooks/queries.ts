@@ -7,6 +7,7 @@ import { questionsService } from "../services/questions.service";
 import { quizAttemptsService } from "../services/quiz-attempts.service";
 import { quizQuestionsService } from "../services/quiz-questions.service";
 import { quizzesService } from "../services/quizzes.service";
+import { usersService } from "../services/users.service";
 import type { StudentAnswerApiItem } from "../services/student-answers.service";
 import { studentAnswersService } from "../services/student-answers.service";
 import { textsService } from "../services/texts.service";
@@ -184,5 +185,20 @@ export function useVocabularyTopicWords(topicId?: string) {
         queryKey: ["vocabulary-topic-words", topicId],
         enabled: Boolean(topicId),
         queryFn: () => vocabularyService.listWordsForTopic(topicId as string),
+    });
+}
+
+export function useAllStudents() {
+    return useQuery<AuthUser[]>({
+        queryKey: ["all-students"],
+        queryFn: () => usersService.listAllStudents(),
+    });
+}
+
+export function useStudentQuizAttempts(studentId?: string) {
+    return useQuery<QuizAttemptApiItem[]>({
+        queryKey: ["student-quiz-attempts", studentId],
+        enabled: Boolean(studentId),
+        queryFn: () => quizAttemptsService.listByStudentId(studentId as string),
     });
 }

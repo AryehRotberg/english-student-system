@@ -39,7 +39,9 @@
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -2px;
-    transition: color 0.15s, border-color 0.15s;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
     border-radius: 6px 6px 0 0;
 }
 
@@ -92,7 +94,9 @@
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    transition:
+        background 0.15s,
+        color 0.15s;
 }
 
 .addButton:hover {
@@ -237,8 +241,8 @@
     margin-top: 0.5rem;
 }
 
-.inlineForm input[type='text'],
-.inlineForm input:not([type='checkbox']):not([type='number']) {
+.inlineForm input[type="text"],
+.inlineForm input:not([type="checkbox"]):not([type="number"]) {
     flex: 1;
     min-width: 160px;
     padding: 0.4rem 0.65rem;
@@ -256,7 +260,7 @@
     width: 100%;
 }
 
-.inlineEdit input:not([type='checkbox']) {
+.inlineEdit input:not([type="checkbox"]) {
     flex: 1;
     min-width: 120px;
     padding: 0.3rem 0.55rem;
@@ -448,4 +452,42 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+}
+
+/* ─── Additional button styles ──────────────────────── */
+
+.viewButton,
+.resumeButton {
+    border: 1px solid #0f172a;
+    border-radius: 10px;
+    background: #111827;
+    color: #ffffff;
+    padding: 8px 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.resumeButton {
+    margin: 12px 0;
+}
+
+.viewButton:hover,
+.resumeButton:hover {
+    background: #1f2937;
+}
+
+.backButton {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    color: #374151;
+    padding: 0.4rem 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background 0.15s;
+}
+
+.backButton:hover {
+    background: #f3f4f6;
 }
