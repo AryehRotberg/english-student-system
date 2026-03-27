@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from 'src/config/postgres.client';
+import { PostgresService } from '../../config/postgres.client';
 import {
     createAiContentQuery,
     getAllAiContentsQuery,

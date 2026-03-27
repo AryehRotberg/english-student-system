@@ -1,6 +1,6 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { AiContentsService } from 'src/modules/ai-contents/ai-contents.service';
+import { AiContentsService } from '../../../modules/ai-contents/ai-contents.service';
 import { LlmService } from '../../../modules/llm/llm.service';
 import { quizPipeline } from '../../../modules/llm/pipelines/quiz/quiz.pipeline';
 
