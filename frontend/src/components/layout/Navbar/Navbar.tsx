@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { authService } from "../../../services/auth.service";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthUser } from "../../../hooks/queries";
+import { authService } from "../../../services/auth.service";
 import styles from "./Navbar.module.css";
 
 const links = [
@@ -60,44 +59,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
                 }
             >
                 <div className={styles.logoWrap}>
-                    <div className={styles.logoIcon} aria-hidden="true">
-                        <svg
-                            width="22"
-                            height="22"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M4 4.5C4 3.67157 4.67157 3 5.5 3H18.5C19.3284 3 20 3.67157 20 4.5V19.5C20 20.3284 19.3284 21 18.5 21H5.5C4.67157 21 4 20.3284 4 19.5V4.5Z"
-                                stroke="currentColor"
-                                strokeWidth="1.7"
-                            />
-                            <path
-                                d="M8 3V21"
-                                stroke="currentColor"
-                                strokeWidth="1.7"
-                            />
-                            <path
-                                d="M10.5 7.5H16"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                            />
-                            <path
-                                d="M10.5 11H16"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                            />
-                            <path
-                                d="M10.5 14.5H16"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                            />
-                        </svg>
-                    </div>
+                    <img src="/open-book.png" alt="" width="24" height="24" />
                     <span className={styles.logoText}>
                         English Student System
                     </span>
