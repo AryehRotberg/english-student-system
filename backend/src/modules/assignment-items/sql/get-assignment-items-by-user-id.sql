@@ -4,7 +4,6 @@ SELECT
     A.TITLE AS "assignmentTitle",
     A.DESCRIPTION AS "assignmentDescription",
     A.DUE_DATE AS "assignmentDueDate",
-    A.CREATED_AT AS "assignmentCreatedAt",
     AI.STATUS AS "status",
     AI.CONTENT_TYPE AS "contentType",
     AI.CONTENT_ID AS "contentId",

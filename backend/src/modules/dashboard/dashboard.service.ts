@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
 import { AssignmentItemsService } from '../assignment-items/assignment-items.service';
+import { AssignmentsService } from '../assignments/assignments.service';
 import { AssignmentItemResponseDto } from '../assignment-items/dto/assignment-item-response.dto';
+import { AssignmentResponseDto } from '../assignments/dto/assignment-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import {
     getContentProgressQuery,
@@ -15,19 +17,23 @@ export class DashboardService {
     constructor(
         private readonly postgresService: PostgresService,
         private readonly assignmentItemsService: AssignmentItemsService,
+        private readonly assignmentsService: AssignmentsService,
     ) {}
 
     async getOverview(user: UserResponseDto) {
         const userId = user.id;
 
-        const [assignmentItems, quizProgressRaw, contentProgressRaw] =
-            await Promise.all([
-                this.assignmentItemsService.findByUserId({ userId }),
-                this.postgresService.query<any>(getQuizProgressQuery, [userId]),
-                this.postgresService.query<any>(getContentProgressQuery, [
-                    userId,
-                ]),
-            ]);
+        const [
+            assignments,
+            assignmentItems,
+            quizProgressRaw,
+            contentProgressRaw,
+        ] = await Promise.all([
+            this.assignmentsService.findByUserId({ userId }),
+            this.assignmentItemsService.findByUserId({ userId }),
+            this.postgresService.query<any>(getQuizProgressQuery, [userId]),
+            this.postgresService.query<any>(getContentProgressQuery, [userId]),
+        ]);
 
         const activeAssignmentItems = assignmentItems.filter(
             (item) => item.status !== 'completed',
@@ -81,35 +87,10 @@ export class DashboardService {
             }
         }
 
-        const activities = [...assignmentItems]
-            .sort((a, b) => {
-                const createdAtDelta =
-                    this.toTimestamp(b.assignmentCreatedAt) -
-                    this.toTimestamp(a.assignmentCreatedAt);
-
-                if (createdAtDelta !== 0) {
-                    return createdAtDelta;
-                }
-
-                if (!a.assignmentDueDate && !b.assignmentDueDate) {
-                    return 0;
-                }
-
-                if (!a.assignmentDueDate) {
-                    return 1;
-                }
-
-                if (!b.assignmentDueDate) {
-                    return -1;
-                }
-
-                return (
-                    this.toTimestamp(a.assignmentDueDate) -
-                    this.toTimestamp(b.assignmentDueDate)
-                );
-            })
+        const activities = assignments
+            .filter((assignment) => assignment.status === 'assigned')
             .slice(0, 5)
-            .map((item) => this.toActivity(item));
+            .map((assignment) => this.toActivity(assignment));
 
         return {
             studentName: user.name,
@@ -158,27 +139,18 @@ export class DashboardService {
         };
     }
 
-    private toActivity(item: AssignmentItemResponseDto) {
+    private toActivity(assignment: AssignmentResponseDto) {
         return {
-            id: item.id,
-            title: `${item.status === 'completed' ? 'Completed' : 'Assigned'}: ${item.assignmentTitle}`,
-            dueDate: item.assignmentDueDate,
+            id: assignment.id,
+            title: `Assigned: ${assignment.title}`,
+            dueDate: assignment.dueDate,
             topicDescription: this.getAssignmentDescription(
-                item.assignmentDescription,
+                assignment.description,
             ),
         };
     }
 
     private getAssignmentDescription(description: string | null | undefined) {
         return description ?? DEFAULT_ASSIGNMENT_DESCRIPTION;
-    }
-
-    private toTimestamp(value: string | null | undefined): number {
-        if (!value) {
-            return Number.MAX_SAFE_INTEGER;
-        }
-
-        const timestamp = new Date(value).getTime();
-        return Number.isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp;
     }
 }

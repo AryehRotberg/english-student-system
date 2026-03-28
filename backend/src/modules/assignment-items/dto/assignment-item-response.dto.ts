@@ -13,8 +13,6 @@ export class AssignmentItemResponseDto {
     @ApiProperty({ nullable: true })
     readonly assignmentDueDate: string | null;
     @ApiProperty()
-    readonly assignmentCreatedAt: string;
-    @ApiProperty()
     readonly contentId: string;
     @ApiProperty()
     readonly contentType: string;
@@ -36,7 +34,6 @@ export class AssignmentItemResponseDto {
             assignmentTitle: assignmentItem.assignmentTitle,
             assignmentDescription: assignmentItem.assignmentDescription,
             assignmentDueDate: assignmentItem.assignmentDueDate,
-            assignmentCreatedAt: assignmentItem.assignmentCreatedAt,
             contentId: assignmentItem.contentId,
             contentType: assignmentItem.contentType,
             status: assignmentItem.status,

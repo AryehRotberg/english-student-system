@@ -4,5 +4,6 @@ export class Assignment {
     title: string;
     description: string;
     dueDate: Date;
+    status: 'assigned' | 'completed';
     createdAt: Date;
 }

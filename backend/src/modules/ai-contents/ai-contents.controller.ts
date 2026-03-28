@@ -6,11 +6,13 @@ import {
     Param,
     ParseUUIDPipe,
     Post,
+    UseGuards,
 } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { GenerateQuizDto } from './dto/generate-quiz.dto';
 import { AiContentsService } from './ai-contents.service';
 import { CreateAiContentDto } from './dto/create-ai-content.dto';
+import { TeacherGuard } from 'src/auth/auth.guard';
 
 @Controller('ai-contents')
 export class AiContentsController {
@@ -25,6 +27,7 @@ export class AiContentsController {
     ) {}
 
     @Post('/generate-quiz')
+    @UseGuards(TeacherGuard)
     async generateQuiz(@Body() generateQuizDto: GenerateQuizDto) {
         const job = await this.generateQuizQueue.add(
             'generate-quiz',
@@ -39,6 +42,7 @@ export class AiContentsController {
     }
 
     @Post(':id/publish')
+    @UseGuards(TeacherGuard)
     async publish(@Param('id', new ParseUUIDPipe()) id: string) {
         const job = await this.publishQuizQueue.add(
             'publish-quiz',
@@ -53,11 +57,13 @@ export class AiContentsController {
     }
 
     @Get()
+    @UseGuards(TeacherGuard)
     async findAll() {
         return this.aiContentsService.findAll();
     }
 
     @Post()
+    @UseGuards(TeacherGuard)
     async create(@Body() createAiContentDto: CreateAiContentDto) {
         return this.aiContentsService.create(createAiContentDto);
     }

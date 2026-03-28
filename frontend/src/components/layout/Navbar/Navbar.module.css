@@ -145,7 +145,7 @@
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 980px) {
     .shell {
         align-items: center;
         grid-template-columns: minmax(0, 1fr) auto;

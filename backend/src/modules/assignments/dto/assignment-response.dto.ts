@@ -13,6 +13,8 @@ export class AssignmentResponseDto {
     @ApiProperty()
     readonly dueDate: Date;
     @ApiProperty()
+    readonly status: 'assigned' | 'completed';
+    @ApiProperty()
     readonly createdAt: Date;
 
     private constructor(props: AssignmentResponseDto) {
@@ -26,6 +28,7 @@ export class AssignmentResponseDto {
             title: assignment.title,
             description: assignment.description,
             dueDate: assignment.dueDate,
+            status: assignment.status,
             createdAt: assignment.createdAt,
         };
         return new AssignmentResponseDto(props);

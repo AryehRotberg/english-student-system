@@ -7,5 +7,6 @@ import { AssignmentsController } from './assignments.controller';
     imports: [AuthModule],
     controllers: [AssignmentsController],
     providers: [AssignmentsService],
+    exports: [AssignmentsService],
 })
 export class AssignmentsModule {}
