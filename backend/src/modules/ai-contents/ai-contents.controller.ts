@@ -12,7 +12,7 @@ import { Queue } from 'bullmq';
 import { GenerateQuizDto } from './dto/generate-quiz.dto';
 import { AiContentsService } from './ai-contents.service';
 import { CreateAiContentDto } from './dto/create-ai-content.dto';
-import { TeacherGuard } from 'src/auth/auth.guard';
+import { TeacherGuard } from '../../auth/auth.guard';
 
 @Controller('ai-contents')
 export class AiContentsController {
