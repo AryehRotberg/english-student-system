@@ -1,6 +1,6 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../../auth/auth.module';
 import { AiContentsController } from './ai-contents.controller';
 import { AiContentsService } from './ai-contents.service';
 
