@@ -9,5 +9,6 @@ import { QuizAttemptsService } from './quiz-attempts.service';
     imports: [UsersModule],
     controllers: [QuizAttemptsController],
     providers: [QuizAttemptsService, JwtService, AuthGuard, TeacherGuard],
+    exports: [QuizAttemptsService],
 })
 export class QuizAttemptsModule {}

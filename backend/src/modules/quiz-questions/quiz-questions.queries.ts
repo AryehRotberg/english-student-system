@@ -5,11 +5,6 @@ export const getQuizQuestionsByQuizIdQuery = PostgresService.readSql(
     'get-quiz-questions-by-quiz-id.sql',
 );
 
-export const getQuizQuestionByIdQuery = PostgresService.readSql(
-    __dirname,
-    'get-quiz-question-by-id.sql',
-);
-
 export const createQuizQuestionQuery = PostgresService.readSql(
     __dirname,
     'create-quiz-question.sql',

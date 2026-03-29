@@ -1,71 +1,76 @@
 .panel {
-  background: var(--surface-0);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow: 0 10px 24px rgba(37, 51, 105, 0.1);
-  padding: 1.1rem;
+    background: var(--surface-0);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 10px 24px rgba(37, 51, 105, 0.1);
+    padding: 1.1rem;
 }
 
 .counter {
-  color: var(--ink-700);
-  font-weight: 700;
-  margin: 0 0 0.8rem;
+    color: var(--ink-700);
+    font-weight: 700;
+    margin: 0 0 0.8rem;
+}
+
+.hints {
+    color: var(--ink-700);
+    margin: 0 0 1rem;
 }
 
 .prompt {
-  color: var(--ink-900);
-  font-family: 'Sora', sans-serif;
-  font-size: 1.22rem;
-  margin: 0 0 1rem;
+    color: var(--ink-900);
+    font-family: "Sora", sans-serif;
+    font-size: 1.22rem;
+    margin: 0 0 1rem;
 }
 
 .options {
-  display: grid;
-  gap: 0.6rem;
+    display: grid;
+    gap: 0.6rem;
 }
 
 .option {
-  align-items: center;
-  background: #f7f8ff;
-  border: 1px solid #c8cfee;
-  border-radius: 10px;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 1.05rem;
-  gap: 0.55rem;
-  padding: 0.7rem;
+    align-items: center;
+    background: #f7f8ff;
+    border: 1px solid #c8cfee;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.05rem;
+    gap: 0.55rem;
+    padding: 0.7rem;
 }
 
 .openEndedList {
-  display: grid;
-  gap: 0.6rem;
+    display: grid;
+    gap: 0.6rem;
 }
 
 .openEndedInput {
-  border: 1px solid #bbc5e2;
-  border-radius: 10px;
-  font-size: 1rem;
-  padding: 0.62rem 0.7rem;
+    border: 1px solid #bbc5e2;
+    border-radius: 10px;
+    font-size: 1rem;
+    padding: 0.62rem 0.7rem;
 }
 
 .nextButton {
-  background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
-  border: 1px solid #1a357e;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 700;
-  margin-top: 1rem;
-  min-width: 100px;
-  padding: 0.65rem 1rem;
+    background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
+    border: 1px solid #1a357e;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 1rem;
+    min-width: 100px;
+    padding: 0.65rem 1rem;
 }
 
 .success {
-  color: #0f7343;
-  font-weight: 600;
+    color: #0f7343;
+    font-weight: 600;
 }
 
 .error {
-  color: #a92d2d;
-  font-weight: 600;
+    color: #a92d2d;
+    font-weight: 600;
 }

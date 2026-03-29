@@ -17,6 +17,16 @@ import {
 export class QuizAttemptsService {
     constructor(private readonly postgresService: PostgresService) {}
 
+    async completeQuizAssignmentItemsForUser(
+        userId: string,
+        quizId: string,
+    ): Promise<void> {
+        await this.postgresService.query(
+            completeQuizAssignmentItemsForUserQuery,
+            [userId, quizId],
+        );
+    }
+
     async findByUserIdAndQuizId(filter: GetQuizAttemptsFilterDto) {
         const { userId, quizId } = filter;
 
@@ -81,9 +91,9 @@ export class QuizAttemptsService {
         }
 
         if (result.completedAt) {
-            await this.postgresService.query(
-                completeQuizAssignmentItemsForUserQuery,
-                [result.userId, result.quizId],
+            await this.completeQuizAssignmentItemsForUser(
+                result.userId,
+                result.quizId,
             );
         }
 

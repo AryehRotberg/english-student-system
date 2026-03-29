@@ -29,8 +29,3 @@ export const submitQuizAttemptQuery = PostgresService.readSql(
     __dirname,
     'submit-quiz-attempt.sql',
 );
-
-export const markQuizAssignmentCompletedQuery = PostgresService.readSql(
-    __dirname,
-    'mark-quiz-assignment-completed.sql',
-);

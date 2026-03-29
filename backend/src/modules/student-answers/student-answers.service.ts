@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { QuizAttemptResponseDto } from '../quiz-attempts/dto/quiz-attempt-response.dto';
 import { QuizAttempt } from '../quiz-attempts/entities/quiz-attempt.entity';
+import { QuizAttemptsService } from '../quiz-attempts/quiz-attempts.service';
 import { PostgresService } from '../../config/postgres.client';
 import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
 import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
@@ -14,7 +15,6 @@ import {
     getAllStudentAnswersQuery,
     getStudentAnswerByIdQuery,
     getUnifiedGradingDataQuery,
-    markQuizAssignmentCompletedQuery,
     submitQuizAttemptQuery,
     upsertStudentAnswerQuery,
 } from './student-answers.queries';
@@ -33,7 +33,10 @@ type UnifiedGradingData = {
 
 @Injectable()
 export class StudentAnswersService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(
+        private readonly postgresService: PostgresService,
+        private readonly quizAttemptsService: QuizAttemptsService,
+    ) {}
 
     async upsert(
         upsertStudentAnswerDto: UpsertStudentAnswerDto,
@@ -98,10 +101,10 @@ export class StudentAnswersService {
             [attemptId],
         );
 
-        await this.postgresService.query(markQuizAssignmentCompletedQuery, [
+        await this.quizAttemptsService.completeQuizAssignmentItemsForUser(
             updatedAttempt.userId,
             updatedAttempt.quizId,
-        ]);
+        );
 
         return QuizAttemptResponseDto.fromEntity(updatedAttempt);
     }

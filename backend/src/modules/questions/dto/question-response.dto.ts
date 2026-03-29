@@ -7,6 +7,8 @@ export class QuestionResponseDto {
     @ApiProperty()
     readonly question: string;
     @ApiProperty()
+    readonly hints: string;
+    @ApiProperty()
     readonly questionType: string;
     @ApiProperty()
     readonly audioUrl: string | null;
@@ -21,6 +23,7 @@ export class QuestionResponseDto {
         return new QuestionResponseDto({
             id: question.id,
             question: question.question,
+            hints: question.hints,
             questionType: question.questionType,
             audioUrl: question.audioUrl,
             createdAt: question.createdAt,

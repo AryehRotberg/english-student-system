@@ -56,6 +56,10 @@ export function QuizCard({
 
             <h2 className={styles.prompt}>{question.prompt}</h2>
 
+            {question.hints && (
+                <p className={styles.hints}>Hint: {question.hints}</p>
+            )}
+
             {isMultipleChoice ? (
                 <div className={styles.options}>
                     {question.options.map((option) => (
