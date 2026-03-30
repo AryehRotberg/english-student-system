@@ -1,16 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
 import { CreateQuizAttemptDto } from './dto/create-quiz-attempt.dto';
 import { GetQuizAttemptsFilterDto } from './dto/get-quiz-attempts-filter.dto';
 import { QuizAttemptResponseDto } from './dto/quiz-attempt-response.dto';
-import { UpdateQuizAttemptDto } from './dto/update-quiz-attempt.dto';
 import { QuizAttempt } from './entities/quiz-attempt.entity';
 import {
     completeQuizAssignmentItemsForUserQuery,
     createQuizAttemptQuery,
     getQuizAttemptsByUserIdAndQuizIdQuery,
     getQuizAttemptsByUserIdQuery,
-    updateQuizAttemptQuery,
 } from './quiz-attempts.queries';
 
 @Injectable()
@@ -63,39 +61,6 @@ export class QuizAttemptsService {
                 completedAt ?? null,
             ],
         );
-
-        return QuizAttemptResponseDto.fromEntity(result);
-    }
-
-    async update(
-        id: string,
-        updateQuizAttemptDto: UpdateQuizAttemptDto,
-    ): Promise<QuizAttemptResponseDto> {
-        const { quizId, userId, points, startedAt, completedAt } =
-            updateQuizAttemptDto;
-
-        const [result] = await this.postgresService.query<QuizAttempt>(
-            updateQuizAttemptQuery,
-            [
-                id,
-                quizId ?? null,
-                userId ?? null,
-                points ?? null,
-                startedAt ?? null,
-                completedAt ?? null,
-            ],
-        );
-
-        if (!result) {
-            throw new NotFoundException('Quiz attempt not found');
-        }
-
-        if (result.completedAt) {
-            await this.completeQuizAssignmentItemsForUser(
-                result.userId,
-                result.quizId,
-            );
-        }
 
         return QuizAttemptResponseDto.fromEntity(result);
     }

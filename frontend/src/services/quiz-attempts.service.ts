@@ -55,23 +55,6 @@ class QuizAttemptsService {
         const response = await this.httpClient.post("/quiz-attempts", payload);
         return response.data;
     }
-
-    public async update(
-        id: string,
-        payload: Partial<{
-            quizId: string;
-            userId: string;
-            points: number;
-            startedAt: string;
-            completedAt: string;
-        }>,
-    ) {
-        const response = await this.httpClient.patch(
-            `/quiz-attempts/${id}`,
-            payload,
-        );
-        return response.data;
-    }
 }
 
 export const quizAttemptsService = new QuizAttemptsService();

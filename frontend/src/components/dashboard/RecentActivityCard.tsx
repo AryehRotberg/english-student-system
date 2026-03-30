@@ -19,6 +19,7 @@ function formatDueDate(dueDate: string | null) {
     }
 
     return `Due ${parsedDate.toLocaleDateString(undefined, {
+        weekday: "long",
         month: "short",
         day: "numeric",
         year: "numeric",

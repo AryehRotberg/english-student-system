@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { answersService } from "../services/answers.service";
 import { authService } from "../services/auth.service";
 import { dashboardService } from "../services/dashboard.service";
@@ -26,7 +26,6 @@ import type { QuizQuestion, QuizSummary, QuizTopic } from "../types/quiz";
 import type { ReadingItem } from "../types/reading";
 import type {
     VocabularyTopicPreview,
-    VocabularyTopicWithWords,
     VocabularyWord,
 } from "../types/vocabulary";
 export type {
@@ -60,30 +59,6 @@ export function useAuthUser() {
         refetchOnMount: "always",
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
-    });
-}
-
-export function useQuizAttemptId(quizId?: string, userId?: string) {
-    const queryClient = useQueryClient();
-
-    return useQuery<string | null>({
-        queryKey: ["quiz-attempt-id", quizId, userId],
-        enabled: Boolean(userId) && Boolean(quizId),
-        queryFn: async () => {
-            const attempts = await queryClient.ensureQueryData<
-                QuizAttemptApiItem[]
-            >({
-                queryKey: ["quiz-attempts", quizId, userId],
-                queryFn: () =>
-                    quizAttemptsService.listByUserAndQuizSorted(userId, quizId),
-            });
-
-            const activeAttempt =
-                attempts.find((attempt) => attempt.completedAt === null) ??
-                null;
-
-            return activeAttempt ? activeAttempt.id : null;
-        },
     });
 }
 
@@ -163,13 +138,6 @@ export function useTexts() {
     return useQuery<TextAdminItem[]>({
         queryKey: ["texts"],
         queryFn: () => textsService.listAdmin(),
-    });
-}
-
-export function useVocabularyTopicsWithWords() {
-    return useQuery<VocabularyTopicWithWords[]>({
-        queryKey: ["vocabulary-topics-with-words"],
-        queryFn: () => vocabularyService.listTopicsWithWords(),
     });
 }
 
