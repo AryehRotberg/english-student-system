@@ -8,6 +8,7 @@ WITH
             JOIN ASSIGNMENTS A ON AI.ASSIGNMENT_ID = A.ID
         WHERE
             A.USER_ID = $1
+            AND A.STATUS = 'assigned'
             AND AI.CONTENT_TYPE = 'quiz'
     ),
     latest_attempts AS (
