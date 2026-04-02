@@ -27,12 +27,15 @@ export function QuizResultsPanel({
     onBackToCurrentQuiz,
     onViewAttempt,
 }: Props) {
-    const pointsByQuestionId = new Map(
-        answers.map((answer) => [
-            answer.questionId,
-            Number(answer.points ?? 0),
-        ]),
-    );
+    const pointsByQuestionId = new Map<string, number>();
+    for (const answer of answers) {
+        const currentId = answer.questionId;
+        const currentPoints = pointsByQuestionId.get(currentId) ?? 0;
+        pointsByQuestionId.set(
+            currentId,
+            currentPoints + Number(answer.points ?? 0),
+        );
+    }
 
     return (
         <section className={styles.completedPanel}>

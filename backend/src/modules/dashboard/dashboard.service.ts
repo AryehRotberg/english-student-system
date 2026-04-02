@@ -9,6 +9,7 @@ import {
     getContentProgressQuery,
     getQuizProgressQuery,
 } from './dashboard.queries';
+import { ProgressMetric } from './entities/progress-metric';
 
 const DEFAULT_ASSIGNMENT_DESCRIPTION = 'No assignment description.';
 
@@ -39,16 +40,31 @@ export class DashboardService {
             (item) => item.status !== 'completed',
         );
 
-        const tasks = activeAssignmentItems.map((item) => this.toTask(item));
+        return {
+            studentName: user.name,
+            tasks: activeAssignmentItems.map((item) => this.toTask(item)),
+            assignmentTopics: activeAssignmentItems
+                .filter((item) => Boolean(item.contentId))
+                .map((item) => this.toAssignmentTopic(item)),
+            activities: assignments
+                .filter((a) => a.status === 'assigned')
+                .slice(0, 5)
+                .map((a) => this.toActivity(a)),
+            progress: this.buildProgressMetrics(
+                quizProgressRaw,
+                contentProgressRaw,
+            ),
+        };
+    }
 
-        const assignmentTopics = activeAssignmentItems
-            .filter((item) => Boolean(item.contentId))
-            .map((item) => this.toAssignmentTopic(item));
+    private buildProgressMetrics(
+        quizData: any[],
+        contentData: any[],
+    ): ProgressMetric[] {
+        const progress: ProgressMetric[] = [];
 
-        const progress: { id: string; label: string; percent: number }[] = [];
-
-        if (quizProgressRaw.length > 0) {
-            const totalQuizPercent = quizProgressRaw.reduce((sum, row) => {
+        if (quizData.length > 0) {
+            const totalPercent = quizData.reduce((sum, row) => {
                 if (row.completedAt || row.assignmentStatus === 'completed')
                     return sum + 100;
                 if (row.totalQuestions === 0) return sum;
@@ -66,11 +82,11 @@ export class DashboardService {
             progress.push({
                 id: 'quiz',
                 label: 'Quiz',
-                percent: Math.round(totalQuizPercent / quizProgressRaw.length),
+                percent: Math.round(totalPercent / quizData.length),
             });
         }
 
-        for (const row of contentProgressRaw) {
+        for (const row of contentData) {
             if (row.contentType === 'text' || row.contentType === 'writing') {
                 const percent =
                     row.totalItems > 0
@@ -87,18 +103,7 @@ export class DashboardService {
             }
         }
 
-        const activities = assignments
-            .filter((assignment) => assignment.status === 'assigned')
-            .slice(0, 5)
-            .map((assignment) => this.toActivity(assignment));
-
-        return {
-            studentName: user.name,
-            tasks,
-            progress,
-            assignmentTopics,
-            activities,
-        };
+        return progress;
     }
 
     private mapContentTypeToCategory(contentType: string): string {

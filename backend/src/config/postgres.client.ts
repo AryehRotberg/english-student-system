@@ -72,7 +72,10 @@ export class PostgresService {
             const result = await this.pool.query(query, parameters ?? []);
             return result.rows as T[];
         } catch (error) {
-            Logger.error(`Database query error: ${error.message}`, error.stack);
+            Logger.error(
+                `Database query error: ${error}`,
+                error instanceof Error ? error.stack : '',
+            );
             Sentry.captureException(error);
             return Promise.reject(error);
         }

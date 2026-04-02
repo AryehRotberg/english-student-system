@@ -8,12 +8,7 @@ import { quizQuestionsService } from "../services/quiz-questions.service";
 import { quizzesService } from "../services/quizzes.service";
 import { studentAnswersService } from "../services/student-answers.service";
 import { textsService } from "../services/texts.service";
-
-function isUuid(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        value,
-    );
-}
+import { isUuid } from "../utils/isUuid";
 
 export function useSubmitStudentAnswer() {
     const queryClient = useQueryClient();
@@ -22,8 +17,9 @@ export function useSubmitStudentAnswer() {
         mutationFn: async (payload: {
             attemptId: string;
             questionId: string;
-            selectedOptionId?: string;
-            answers?: string[];
+            textAnswers?: string[] | null;
+            selectedOptionId?: string | null;
+            feedback?: string | null;
         }) => {
             if (!isUuid(payload.attemptId)) {
                 throw new Error(
@@ -31,20 +27,12 @@ export function useSubmitStudentAnswer() {
                 );
             }
 
-            const answerData = payload.selectedOptionId
-                ? {
-                      questionId: payload.questionId,
-                      selectedOptionId: payload.selectedOptionId,
-                  }
-                : {
-                      questionId: payload.questionId,
-                      answers: payload.answers ?? [],
-                  };
-
             return studentAnswersService.upsert({
                 attemptId: payload.attemptId,
                 questionId: payload.questionId,
-                answerData,
+                textAnswers: payload.textAnswers,
+                selectedOptionId: payload.selectedOptionId,
+                feedback: payload.feedback,
             });
         },
         onSuccess: async (_data, variables) => {
@@ -62,10 +50,9 @@ export function useSubmitQuizAttempt() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (attemptId: string) =>
-            studentAnswersService.submitAttempt(attemptId),
+            quizAttemptsService.submitAttempt(attemptId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["quiz-attempts"] });
-            queryClient.invalidateQueries({ queryKey: ["quiz-attempt-id"] });
         },
     });
 }
@@ -81,7 +68,6 @@ export function useStartQuizAttempt() {
             }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["quiz-attempts"] });
-            queryClient.invalidateQueries({ queryKey: ["quiz-attempt-id"] });
         },
     });
 }

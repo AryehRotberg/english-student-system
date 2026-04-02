@@ -1,69 +1,65 @@
 import {
     BadRequestException,
     Injectable,
+    Logger,
     NotFoundException,
 } from '@nestjs/common';
-import { QuizAttemptResponseDto } from '../quiz-attempts/dto/quiz-attempt-response.dto';
-import { QuizAttempt } from '../quiz-attempts/entities/quiz-attempt.entity';
-import { QuizAttemptsService } from '../quiz-attempts/quiz-attempts.service';
 import { PostgresService } from '../../config/postgres.client';
 import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
 import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
+import { CorrectOption, ValidAnswer } from './entities/grading-data';
 import { StudentAnswer } from './entities/student-answer.entity';
+import { StudentAnswersCommon } from './student-answers.common';
 import {
     deleteStudentAnswerQuery,
     getAllStudentAnswersQuery,
+    getCorrectOptionsQuery,
     getStudentAnswerByIdQuery,
-    getUnifiedGradingDataQuery,
-    submitQuizAttemptQuery,
+    getStudentAnswersByAttemptQuery,
+    getValidAnswersQuery,
     upsertStudentAnswerQuery,
 } from './student-answers.queries';
-
-type StudentAnswerData = {
-    questionId?: string;
-    selectedOptionId?: string;
-    answers?: string[];
-};
-
-type UnifiedGradingData = {
-    maxPoints: number | string;
-    correctOptionIds: string[];
-    validAnswers: { answer: string; blankIndex: number | string }[];
-};
 
 @Injectable()
 export class StudentAnswersService {
     constructor(
         private readonly postgresService: PostgresService,
-        private readonly quizAttemptsService: QuizAttemptsService,
+        private readonly studentAnswersCommon: StudentAnswersCommon,
     ) {}
 
     async upsert(
         upsertStudentAnswerDto: UpsertStudentAnswerDto,
-    ): Promise<StudentAnswerResponseDto> {
-        const { attemptId, questionId, answerData } = upsertStudentAnswerDto;
-        const normalizedAnswerData = this.validateAnswerData(
-            questionId,
-            answerData,
-        );
-        const computedPoints = await this.calculateAutomaticPoints(
-            attemptId,
-            questionId,
-            normalizedAnswerData,
+    ): Promise<StudentAnswerResponseDto[]> {
+        const scores = await this.calculateAutomaticPoints(
+            upsertStudentAnswerDto,
         );
 
-        const [result] = await this.postgresService.query<StudentAnswer>(
+        const {
+            attemptId,
+            questionId,
+            selectedOptionId,
+            textAnswers = [],
+        } = upsertStudentAnswerDto;
+
+        const arrays = this.studentAnswersCommon.prepareBulkUpsertArrays(
+            selectedOptionId,
+            textAnswers,
+            scores,
+        );
+
+        const results = await this.postgresService.query<StudentAnswer>(
             upsertStudentAnswerQuery,
             [
                 attemptId,
                 questionId,
-                normalizedAnswerData,
-                computedPoints,
-                upsertStudentAnswerDto.feedback ?? null,
+                arrays.blankIndices,
+                arrays.optionIds,
+                arrays.texts,
+                arrays.points,
             ],
         );
 
-        return StudentAnswerResponseDto.fromEntity(result);
+        return StudentAnswerResponseDto.fromEntities(results);
     }
 
     async findAll(): Promise<StudentAnswerResponseDto[]> {
@@ -86,6 +82,16 @@ export class StudentAnswersService {
         return StudentAnswerResponseDto.fromEntity(answer);
     }
 
+    async findByAttempt(
+        attemptId: string,
+    ): Promise<StudentAnswerResponseDto[]> {
+        const answers = await this.postgresService.query<StudentAnswer>(
+            getStudentAnswersByAttemptQuery,
+            [attemptId],
+        );
+        return StudentAnswerResponseDto.fromEntities(answers);
+    }
+
     async remove(id: string): Promise<StudentAnswerResponseDto> {
         const [result] = await this.postgresService.query<StudentAnswer>(
             deleteStudentAnswerQuery,
@@ -95,146 +101,71 @@ export class StudentAnswersService {
         return StudentAnswerResponseDto.fromEntity(result);
     }
 
-    async submitAttempt(attemptId: string): Promise<QuizAttempt> {
-        const [updatedAttempt] = await this.postgresService.query<QuizAttempt>(
-            submitQuizAttemptQuery,
-            [attemptId],
-        );
-
-        await this.quizAttemptsService.completeQuizAssignmentItemsForUser(
-            updatedAttempt.userId,
-            updatedAttempt.quizId,
-        );
-
-        return QuizAttemptResponseDto.fromEntity(updatedAttempt);
-    }
-
-    private validateAnswerData(
-        questionId: string,
-        answerData: unknown,
-    ): StudentAnswerData {
-        if (
-            !answerData ||
-            typeof answerData !== 'object' ||
-            Array.isArray(answerData)
-        ) {
-            throw new BadRequestException('answerData must be an object');
-        }
-
-        const parsedAnswerData = answerData as StudentAnswerData;
-        const hasSelectedOption =
-            typeof parsedAnswerData.selectedOptionId === 'string';
-        const hasAnswers = Array.isArray(parsedAnswerData.answers);
-
-        if (
-            parsedAnswerData.questionId &&
-            parsedAnswerData.questionId !== questionId
-        ) {
-            throw new BadRequestException(
-                'answerData.questionId must match questionId',
-            );
-        }
-
-        if (hasSelectedOption === hasAnswers) {
-            throw new BadRequestException(
-                'answerData must contain exactly one of selectedOptionId or answers',
-            );
-        }
-
-        if (
-            hasAnswers &&
-            parsedAnswerData.answers?.some(
-                (answer) => typeof answer !== 'string',
-            )
-        ) {
-            throw new BadRequestException(
-                'answerData.answers must be an array of strings',
-            );
-        }
-
-        return {
-            questionId,
-            selectedOptionId: parsedAnswerData.selectedOptionId,
-            answers: parsedAnswerData.answers,
-        };
-    }
-
     private async calculateAutomaticPoints(
-        attemptId: string,
-        questionId: string,
-        answerData: StudentAnswerData,
-    ): Promise<number> {
-        const [gradingData] =
-            await this.postgresService.query<UnifiedGradingData>(
-                getUnifiedGradingDataQuery,
+        upsertStudentAnswerDto: UpsertStudentAnswerDto,
+    ): Promise<number[]> {
+        const { attemptId, questionId, selectedOptionId, textAnswers } =
+            upsertStudentAnswerDto;
+
+        if (selectedOptionId && textAnswers) {
+            throw new BadRequestException(
+                'Cannot provide both selected option and text answers',
+            );
+        }
+
+        if (selectedOptionId) {
+            const [result] = await this.postgresService.query<CorrectOption>(
+                getCorrectOptionsQuery,
                 [attemptId, questionId],
             );
 
-        if (!gradingData || gradingData.maxPoints === null) {
-            throw new BadRequestException(
-                'Question does not belong to the quiz attempt',
+            if (!result) {
+                throw new NotFoundException(
+                    'Correct option not found for the given question and attempt',
+                );
+            }
+
+            return result.correctOptionId === selectedOptionId
+                ? [Number(result.maxPoints)]
+                : [0];
+        }
+
+        if (textAnswers && textAnswers.length > 0) {
+            const results = await this.postgresService.query<ValidAnswer>(
+                getValidAnswersQuery,
+                [attemptId, questionId],
             );
-        }
 
-        const maxPoints = Number(gradingData.maxPoints);
-
-        if (answerData.selectedOptionId) {
-            return gradingData.correctOptionIds.includes(
-                answerData.selectedOptionId,
-            )
-                ? maxPoints
-                : 0;
-        }
-
-        if (gradingData.validAnswers.length === 0) {
-            return 0;
-        }
-
-        const expectedAnswersByBlank = new Map<number, Set<string>>();
-
-        for (const validAnswer of gradingData.validAnswers) {
-            const blankIndex = Number(validAnswer.blankIndex);
-            const normalizedAnswer = this.normalizeAnswer(validAnswer.answer);
-
-            if (!expectedAnswersByBlank.has(blankIndex)) {
-                expectedAnswersByBlank.set(blankIndex, new Set<string>());
+            if (!results || results.length === 0) {
+                throw new NotFoundException(
+                    'Valid answers not found for the given question and attempt',
+                );
             }
 
-            expectedAnswersByBlank.get(blankIndex)?.add(normalizedAnswer);
+            const groupedResults =
+                this.studentAnswersCommon.groupResultsByBlankIndex(results);
+            const maxPointsPerBlank =
+                this.studentAnswersCommon.distributePoints(
+                    Number(results[0].questionMaxPoints),
+                    groupedResults.length,
+                );
+
+            return textAnswers.map((submittedAnswer, i) => {
+                const truth = groupedResults[i];
+                if (!truth) return 0;
+
+                const normalizedInput =
+                    this.studentAnswersCommon.normalizeAnswer(submittedAnswer);
+                const isCorrect = truth.validAnswers.some(
+                    (variant) =>
+                        this.studentAnswersCommon.normalizeAnswer(variant) ===
+                        normalizedInput,
+                );
+
+                return isCorrect ? maxPointsPerBlank[i] : 0;
+            });
         }
 
-        const blankIndexes = Array.from(expectedAnswersByBlank.keys()).sort(
-            (a, b) => a - b,
-        );
-        const submittedAnswers = answerData.answers ?? [];
-
-        if (blankIndexes.length === 0 || submittedAnswers.length === 0) {
-            return 0;
-        }
-
-        let correctAnswersCount = 0;
-
-        for (const blankIndex of blankIndexes) {
-            const submittedAnswer = submittedAnswers[blankIndex - 1];
-            if (!submittedAnswer) continue;
-
-            const normalizedAnswer = this.normalizeAnswer(submittedAnswer);
-            const acceptedAnswers = expectedAnswersByBlank.get(blankIndex);
-
-            if (acceptedAnswers?.has(normalizedAnswer)) {
-                correctAnswersCount += 1;
-            }
-        }
-
-        const points = (correctAnswersCount / blankIndexes.length) * maxPoints;
-        return Number(points.toFixed(2));
-    }
-
-    private normalizeAnswer(answer: string): string {
-        return answer
-            .trim()
-            .toLowerCase()
-            .replace(/[’`]/g, "'")
-            .replace(/\s+/g, ' ');
+        return [];
     }
 }

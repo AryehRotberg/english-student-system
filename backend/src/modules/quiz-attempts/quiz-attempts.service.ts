@@ -5,25 +5,15 @@ import { GetQuizAttemptsFilterDto } from './dto/get-quiz-attempts-filter.dto';
 import { QuizAttemptResponseDto } from './dto/quiz-attempt-response.dto';
 import { QuizAttempt } from './entities/quiz-attempt.entity';
 import {
-    completeQuizAssignmentItemsForUserQuery,
     createQuizAttemptQuery,
     getQuizAttemptsByUserIdAndQuizIdQuery,
     getQuizAttemptsByUserIdQuery,
+    submitQuizAttemptQuery
 } from './quiz-attempts.queries';
 
 @Injectable()
 export class QuizAttemptsService {
     constructor(private readonly postgresService: PostgresService) {}
-
-    async completeQuizAssignmentItemsForUser(
-        userId: string,
-        quizId: string,
-    ): Promise<void> {
-        await this.postgresService.query(
-            completeQuizAssignmentItemsForUserQuery,
-            [userId, quizId],
-        );
-    }
 
     async findByUserIdAndQuizId(filter: GetQuizAttemptsFilterDto) {
         const { userId, quizId } = filter;
@@ -43,6 +33,15 @@ export class QuizAttemptsService {
         );
 
         return QuizAttemptResponseDto.fromEntities(attempts);
+    }
+
+    async submitAttempt(attemptId: string): Promise<QuizAttemptResponseDto> {
+        const [updatedAttempt] = await this.postgresService.query<QuizAttempt>(
+            submitQuizAttemptQuery,
+            [attemptId],
+        );
+
+        return QuizAttemptResponseDto.fromEntity(updatedAttempt);
     }
 
     async create(

@@ -10,6 +10,11 @@ export const getStudentAnswerByIdQuery = PostgresService.readSql(
     'get-student-answer-by-id.sql',
 );
 
+export const getStudentAnswersByAttemptQuery = PostgresService.readSql(
+    __dirname,
+    'get-student-answers-by-attempt.sql',
+);
+
 export const upsertStudentAnswerQuery = PostgresService.readSql(
     __dirname,
     'upsert-student-answer.sql',
@@ -20,12 +25,12 @@ export const deleteStudentAnswerQuery = PostgresService.readSql(
     'delete-student-answer.sql',
 );
 
-export const getUnifiedGradingDataQuery = PostgresService.readSql(
+export const getCorrectOptionsQuery = PostgresService.readSql(
     __dirname,
-    'get-unified-grading-data.sql',
+    'get-correct-options.sql',
 );
 
-export const submitQuizAttemptQuery = PostgresService.readSql(
+export const getValidAnswersQuery = PostgresService.readSql(
     __dirname,
-    'submit-quiz-attempt.sql',
+    'get-valid-answers.sql',
 );

@@ -6,7 +6,7 @@ SET
         SELECT
             SUM(COALESCE(POINTS, 0))
         FROM
-            STUDENT_ANSWERS
+            student_answers
         WHERE
             ATTEMPT_ID = $1
     ), 0)

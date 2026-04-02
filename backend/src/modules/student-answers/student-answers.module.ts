@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { QuizAttemptsModule } from '../quiz-attempts/quiz-attempts.module';
-import { StudentAnswersService } from './student-answers.service';
+import { StudentAnswersCommon } from './student-answers.common';
 import { StudentAnswersController } from './student-answers.controller';
+import { StudentAnswersService } from './student-answers.service';
 
 @Module({
-    imports: [QuizAttemptsModule],
     controllers: [StudentAnswersController],
-    providers: [StudentAnswersService],
+    providers: [StudentAnswersService, StudentAnswersCommon],
 })
 export class StudentAnswersModule {}

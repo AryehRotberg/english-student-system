@@ -5,7 +5,9 @@ export type StudentAnswerApiItem = {
     id: string;
     attemptId: string;
     questionId: string;
-    answerData: Record<string, unknown>;
+    blankIndex: number;
+    selectedOptionId: string | null;
+    textAnswer: string | null;
     createdAt: string;
     points: number | null;
     feedback: string | null;
@@ -18,41 +20,25 @@ class StudentAnswersService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list(): Promise<StudentAnswerApiItem[]> {
-        const response =
-            await this.httpClient.get<StudentAnswerApiItem[]>(
-                "/student-answers",
-            );
-        return response.data;
-    }
-
     public async listByAttempt(
         attemptId?: string,
     ): Promise<StudentAnswerApiItem[]> {
-        if (!attemptId) {
-            return [];
-        }
-
-        const answers = await this.list();
-        return answers.filter((answer) => answer.attemptId === attemptId);
+        const response = await this.httpClient.get<StudentAnswerApiItem[]>(
+            `/student-answers/attempt/${attemptId}`,
+        );
+        return response.data;
     }
 
     public async upsert(payload: {
         attemptId: string;
         questionId: string;
-        answerData: Record<string, unknown>;
-        feedback?: string;
+        textAnswers?: string[] | null;
+        selectedOptionId?: string | null;
+        feedback?: string | null;
     }) {
         const response = await this.httpClient.post(
             "/student-answers",
             payload,
-        );
-        return response.data;
-    }
-
-    public async submitAttempt(attemptId: string) {
-        const response = await this.httpClient.post(
-            `/student-answers/submit-attempt/${attemptId}`,
         );
         return response.data;
     }

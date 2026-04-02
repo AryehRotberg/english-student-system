@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import remarkGfm from "remark-gfm";
-import { QuizAttemptHistoryPanel } from "../../components/quiz/QuizAttemptHistoryPanel";
-import { QuizCard } from "../../components/quiz/QuizCard";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { QuizActiveView } from "../../components/quiz/QuizActiveView";
 import { QuizResultsPanel } from "../../components/quiz/QuizResultsPanel";
+import { QuizRetakeScreen } from "../../components/quiz/QuizRetakeScreen";
+import { QuizSetupScreen } from "../../components/quiz/QuizSetupScreen";
+import { QuizTopicsSection } from "../../components/quiz/QuizTopicsSection";
 import {
     useStartQuizAttempt,
     useSubmitQuizAttempt,
@@ -14,29 +13,10 @@ import {
     useQuizAttempts,
     useQuizQuestions,
     useQuizTopics,
-    useStudentAnswersByAttempt
+    useStudentAnswersByAttempt,
 } from "../../hooks/queries";
 import styles from "../../pages/Quiz/QuizPage.module.css";
 import { assignmentEmailService } from "../../services/assignment-email.service";
-import type { QuizTopic } from "../../types/quiz";
-
-const SANITIZE_SCHEMA = {
-    ...defaultSchema,
-    tagNames: [
-        ...(defaultSchema.tagNames || []),
-        "table",
-        "thead",
-        "tbody",
-        "tr",
-        "td",
-        "th",
-    ],
-    attributes: {
-        ...defaultSchema.attributes,
-        th: ["align"],
-        td: ["align"],
-    },
-};
 
 type QuizPageContentProps = {
     quizId: string;
@@ -45,7 +25,6 @@ type QuizPageContentProps = {
 export function QuizPageContent({ quizId }: QuizPageContentProps) {
     const [isCompleted, setIsCompleted] = useState(false);
     const [viewAttemptId, setViewAttemptId] = useState<string | null>(null);
-    const [selectedTopic, setSelectedTopic] = useState<QuizTopic | null>(null);
 
     const hasAutoStarted = useRef(false);
 
@@ -106,20 +85,7 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
         }
     };
 
-    const handleQuestionSubmitted = async () => {
-        const answeredQuestionIds = new Set(
-            activeAttemptAnswers.map((answer) => answer.questionId),
-        );
-        const firstUnansweredIndex = questions.findIndex(
-            (q) => !answeredQuestionIds.has(q.questionId),
-        );
-        const currentIndex =
-            firstUnansweredIndex === -1
-                ? questions.length - 1
-                : firstUnansweredIndex;
-
-        const isLastQuestion = currentIndex >= questions.length - 1;
-
+    const handleQuestionSubmitted = async (isLastQuestion: boolean) => {
         if (!isLastQuestion || !attemptId) {
             return;
         }
@@ -146,86 +112,48 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
 
     if (!attemptId && !isViewingResults) {
         if (attempts.length === 0) {
-            return (
-                <div className={styles.stack}>
-                    <section
-                        className={styles.panel}
-                        style={{ textAlign: "center", padding: "3rem" }}
-                    >
-                        <h2>Setting up your quiz...</h2>
-                    </section>
-                </div>
-            );
+            return <QuizSetupScreen />;
         }
 
         return (
-            <div className={styles.stack}>
-                <section
-                    className={styles.panel}
-                    style={{ textAlign: "center", padding: "3rem" }}
-                >
-                    <h2>Ready to try again?</h2>
-                    <p>You have {questions.length} questions to answer.</p>
-                    <button
-                        className={styles.nextButton}
-                        onClick={() => void handleStartOrRetake()}
-                        disabled={startAttemptMutation.isPending}
-                        type="button"
-                    >
-                        {startAttemptMutation.isPending
-                            ? "Starting..."
-                            : "Retake Quiz"}
-                    </button>
-                </section>
-                <QuizAttemptHistoryPanel
-                    attempts={completedAttempts}
-                    onViewAttempt={handleViewAttempt}
-                />
-            </div>
+            <QuizRetakeScreen
+                questionCount={questions.length}
+                completedAttempts={completedAttempts}
+                isPending={startAttemptMutation.isPending}
+                onRetake={() => void handleStartOrRetake()}
+                onViewAttempt={handleViewAttempt}
+            />
         );
     }
 
     const selectedAttempt =
         attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
-    const totalPossible = questions.reduce(
-        (sum, question) => sum + question.maxPoints,
-        0,
-    );
-    const earned = questions.reduce((sum, question) => {
-        const studentAnswer = viewedStudentAnswers.find(
-            (answer) => answer.questionId === question.questionId,
+
+    const { totalPossible, finalScore, gradePercent } = useMemo(() => {
+        const totalPossible = questions.reduce(
+            (sum, question) => sum + question.maxPoints,
+            0,
         );
-        return sum + Number(studentAnswer?.points ?? 0);
-    }, 0);
-
-    const finalScore =
-        selectedAttemptId === attemptId
-            ? earned
-            : Number(selectedAttempt?.points ?? earned);
-
-    const gradePercent =
-        totalPossible > 0 ? Math.round((finalScore / totalPossible) * 100) : 0;
+        const earned = questions.reduce((sum, question) => {
+            const studentAnswerPoints = viewedStudentAnswers
+                .filter((answer) => answer.questionId === question.questionId)
+                .reduce(
+                    (total, answer) => total + Number(answer?.points ?? 0),
+                    0,
+                );
+            return sum + studentAnswerPoints;
+        }, 0);
+        const finalScore = Number(selectedAttempt?.points ?? earned);
+        const gradePercent =
+            totalPossible > 0
+                ? Math.round((finalScore / totalPossible) * 100)
+                : 0;
+        return { totalPossible, finalScore, gradePercent };
+    }, [questions, viewedStudentAnswers, selectedAttempt]);
 
     return (
         <div className={styles.stack}>
-            {topics.length > 0 ? (
-                <section className={styles.topicSection}>
-                    <h3>Topics for this quiz</h3>
-                    <div className={styles.topicGrid}>
-                        {topics.map((topic) => (
-                            <button
-                                className={styles.topicCard}
-                                key={topic.id}
-                                onClick={() => setSelectedTopic(topic)}
-                                type="button"
-                            >
-                                <span>{topic.topic}</span>
-                                <small>Open explanation</small>
-                            </button>
-                        ))}
-                    </div>
-                </section>
-            ) : null}
+            <QuizTopicsSection topics={topics} />
 
             {isViewingResults ? (
                 <QuizResultsPanel
@@ -240,77 +168,23 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
                     onViewAttempt={handleViewAttempt}
                 />
             ) : (
-                (() => {
-                    const answeredQuestionIds = new Set(
-                        activeAttemptAnswers.map((answer) => answer.questionId),
-                    );
-                    const firstUnansweredIndex = questions.findIndex(
-                        (q) => !answeredQuestionIds.has(q.questionId),
-                    );
-                    const currentIndex =
-                        firstUnansweredIndex === -1
-                            ? questions.length - 1
-                            : firstUnansweredIndex;
-                    const currentQuestion = questions[currentIndex];
-
-                    return (
-                        <>
-                            <QuizCard
-                                key={currentQuestion.id}
-                                attemptId={attemptId as string}
-                                question={currentQuestion}
-                                onSubmitted={() =>
-                                    void handleQuestionSubmitted()
-                                }
-                                isLastQuestion={
-                                    currentIndex >= questions.length - 1
-                                }
-                            />
-                            <QuizAttemptHistoryPanel
-                                attempts={completedAttempts}
-                                onViewAttempt={handleViewAttempt}
-                            />
-                        </>
-                    );
-                })()
+                <QuizActiveView
+                    attemptId={attemptId as string}
+                    questions={questions}
+                    answeredQuestionIds={
+                        new Set(
+                            activeAttemptAnswers.map(
+                                (answer) => answer.questionId,
+                            ),
+                        )
+                    }
+                    completedAttempts={completedAttempts}
+                    onSubmitted={(isLastQuestion) =>
+                        void handleQuestionSubmitted(isLastQuestion)
+                    }
+                    onViewAttempt={handleViewAttempt}
+                />
             )}
-
-            {selectedTopic ? (
-                <div
-                    className={styles.topicModalOverlay}
-                    onClick={() => setSelectedTopic(null)}
-                    role="presentation"
-                >
-                    <section
-                        aria-label="Topic explanation"
-                        className={styles.topicModal}
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        <div className={styles.topicModalHeader}>
-                            <h3>{selectedTopic.topic}</h3>
-                            <button
-                                aria-label="Close explanation"
-                                className={styles.closeTopicButton}
-                                onClick={() => setSelectedTopic(null)}
-                                type="button"
-                            >
-                                Close
-                            </button>
-                        </div>
-
-                        <div className={styles.topicMarkdown}>
-                            <ReactMarkdown
-                                rehypePlugins={[
-                                    [rehypeSanitize, SANITIZE_SCHEMA],
-                                ]}
-                                remarkPlugins={[remarkGfm]}
-                            >
-                                {selectedTopic.explanation}
-                            </ReactMarkdown>
-                        </div>
-                    </section>
-                </div>
-            ) : null}
         </div>
     );
 }

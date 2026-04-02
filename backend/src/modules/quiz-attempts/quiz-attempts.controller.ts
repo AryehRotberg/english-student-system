@@ -34,4 +34,11 @@ export class QuizAttemptsController {
     async create(@Body() createQuizAttemptDto: CreateQuizAttemptDto) {
         return await this.quizAttemptsService.create(createQuizAttemptDto);
     }
+
+    @Post(':attemptId/submit')
+    async submitAttempt(
+        @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
+    ) {
+        return await this.quizAttemptsService.submitAttempt(attemptId);
+    }
 }

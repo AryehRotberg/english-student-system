@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    Logger,
     Param,
     ParseUUIDPipe,
     Post,
@@ -31,15 +32,15 @@ export class StudentAnswersController {
         return await this.studentAnswersService.findOne(id);
     }
 
+    @Get('attempt/:attemptId')
+    async findByAttempt(
+        @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
+    ) {
+        return await this.studentAnswersService.findByAttempt(attemptId);
+    }
+
     @Delete(':id')
     async remove(@Param('id', new ParseUUIDPipe()) id: string) {
         return await this.studentAnswersService.remove(id);
-    }
-
-    @Post('submit-attempt/:attemptId')
-    async submitAttempt(
-        @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
-    ) {
-        return await this.studentAnswersService.submitAttempt(attemptId);
     }
 }

@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { useSubmitStudentAnswer } from "../../hooks/mutations";
 import type { QuizQuestion } from "../../types/quiz";
+import { isUuid } from "../../utils/isUuid";
 import styles from "./QuizCard.module.css";
-
-function isUuid(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        value,
-    );
-}
 
 type QuizCardProps = {
     attemptId: string;
@@ -41,8 +36,8 @@ export function QuizCard({
         await submitMutation.mutateAsync({
             attemptId,
             questionId: question.questionId,
-            selectedOptionId: isMultipleChoice ? selectedOptionId : undefined,
-            answers: isMultipleChoice ? undefined : blankAnswers,
+            selectedOptionId: isMultipleChoice ? selectedOptionId : null,
+            textAnswers: isMultipleChoice ? null : blankAnswers,
         });
 
         onSubmitted();

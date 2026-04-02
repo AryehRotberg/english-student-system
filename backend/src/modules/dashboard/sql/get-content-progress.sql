@@ -1,17 +1,15 @@
 SELECT
-    AI.CONTENT_TYPE AS "contentType",
-    COUNT(*)::int AS "totalItems",
-    SUM(
-        CASE
-            WHEN AI.STATUS = 'completed' THEN 1
-            ELSE 0
-        END
-    )::int AS "completedItems"
+	AI.CONTENT_TYPE AS "contentType",
+	COUNT(*)::INT AS "totalItems",
+	COUNT(*) FILTER (
+		WHERE
+			AI.STATUS = 'completed'
+	)::INT AS "completedItems"
 FROM
-    ASSIGNMENT_ITEMS AI
-    JOIN ASSIGNMENTS A ON AI.ASSIGNMENT_ID = A.ID
+	PUBLIC.ASSIGNMENT_ITEMS AI
+	JOIN PUBLIC.ASSIGNMENTS A ON AI.ASSIGNMENT_ID = A.ID
 WHERE
-    A.USER_ID = $1
-    AND A.STATUS = 'assigned'
+	A.USER_ID = $1
+	AND A.STATUS = 'assigned'
 GROUP BY
-    AI.CONTENT_TYPE;
+	AI.CONTENT_TYPE;

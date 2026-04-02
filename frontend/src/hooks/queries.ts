@@ -66,8 +66,17 @@ export function useQuizAttempts(quizId?: string, userId?: string) {
     return useQuery<QuizAttemptApiItem[]>({
         queryKey: ["quiz-attempts", quizId, userId],
         enabled: Boolean(userId) && Boolean(quizId),
-        queryFn: () =>
-            quizAttemptsService.listByUserAndQuizSorted(userId, quizId),
+        queryFn: async () => {
+            const attempts = await quizAttemptsService.listByUserAndQuiz(
+                userId!,
+                quizId!,
+            );
+            return attempts.sort(
+                (a, b) =>
+                    new Date(b.startedAt).getTime() -
+                    new Date(a.startedAt).getTime(),
+            );
+        },
     });
 }
 

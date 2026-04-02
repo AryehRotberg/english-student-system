@@ -1,8 +1,4 @@
-DELETE FROM
-    student_answers
-WHERE
-    ID = $1
-RETURNING
+SELECT
     ID,
     ATTEMPT_ID AS "attemptId",
     QUESTION_ID AS "questionId",
@@ -10,4 +6,8 @@ RETURNING
     TEXT_ANSWER AS "textAnswer",
     BLANK_INDEX AS "blankIndex",
     POINTS,
-    CREATED_AT AS "createdAt";
+    CREATED_AT AS "createdAt"
+FROM
+    student_answers
+WHERE
+    ATTEMPT_ID = $1;

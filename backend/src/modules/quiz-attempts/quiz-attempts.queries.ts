@@ -15,12 +15,12 @@ export const createQuizAttemptQuery = PostgresService.readSql(
     'create-quiz-attempt.sql',
 );
 
-export const completeQuizAssignmentItemsForUserQuery = PostgresService.readSql(
-    __dirname,
-    'complete-quiz-assignment-items-for-user.sql',
-);
-
 export const getQuizAttemptsByUserIdQuery = PostgresService.readSql(
     __dirname,
     'get-quiz-attempts-by-user-id.sql',
+);
+
+export const submitQuizAttemptQuery = PostgresService.readSql(
+    __dirname,
+    'submit-quiz-attempt.sql',
 );

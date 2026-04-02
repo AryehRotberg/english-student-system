@@ -9,31 +9,14 @@ class QuizAttemptsService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listByUserAndQuiz(userId: string, quizId: string) {
-        const response = await this.httpClient.get(
+    public async listByUserAndQuiz(
+        userId: string,
+        quizId: string,
+    ): Promise<QuizAttemptApiItem[]> {
+        const response = await this.httpClient.get<QuizAttemptApiItem[]>(
             `/quiz-attempts?userId=${userId}&quizId=${quizId}`,
         );
         return response.data;
-    }
-
-    public async listByUserAndQuizSorted(
-        userId?: string,
-        quizId?: string,
-    ): Promise<QuizAttemptApiItem[]> {
-        if (!userId || !quizId) {
-            return [];
-        }
-
-        const attempts = (await this.listByUserAndQuiz(
-            userId,
-            quizId,
-        )) as QuizAttemptApiItem[];
-
-        return attempts.sort(
-            (a, b) =>
-                new Date(b.startedAt).getTime() -
-                new Date(a.startedAt).getTime(),
-        );
     }
 
     public async listByStudentId(
@@ -53,6 +36,13 @@ class QuizAttemptsService {
         completedAt?: string;
     }) {
         const response = await this.httpClient.post("/quiz-attempts", payload);
+        return response.data;
+    }
+
+    public async submitAttempt(attemptId: string) {
+        const response = await this.httpClient.post(
+            `/quiz-attempts/${attemptId}/submit`,
+        );
         return response.data;
     }
 }

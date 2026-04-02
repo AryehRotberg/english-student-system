@@ -2,11 +2,12 @@ SELECT
     ID,
     ATTEMPT_ID AS "attemptId",
     QUESTION_ID AS "questionId",
-    ANSWER_DATA AS "answerData",
-    CREATED_AT AS "createdAt",
+    SELECTED_OPTION_ID AS "selectedOptionId",
+    TEXT_ANSWER AS "textAnswer",
+    BLANK_INDEX AS "blankIndex",
     POINTS,
-    FEEDBACK
+    CREATED_AT AS "createdAt"
 FROM
-    STUDENT_ANSWERS
+    student_answers
 ORDER BY
     CREATED_AT DESC;

@@ -105,8 +105,8 @@ erDiagram
     QUIZZES ||--o{ QUIZ_ATTEMPTS : has
     USERS ||--o{ QUIZ_ATTEMPTS : makes
 
-    QUIZ_ATTEMPTS ||--o{ STUDENT_ANSWERS : produces
-    QUESTIONS ||--o{ STUDENT_ANSWERS : answered_in
+    QUIZ_ATTEMPTS ||--o{ student_answers : produces
+    QUESTIONS ||--o{ student_answers : answered_in
 
     QUESTIONS ||--o{ QUESTION_OPTIONS : has
     QUESTIONS ||--o{ ANSWERS : has
