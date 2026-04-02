@@ -68,14 +68,40 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
         startAttemptMutation,
     ]);
 
-    if (!quizId || !questions || questions.length === 0 || isAttemptLoading) {
-        return <p>Loading...</p>;
-    }
-
     const completedAttempts = attempts.filter(
         (attempt) => attempt.completedAt !== null,
     );
     const isViewingResults = Boolean(selectedAttemptId);
+
+    const selectedAttempt =
+        attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
+
+    const { totalPossible, finalScore, gradePercent } = useMemo(() => {
+        const safeQuestions = questions ?? [];
+        const totalPossible = safeQuestions.reduce(
+            (sum, question) => sum + question.maxPoints,
+            0,
+        );
+        const earned = safeQuestions.reduce((sum, question) => {
+            const studentAnswerPoints = viewedStudentAnswers
+                .filter((answer) => answer.questionId === question.questionId)
+                .reduce(
+                    (total, answer) => total + Number(answer?.points ?? 0),
+                    0,
+                );
+            return sum + studentAnswerPoints;
+        }, 0);
+        const finalScore = Number(selectedAttempt?.points ?? earned);
+        const gradePercent =
+            totalPossible > 0
+                ? Math.round((finalScore / totalPossible) * 100)
+                : 0;
+        return { totalPossible, finalScore, gradePercent };
+    }, [questions, viewedStudentAnswers, selectedAttempt]);
+
+    if (!quizId || !questions || questions.length === 0 || isAttemptLoading) {
+        return <p>Loading...</p>;
+    }
 
     const handleStartOrRetake = async () => {
         if (user?.id) {
@@ -125,31 +151,6 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
             />
         );
     }
-
-    const selectedAttempt =
-        attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
-
-    const { totalPossible, finalScore, gradePercent } = useMemo(() => {
-        const totalPossible = questions.reduce(
-            (sum, question) => sum + question.maxPoints,
-            0,
-        );
-        const earned = questions.reduce((sum, question) => {
-            const studentAnswerPoints = viewedStudentAnswers
-                .filter((answer) => answer.questionId === question.questionId)
-                .reduce(
-                    (total, answer) => total + Number(answer?.points ?? 0),
-                    0,
-                );
-            return sum + studentAnswerPoints;
-        }, 0);
-        const finalScore = Number(selectedAttempt?.points ?? earned);
-        const gradePercent =
-            totalPossible > 0
-                ? Math.round((finalScore / totalPossible) * 100)
-                : 0;
-        return { totalPossible, finalScore, gradePercent };
-    }, [questions, viewedStudentAnswers, selectedAttempt]);
 
     return (
         <div className={styles.stack}>
