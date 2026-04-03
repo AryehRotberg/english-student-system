@@ -81,6 +81,53 @@
     border-color: #9ca3af;
 }
 
+.panel {
+    background: #ffffff;
+    border: 1px solid #d9dbe3;
+    border-radius: 14px;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.panel h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin: 0 0 0.25rem;
+}
+
+.panel p {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.nextButton {
+    margin-top: 0.75rem;
+    padding: 0.65rem 2rem;
+    background: #0c56d0;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.nextButton:hover {
+    background: #0a47b0;
+}
+
+.nextButton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 .completedPanel {
     background: #ffffff;
     border: 1px solid #d9dbe3;
@@ -166,24 +213,40 @@
     color: #6b7280;
 }
 
-.viewButton,
-.resumeButton {
-    border: 1px solid #0f172a;
-    border-radius: 10px;
-    background: #111827;
+.viewButton {
+    border: none;
+    border-radius: 8px;
+    background: #0c56d0;
     color: #ffffff;
-    padding: 8px 12px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
+    transition: background 0.15s;
+}
+
+.viewButton:hover {
+    background: #0a47b0;
 }
 
 .resumeButton {
-    margin: 12px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: none;
+    border-radius: 8px;
+    background: #dae2ff;
+    color: #0c56d0;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 1rem 0;
+    transition: background 0.15s;
 }
 
-.viewButton:hover,
 .resumeButton:hover {
-    background: #1f2937;
+    background: #bfcfff;
 }
 
 .correct {
@@ -194,6 +257,120 @@
 .wrong {
     color: #991b1b;
     font-weight: 700;
+}
+
+/* ─── Result card design (matches admin student progress) ── */
+
+.resultGradeHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.5rem 0 1.25rem;
+    padding: 1.25rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.gradeBadge {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.gradeBadge[data-pass="true"] {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.gradeResultTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 0.2rem;
+}
+
+.gradeResultSub {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.questionCards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.questionCard {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-left-width: 4px;
+}
+
+.questionCardCorrect {
+    border-left-color: #10b981;
+}
+
+.questionCardWrong {
+    border-left-color: #ef4444;
+}
+
+.questionCardTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.questionCardNum {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.questionCardPrompt {
+    font-size: 0.875rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.resultCorrectBadge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.resultWrongBadge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
 }
 
 .completedPanel h2 {

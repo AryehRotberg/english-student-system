@@ -1,0 +1,19 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+
+export class CreateSpeechDto {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty()
+    text: string;
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({ required: false })
+    voiceId?: string;
+
+    @IsNumber()
+    @IsOptional()
+    @ApiProperty({ required: false })
+    speed?: number;
+}

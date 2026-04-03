@@ -5,9 +5,9 @@ import { LlmPipeline } from './llm.types';
 @Injectable()
 export class LlmService {
     private readonly model = new ChatGoogleGenerativeAI({
-        // model: 'gemini-3-flash-preview',
-        model: 'gemini-3.1-flash-lite-preview',
-        temperature: 0.5,
+        model: 'gemini-3-flash-preview',
+        // model: 'gemini-3.1-flash-lite-preview',
+        temperature: 0.7,
         maxRetries: 1,
     });
 
@@ -25,7 +25,7 @@ export class LlmService {
     ): Promise<TOutput> {
         const prompt = pipeline.buildPrompt(input);
 
-        const structured = this.model.withStructuredOutput(pipeline.schema);
+        const structured = this.withStructuredOutput(pipeline.schema);
 
         const result = await structured.invoke(prompt);
 

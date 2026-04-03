@@ -54,9 +54,13 @@ export function Navbar({ sticky = true }: NavbarProps) {
     return (
         <>
             <header
-                className={
-                    sticky ? styles.shell : `${styles.shell} ${styles.static}`
-                }
+                className={[
+                    styles.shell,
+                    sticky ? "" : styles.static,
+                    isMobileMenuOpen ? styles.shellMenuOpen : "",
+                ]
+                    .filter(Boolean)
+                    .join(" ")}
             >
                 <div className={styles.logoWrap}>
                     <img src="/open-book.png" alt="" width="24" height="24" />
@@ -66,19 +70,20 @@ export function Navbar({ sticky = true }: NavbarProps) {
                 </div>
 
                 <nav className={styles.nav} aria-label="Primary navigation">
-                    {links.map((link) => (
-                        <NavLink
-                            key={link.to}
-                            to={link.to}
-                            className={({ isActive }) =>
-                                isActive
-                                    ? `${styles.link} ${styles.active}`
-                                    : styles.link
-                            }
-                        >
-                            {link.label}
-                        </NavLink>
-                    ))}
+                    {user?.role !== "teacher" &&
+                        links.map((link) => (
+                            <NavLink
+                                key={link.to}
+                                to={link.to}
+                                className={({ isActive }) =>
+                                    isActive
+                                        ? `${styles.link} ${styles.active}`
+                                        : styles.link
+                                }
+                            >
+                                {link.label}
+                            </NavLink>
+                        ))}
                     {user?.role === "teacher" && (
                         <NavLink
                             to="/admin"
@@ -167,20 +172,21 @@ export function Navbar({ sticky = true }: NavbarProps) {
                         className={styles.mobileNav}
                         aria-label="Mobile navigation"
                     >
-                        {links.map((link) => (
-                            <NavLink
-                                key={`mobile-${link.to}`}
-                                to={link.to}
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? `${styles.mobileLink} ${styles.mobileActive}`
-                                        : styles.mobileLink
-                                }
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                {link.label}
-                            </NavLink>
-                        ))}
+                        {user?.role !== "teacher" &&
+                            links.map((link) => (
+                                <NavLink
+                                    key={`mobile-${link.to}`}
+                                    to={link.to}
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? `${styles.mobileLink} ${styles.mobileActive}`
+                                            : styles.mobileLink
+                                    }
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    {link.label}
+                                </NavLink>
+                            ))}
 
                         {user?.role === "teacher" && (
                             <NavLink

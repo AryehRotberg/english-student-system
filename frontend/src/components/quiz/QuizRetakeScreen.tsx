@@ -19,10 +19,7 @@ export function QuizRetakeScreen({
 }: QuizRetakeScreenProps) {
     return (
         <div className={styles.stack}>
-            <section
-                className={styles.panel}
-                style={{ textAlign: "center", padding: "3rem" }}
-            >
+            <section className={styles.panel}>
                 <h2>Ready to try again?</h2>
                 <p>You have {questionCount} questions to answer.</p>
                 <button

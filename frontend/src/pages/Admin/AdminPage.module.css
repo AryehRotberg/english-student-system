@@ -1,14 +1,124 @@
-.page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
+/* ─── Admin Shell Layout ──────────────────────────────────── */
+
+.shell {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    min-height: calc(100vh - 68px);
 }
 
-.pageTitle {
-    font-size: 1.6rem;
+.sidebar {
+    width: 256px;
+    flex-shrink: 0;
+    background: #f1f4f6;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebarBrand {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sidebarTitle {
+    font-size: 1.1rem;
     font-weight: 700;
     color: #1a1a2e;
-    margin-bottom: 1.5rem;
+    margin: 0 0 0.2rem;
+}
+
+.sidebarSub {
+    font-size: 0.78rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin: 0;
+}
+
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.75rem;
+    flex: 1;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 0.95rem;
+    border: none;
+    background: transparent;
+    color: #536073;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 8px;
+    text-align: left;
+    transition:
+        background 0.14s,
+        color 0.14s;
+}
+
+.navItem:hover {
+    background: #e2e8f0;
+    color: #1a1a2e;
+}
+
+.navItemActive {
+    background: #ffffff;
+    color: #0c56d0;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.navItemActive:hover {
+    background: #ffffff;
+}
+
+.navIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: inherit;
+}
+
+/* ─── Main Content ───────────────────────────────────────── */
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-y: auto;
+}
+
+.mainHeader {
+    padding: 2rem 2rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.mainTitle {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin: 0 0 0.4rem;
+    letter-spacing: -0.02em;
+}
+
+.mainDesc {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+    max-width: 60ch;
+}
+
+.mainContent {
+    padding: 1.5rem 2rem 3rem;
+    flex: 1;
 }
 
 .accessDenied {
@@ -18,41 +128,6 @@
     min-height: 40vh;
     color: #666;
     font-size: 1.1rem;
-}
-
-/* ─── Tabs ─────────────────────────────────────────────── */
-
-.tabs {
-    display: flex;
-    gap: 0.25rem;
-    border-bottom: 2px solid #e5e7eb;
-    margin-bottom: 2rem;
-}
-
-.tab {
-    padding: 0.6rem 1.25rem;
-    border: none;
-    background: transparent;
-    color: #6b7280;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition:
-        color 0.15s,
-        border-color 0.15s;
-    border-radius: 6px 6px 0 0;
-}
-
-.tab:hover {
-    color: #4f46e5;
-}
-
-.tabActive {
-    color: #4f46e5;
-    border-bottom-color: #4f46e5;
-    background: #f5f3ff;
 }
 
 /* ─── Section ──────────────────────────────────────────── */
@@ -349,9 +424,9 @@
     font-size: 0.9rem;
     color: #1a1a2e;
     font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
 }
 
 .typeBadge {
@@ -405,6 +480,233 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin: 0 0 0.6rem;
+}
+
+/* ─── Student Progress Cards ────────────────────────────── */
+
+.studentGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.studentCard {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.5rem 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.studentAvatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: linear-gradient(140deg, #bfdbfe 0%, #93c5fd 100%);
+    border: 2px solid rgba(28, 116, 233, 0.2);
+    color: #1e3a8a;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.studentCardBody {
+    flex: 1;
+    width: 100%;
+}
+
+.studentCardName {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 0.2rem;
+}
+
+.studentCardEmail {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.studentCardBtn {
+    width: 100%;
+    padding: 0.55rem 1rem;
+    background: #dae2ff;
+    color: #004ab9;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+.studentCardBtn:hover {
+    background: #0c56d0;
+    color: #ffffff;
+}
+
+/* ─── Attempt Cards ─────────────────────────────────────── */
+
+.attemptGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.attemptCard {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.attemptCardIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    background: #dae2ff;
+    color: #0c56d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.attemptCardBody {
+    flex: 1;
+}
+
+.attemptCardDate {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 0.2rem;
+}
+
+.attemptCardScore {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* ─── Question Result Grid ──────────────────────────────── */
+
+.attemptResultHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+    padding: 1.25rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+}
+
+.attemptGradeBadge {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.attemptGradeBadge[data-pass="true"] {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.attemptResultTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 0.2rem;
+}
+
+.attemptResultSub {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.questionResultGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.questionResultCard {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-left-width: 4px;
+}
+
+.questionResultCorrect {
+    border-left-color: #10b981;
+}
+
+.questionResultWrong {
+    border-left-color: #ef4444;
+}
+
+.questionResultTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.questionResultNum {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.questionResultPrompt {
+    font-size: 0.875rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.wrongBadge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    white-space: nowrap;
 }
 
 .subList {
@@ -490,4 +792,149 @@
 
 .backButton:hover {
     background: #f3f4f6;
+}
+
+/* ─── Student Detail Header ─────────────────────────────── */
+
+.backNavBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem 0.45rem 0.65rem;
+    border: none;
+    background: #dae2ff;
+    color: #0c56d0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.14s;
+    margin-bottom: 0.75rem;
+    width: fit-content;
+    align-self: flex-start;
+}
+
+.backNavBtn:hover {
+    background: #bfcfff;
+}
+
+.studentDetailHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.studentDetailName {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 0 0 0.15rem;
+}
+
+/* ─── Mobile ─────────────────────────────────────────────── */
+
+/* ─── Mobile bottom nav (hidden on desktop) ────────────── */
+
+.mobileBottomNav {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .shell {
+        flex-direction: column;
+        padding-bottom: 72px; /* room for bottom nav */
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .mainHeader {
+        padding: 1.25rem 1rem 0.75rem;
+    }
+
+    .mainTitle {
+        font-size: 1.4rem;
+    }
+
+    .mainContent {
+        padding: 1rem 1rem 2rem;
+    }
+
+    .sectionHeader {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .fieldRow {
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .inlineForm {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .inlineEdit {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .builderRow {
+        flex-wrap: wrap;
+    }
+
+    /* Bottom nav bar */
+    .mobileBottomNav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+        z-index: 100;
+    }
+
+    .mobileNavItem {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.5rem 0.25rem;
+        transition: color 0.14s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobileNavItemActive {
+        color: #0c56d0;
+    }
+
+    .mobileNavIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobileNavIcon svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .mobileNavLabel {
+        font-size: 0.65rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+    }
 }

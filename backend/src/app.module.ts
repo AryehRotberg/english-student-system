@@ -25,6 +25,7 @@ import { VocabularyTopicsModule } from './modules/vocabulary-topics/vocabulary-t
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { WritingSubmissionsModule } from './modules/writing-submissions/writing-submissions.module';
 import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module';
+import { TexttospeechModule } from './modules/texttospeech/texttospeech.module';
 
 @Module({
     imports: [
@@ -60,6 +61,7 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
         DashboardModule,
         LlmModule,
         AiContentsModule,
+        TexttospeechModule,
     ],
     controllers: [AppController],
     providers: [AppService],

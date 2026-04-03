@@ -3,6 +3,7 @@ import "./App.css";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { Navbar } from "./components/layout/Navbar/Navbar";
 import { useAuth } from "./contexts/AuthContext";
+import { useAuthUser } from "./hooks/queries";
 import { AdminPage } from "./pages/Admin/AdminPage";
 import { DashboardPage } from "./pages/Dashboard/DashboardPage";
 import { LoginPage } from "./pages/Login/LoginPage";
@@ -13,6 +14,10 @@ import { ReadingPage } from "./pages/Reading/ReadingPage";
 import { VocabPage } from "./pages/Vocab/VocabPage";
 
 function ProtectedPage({ children }: { children: React.ReactNode }) {
+    const { data: user } = useAuthUser();
+    if (user?.role === "teacher") {
+        return <Navigate to="/admin" replace />;
+    }
     return (
         <ProtectedRoute>
             <div className="appShell">
@@ -24,8 +29,23 @@ function ProtectedPage({ children }: { children: React.ReactNode }) {
     );
 }
 
+function AdminProtectedPage() {
+    return (
+        <ProtectedRoute>
+            <div className="adminShell">
+                <Navbar />
+                <div className="adminBody">
+                    <AdminPage />
+                </div>
+            </div>
+        </ProtectedRoute>
+    );
+}
+
 function App() {
     const { isAuthenticated } = useAuth();
+    const { data: user } = useAuthUser();
+    const isTeacher = user?.role === "teacher";
 
     return (
         <Routes>
@@ -33,7 +53,7 @@ function App() {
                 path="/login"
                 element={
                     isAuthenticated ? (
-                        <Navigate to="/" replace />
+                        <Navigate to={isTeacher ? "/admin" : "/"} replace />
                     ) : (
                         <LoginPage />
                     )
@@ -87,18 +107,20 @@ function App() {
                     </ProtectedPage>
                 }
             />
-            <Route
-                path="/admin"
-                element={
-                    <ProtectedPage>
-                        <AdminPage />
-                    </ProtectedPage>
-                }
-            />
+            <Route path="/admin" element={<AdminProtectedPage />} />
             <Route
                 path="*"
                 element={
-                    <Navigate to={isAuthenticated ? "/" : "/login"} replace />
+                    <Navigate
+                        to={
+                            isAuthenticated
+                                ? isTeacher
+                                    ? "/admin"
+                                    : "/"
+                                : "/login"
+                        }
+                        replace
+                    />
                 }
             />
         </Routes>

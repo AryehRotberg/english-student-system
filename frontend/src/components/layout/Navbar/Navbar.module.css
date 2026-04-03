@@ -12,6 +12,10 @@
     z-index: 50;
 }
 
+.shellMenuOpen {
+    z-index: 120;
+}
+
 .static {
     position: static;
 }
@@ -218,7 +222,7 @@
         pointer-events: none;
         position: fixed;
         transition: opacity 180ms ease;
-        z-index: 70;
+        z-index: 110;
     }
 
     .mobileOverlayOpen {
@@ -241,7 +245,7 @@
         transform: translateX(100%);
         transition: transform 220ms ease;
         width: 280px;
-        z-index: 80;
+        z-index: 120;
     }
 
     .mobileDrawerOpen {

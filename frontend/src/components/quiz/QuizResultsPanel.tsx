@@ -46,40 +46,54 @@ export function QuizResultsPanel({
                     : "Review a previous attempt result."}
             </p>
 
-            <div className={styles.scoreSummary}>
-                <p className={styles.gradeLabel}>Grade: {gradePercent}%</p>
-                <p>
-                    Score: {finalScore.toFixed(2)} / {totalPossible.toFixed(2)}
-                </p>
+            <div className={styles.resultGradeHeader}>
+                <div
+                    className={styles.gradeBadge}
+                    data-pass={gradePercent >= 60}
+                >
+                    {gradePercent}%
+                </div>
+                <div>
+                    <p className={styles.gradeResultTitle}>Quiz Results</p>
+                    <p className={styles.gradeResultSub}>
+                        Score: <strong>{finalScore.toFixed(2)}</strong> /{" "}
+                        {totalPossible.toFixed(2)} points
+                    </p>
+                </div>
             </div>
 
-            <ul className={styles.resultList}>
+            <div className={styles.questionCards}>
                 {questions.map((question) => {
                     const points =
                         pointsByQuestionId.get(question.questionId) ?? 0;
                     const isCorrect = points >= question.maxPoints;
 
                     return (
-                        <li className={styles.resultRow} key={question.id}>
-                            <div>
-                                <span className={styles.resultQuestion}>
-                                    Question {question.questionNumber}
+                        <div
+                            className={`${styles.questionCard} ${isCorrect ? styles.questionCardCorrect : styles.questionCardWrong}`}
+                            key={question.id}
+                        >
+                            <div className={styles.questionCardTop}>
+                                <span className={styles.questionCardNum}>
+                                    Q{question.questionNumber}
                                 </span>
-                                <p className={styles.resultPrompt}>
-                                    {question.prompt}
-                                </p>
+                                <span
+                                    className={
+                                        isCorrect
+                                            ? styles.resultCorrectBadge
+                                            : styles.resultWrongBadge
+                                    }
+                                >
+                                    {isCorrect ? "Correct" : "Wrong"}
+                                </span>
                             </div>
-                            <span
-                                className={
-                                    isCorrect ? styles.correct : styles.wrong
-                                }
-                            >
-                                {isCorrect ? "Correct" : "Wrong"}
-                            </span>
-                        </li>
+                            <p className={styles.questionCardPrompt}>
+                                {question.prompt}
+                            </p>
+                        </div>
                     );
                 })}
-            </ul>
+            </div>
 
             <button
                 className={styles.resumeButton}

@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { AdminMobileNav } from "../../components/admin/AdminMobileNav";
+import { AdminSidebar } from "../../components/admin/AdminSidebar";
+import { adminTabs } from "../../components/admin/admin-tabs";
+import type { AdminTab } from "../../components/admin/admin-tabs";
 import { QuestionsSection } from "../../components/admin/QuestionsSection";
 import { QuizBuilderSection } from "../../components/admin/QuizBuilderSection";
 import { QuizzesSection } from "../../components/admin/QuizzesSection";
@@ -7,24 +11,9 @@ import { TextsSection } from "../../components/admin/TextsSection";
 import { useAuthUser } from "../../hooks/queries";
 import styles from "./AdminPage.module.css";
 
-type Tab =
-    | "quizzes"
-    | "questions"
-    | "quiz-builder"
-    | "texts"
-    | "student-progress";
-
-const tabs: { id: Tab; label: string }[] = [
-    { id: "quizzes", label: "Quizzes" },
-    { id: "questions", label: "Questions" },
-    { id: "quiz-builder", label: "Quiz Builder" },
-    { id: "texts", label: "Texts" },
-    { id: "student-progress", label: "Student Progress" },
-];
-
 export function AdminPage() {
     const { data: user } = useAuthUser();
-    const [activeTab, setActiveTab] = useState<Tab>("quizzes");
+    const [activeTab, setActiveTab] = useState<AdminTab>("quizzes");
 
     if (user?.role !== "teacher") {
         return (
@@ -34,36 +23,39 @@ export function AdminPage() {
         );
     }
 
+    const activeTabDef = adminTabs.find((t) => t.id === activeTab)!;
+
     return (
-        <div className={styles.page}>
-            <h2 className={styles.pageTitle}>Admin Panel</h2>
+        <div className={styles.shell}>
+            <AdminSidebar
+                tabs={adminTabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+            />
 
-            <div className={styles.tabs} role="tablist">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={activeTab === tab.id}
-                        className={
-                            activeTab === tab.id
-                                ? `${styles.tab} ${styles.tabActive}`
-                                : styles.tab
-                        }
-                        onClick={() => setActiveTab(tab.id)}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
+            <main className={styles.main}>
+                <header className={styles.mainHeader}>
+                    <h1 className={styles.mainTitle}>{activeTabDef.label}</h1>
+                    <p className={styles.mainDesc}>
+                        {activeTabDef.description}
+                    </p>
+                </header>
+                <div className={styles.mainContent}>
+                    {activeTab === "quizzes" && <QuizzesSection />}
+                    {activeTab === "questions" && <QuestionsSection />}
+                    {activeTab === "quiz-builder" && <QuizBuilderSection />}
+                    {activeTab === "texts" && <TextsSection />}
+                    {activeTab === "student-progress" && (
+                        <StudentProgressSection />
+                    )}
+                </div>
+            </main>
 
-            <div className={styles.tabContent}>
-                {activeTab === "quizzes" && <QuizzesSection />}
-                {activeTab === "questions" && <QuestionsSection />}
-                {activeTab === "quiz-builder" && <QuizBuilderSection />}
-                {activeTab === "texts" && <TextsSection />}
-                {activeTab === "student-progress" && <StudentProgressSection />}
-            </div>
+            <AdminMobileNav
+                tabs={adminTabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+            />
         </div>
     );
 }

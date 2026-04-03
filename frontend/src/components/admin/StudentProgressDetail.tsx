@@ -46,122 +46,193 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                 ? Math.round((finalScore / totalPossible) * 100)
                 : 0;
 
-        const pointsByQuestionId = new Map(
-            answers.map((answer) => [
+        const pointsByQuestionId = new Map<string, number>();
+        for (const answer of answers) {
+            const current = pointsByQuestionId.get(answer.questionId) ?? 0;
+            pointsByQuestionId.set(
                 answer.questionId,
-                Number(answer.points ?? 0),
-            ]),
-        );
+                current + Number(answer.points ?? 0),
+            );
+        }
 
         return (
             <div className={styles.section}>
                 <button
                     type="button"
-                    className={styles.backButton}
+                    className={styles.backNavBtn}
                     onClick={() => setSelectedAttemptId(null)}
                 >
-                    ← Back
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                    Back to attempts
                 </button>
-                <div style={{ marginBottom: "1.5rem" }}>
-                    <h3 style={{ marginBottom: "0.5rem" }}>Quiz Results</h3>
-                    <p style={{ color: "#6b7280", fontSize: "0.95rem" }}>
-                        Grade: <strong>{gradePercent}%</strong> | Score:{" "}
-                        <strong>
-                            {finalScore.toFixed(2)} / {totalPossible.toFixed(2)}
-                        </strong>
-                    </p>
+
+                <div className={styles.attemptResultHeader}>
+                    <div
+                        className={styles.attemptGradeBadge}
+                        data-pass={gradePercent >= 60}
+                    >
+                        {gradePercent}%
+                    </div>
+                    <div>
+                        <p className={styles.attemptResultTitle}>
+                            Quiz Results
+                        </p>
+                        <p className={styles.attemptResultSub}>
+                            Score: <strong>{finalScore.toFixed(2)}</strong> /{" "}
+                            {totalPossible.toFixed(2)} points
+                        </p>
+                    </div>
                 </div>
-                <ul className={styles.itemList}>
+
+                <div className={styles.questionResultGrid}>
                     {questions.map((question) => {
                         const points =
                             pointsByQuestionId.get(question.questionId) ?? 0;
                         const isCorrect = points >= question.maxPoints;
 
                         return (
-                            <li className={styles.item} key={question.id}>
-                                <div>
-                                    <span
-                                        style={{
-                                            fontWeight: "500",
-                                            fontSize: "0.9rem",
-                                        }}
-                                    >
-                                        Question {question.questionNumber}
+                            <div
+                                className={`${styles.questionResultCard} ${isCorrect ? styles.questionResultCorrect : styles.questionResultWrong}`}
+                                key={question.id}
+                            >
+                                <div className={styles.questionResultTop}>
+                                    <span className={styles.questionResultNum}>
+                                        Q{question.questionNumber}
                                     </span>
-                                    <p className={styles.meta}>
-                                        {question.prompt}
-                                    </p>
+                                    <span
+                                        className={
+                                            isCorrect
+                                                ? styles.correctBadge
+                                                : styles.wrongBadge
+                                        }
+                                    >
+                                        {isCorrect ? "Correct" : "Wrong"}
+                                    </span>
                                 </div>
-                                <span
-                                    style={{
-                                        fontWeight: "700",
-                                        color: isCorrect
-                                            ? "#166534"
-                                            : "#991b1b",
-                                    }}
-                                >
-                                    {isCorrect ? "Correct" : "Wrong"}
-                                </span>
-                            </li>
+                                <p className={styles.questionResultPrompt}>
+                                    {question.prompt}
+                                </p>
+                            </div>
                         );
                     })}
-                </ul>
+                </div>
             </div>
         );
     }
 
     return (
         <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-                <button
-                    type="button"
-                    onClick={onBack}
-                    className={styles.backButton}
+            <button
+                type="button"
+                onClick={onBack}
+                className={styles.backNavBtn}
+            >
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                 >
-                    ← Back to students
-                </button>
-                <h3>{student.name}</h3>
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Back to students
+            </button>
+            <div className={styles.studentDetailHeader}>
+                <div className={styles.studentAvatar}>
+                    {student.name
+                        ?.trim()
+                        .split(/\s+/)
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((p) => p[0]?.toUpperCase() ?? "")
+                        .join("")}
+                </div>
+                <div>
+                    <h3 className={styles.studentDetailName}>{student.name}</h3>
+                    <p className={styles.meta}>{student.email}</p>
+                </div>
             </div>
 
-            <p className={styles.meta}>{student.email}</p>
+            {attempts.length === 0 ? (
+                <p className={styles.empty} style={{ marginTop: "1.5rem" }}>
+                    No completed attempts yet.
+                </p>
+            ) : (
+                <div className={styles.attemptGrid}>
+                    {attempts.map((attempt) => {
+                        const completedAt = attempt.completedAt
+                            ? new Date(attempt.completedAt)
+                            : null;
+                        const score = Number(attempt.points ?? 0);
 
-            <h4 style={{ marginTop: "1.5rem", marginBottom: "0.5rem" }}>
-                Quiz Attempts
-            </h4>
-
-            <ul className={styles.itemList}>
-                {attempts.map((attempt) => {
-                    const completedAt = attempt.completedAt
-                        ? new Date(attempt.completedAt)
-                        : null;
-
-                    return (
-                        <li key={attempt.id} className={styles.item}>
-                            <div>
-                                <strong>
-                                    {completedAt
-                                        ? completedAt.toLocaleString()
-                                        : "Completed attempt"}
-                                </strong>
-                                <p>
-                                    Score:{" "}
-                                    {Number(attempt.points ?? 0).toFixed(2)}
-                                </p>
-                            </div>
-                            <button
-                                className={styles.viewButton}
-                                onClick={() => setSelectedAttemptId(attempt.id)}
-                                type="button"
+                        return (
+                            <div
+                                key={attempt.id}
+                                className={styles.attemptCard}
                             >
-                                View results
-                            </button>
-                        </li>
-                    );
-                })}
-                {attempts.length === 0 && (
-                    <li className={styles.empty}>No completed attempts yet.</li>
-                )}
-            </ul>
+                                <div className={styles.attemptCardIcon}>
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <rect
+                                            x="9"
+                                            y="2"
+                                            width="6"
+                                            height="4"
+                                            rx="1"
+                                        />
+                                        <path d="M9 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-2" />
+                                        <line x1="9" y1="12" x2="15" y2="12" />
+                                        <line x1="9" y1="16" x2="13" y2="16" />
+                                    </svg>
+                                </div>
+                                <div className={styles.attemptCardBody}>
+                                    <p className={styles.attemptCardDate}>
+                                        {completedAt
+                                            ? completedAt.toLocaleString()
+                                            : "Completed attempt"}
+                                    </p>
+                                    <p className={styles.attemptCardScore}>
+                                        Score:{" "}
+                                        <strong>{score.toFixed(2)}</strong>
+                                    </p>
+                                </div>
+                                <button
+                                    className={styles.studentCardBtn}
+                                    onClick={() =>
+                                        setSelectedAttemptId(attempt.id)
+                                    }
+                                    type="button"
+                                >
+                                    View results
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
