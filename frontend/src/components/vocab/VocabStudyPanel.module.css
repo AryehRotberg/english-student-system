@@ -138,28 +138,48 @@
 .controls {
     display: flex;
     justify-content: center;
-    gap: 0.8rem;
+    gap: 1rem;
 }
 
 .arrowButton {
     align-items: center;
-    background: #111827;
-    border: 1px solid #0f172a;
-    border-radius: 10px;
-    color: #ffffff;
+    background: #ffffff;
+    border: 1.5px solid #d1d5db;
+    border-radius: 999px;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+    color: #111827;
     cursor: pointer;
     display: inline-flex;
-    font-size: 1.08rem;
-    font-weight: 700;
-    height: 42px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    gap: 0.35rem;
+    height: 44px;
     justify-content: center;
-    width: 52px;
+    letter-spacing: 0.01em;
+    padding: 0 1.25rem;
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease,
+        transform 100ms ease;
+}
+
+.arrowButton:hover:not(:disabled) {
+    background: #f8faff;
+    border-color: #93c5fd;
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.15);
+}
+
+.arrowButton:active:not(:disabled) {
+    transform: scale(0.96);
+    box-shadow: none;
 }
 
 .arrowButton:disabled {
-    background: #d1d5db;
-    border-color: #d1d5db;
-    color: #6b7280;
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    box-shadow: none;
+    color: #9ca3af;
     cursor: not-allowed;
 }
 

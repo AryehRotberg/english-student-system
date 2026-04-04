@@ -225,16 +225,48 @@ export function VocabStudyPanel({
                     className={styles.arrowButton}
                     onClick={movePrevious}
                     disabled={currentIndex === 0}
+                    aria-label="Previous card"
                 >
-                    ←
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M12.5 15L7.5 10L12.5 5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                    Prev
                 </button>
                 <button
                     type="button"
                     className={styles.arrowButton}
                     onClick={moveNext}
                     disabled={currentIndex === totalCards - 1}
+                    aria-label="Next card"
                 >
-                    →
+                    Next
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M7.5 5L12.5 10L7.5 15"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
                 </button>
             </div>
         </section>
