@@ -7,7 +7,7 @@ import {
     Res,
     UseGuards,
 } from '@nestjs/common';
-import { AuthGuard, TeacherGuard } from '../../auth/auth.guard';
+import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { SupabaseService } from '../../config/supabase.client';
 import { AudioService } from './audio.service';
 import { CreateSpeechDto } from './dto/create-speech-dto';

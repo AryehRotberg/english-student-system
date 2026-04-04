@@ -24,6 +24,7 @@ class HttpClientService {
             withCredentials: true,
             headers: {
                 "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
             },
         };
     }

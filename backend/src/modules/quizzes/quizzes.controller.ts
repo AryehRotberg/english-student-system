@@ -7,7 +7,7 @@ import {
     Post,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { QuizzesService } from './quizzes.service';
 

@@ -9,7 +9,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { CreateQuestionOptionDto } from './dto/create-question-option.dto';
 import { GetQuestionOptionsFilterDto } from './dto/get-question-options-filter.dto';
 import { UpdateQuestionOptionDto } from './dto/update-question-option.dto';

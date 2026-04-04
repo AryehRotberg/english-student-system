@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthGuard, TeacherGuard } from '../../auth/auth.guard';
+import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { HashingService } from '../../auth/hashing.service';
 import { JwtService } from '../../auth/jwt.service';
 import { UsersController } from './users.controller';

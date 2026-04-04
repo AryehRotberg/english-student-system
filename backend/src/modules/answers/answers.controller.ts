@@ -9,7 +9,7 @@ import {
     Post,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDto } from './dto/create-answer.dto';
 import { UpdateAnswerDto } from './dto/update-answer.dto';

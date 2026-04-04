@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { AssignmentsService } from './assignments.service';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { GetAssignmentsFilterDto } from './dto/get-assignments-filter.dto';

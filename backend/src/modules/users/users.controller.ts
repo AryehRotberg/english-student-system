@@ -6,7 +6,7 @@ import {
     ParseUUIDPipe,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')

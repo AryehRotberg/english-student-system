@@ -1,8 +1,10 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import { AppModule } from './app.module';
+import { CsrfGuard } from './auth/guards/csrf.guard';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -27,7 +29,7 @@ async function bootstrap() {
         origin: ['http://localhost:5173', process.env.FRONTEND_URL],
         credentials: true,
         methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     });
 
     app.useGlobalPipes(
@@ -39,6 +41,8 @@ async function bootstrap() {
     );
 
     app.use(cookieParser());
+    app.use(helmet());
+    app.useGlobalGuards(new CsrfGuard());
 
     await app.listen(process.env.PORT ?? 3000);
 }

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { CreateVocabularyTopicWordDto } from './dto/create-vocabulary-topic-word.dto';
 import { GetVocabularyTopicWordsFilterDto } from './dto/get-vocabulary-topic-words-filter.dto';
 import { VocabularyTopicWordsService } from './vocabulary-topic-words.service';

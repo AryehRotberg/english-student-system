@@ -9,7 +9,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { CreateQuizQuestionDto } from './dto/create-quiz-question.dto';
 import { GetQuizQuestionsFilterDto } from './dto/get-quiz-questions-filter.dto';
 import { UpdateQuizQuestionDto } from './dto/update-quiz-question.dto';

@@ -8,7 +8,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { CreateQuizAttemptDto } from './dto/create-quiz-attempt.dto';
 import { GetQuizAttemptsFilterDto } from './dto/get-quiz-attempts-filter.dto';
 import { QuizAttemptsService } from './quiz-attempts.service';

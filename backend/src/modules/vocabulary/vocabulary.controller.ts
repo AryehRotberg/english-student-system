@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/auth.guard';
+import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
 import { VocabularyService } from './vocabulary.service';
 

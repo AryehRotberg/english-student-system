@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AuthGuard, TeacherGuard } from '../../auth/auth.guard';
+import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { JwtService } from '../../auth/jwt.service';
 import { UsersModule } from '../users/users.module';
 import { QuizAttemptsController } from './quiz-attempts.controller';
