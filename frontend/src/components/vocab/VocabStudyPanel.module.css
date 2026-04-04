@@ -63,6 +63,7 @@
     perspective: 1200px;
     width: 100%;
     outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .cardViewport:focus-visible {

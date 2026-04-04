@@ -21,7 +21,7 @@ export class AudioController {
     ) {}
 
     @Post('tts')
-    // @UseGuards(TeacherGuard)
+    @UseGuards(TeacherGuard)
     async convertTextToSpeech(
         @Body() createSpeechDto: CreateSpeechDto,
         @Res() res,
@@ -36,7 +36,7 @@ export class AudioController {
     }
 
     @Get('download')
-    // @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard)
     async downloadAudio(
         @Res() res,
         @Query() downloadAudioDto: DownloadAudioDto,
