@@ -9,6 +9,7 @@ import { AiContentsModule } from './modules/ai-contents/ai-contents.module';
 import { AnswersModule } from './modules/answers/answers.module';
 import { AssignmentItemsModule } from './modules/assignment-items/assignment-items.module';
 import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { AudioModule } from './modules/audio/audio.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { QuestionOptionsModule } from './modules/question-options/question-options.module';
@@ -25,7 +26,6 @@ import { VocabularyTopicsModule } from './modules/vocabulary-topics/vocabulary-t
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { WritingSubmissionsModule } from './modules/writing-submissions/writing-submissions.module';
 import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module';
-import { TexttospeechModule } from './modules/texttospeech/texttospeech.module';
 
 @Module({
     imports: [
@@ -61,7 +61,7 @@ import { TexttospeechModule } from './modules/texttospeech/texttospeech.module';
         DashboardModule,
         LlmModule,
         AiContentsModule,
-        TexttospeechModule,
+        AudioModule,
     ],
     controllers: [AppController],
     providers: [AppService],

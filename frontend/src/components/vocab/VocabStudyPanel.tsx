@@ -1,6 +1,53 @@
 import { useMemo, useState } from "react";
+import { useVocabAudio } from "../../hooks/queries";
+import { AudioNotFoundError } from "../../services/audio.service";
+import type { VocabAudioType } from "../../services/audio.service";
 import type { VocabularyTopicWithWords } from "../../types/vocabulary";
 import styles from "./VocabStudyPanel.module.css";
+
+type AudioButtonProps = {
+    word: string;
+    type: VocabAudioType;
+    label: string;
+};
+
+function AudioButton({ word, type, label }: AudioButtonProps) {
+    const { data: url, isLoading, isError, error } = useVocabAudio(word, type);
+
+    const handlePlay = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (url) {
+            new Audio(url).play().catch(() => undefined);
+        }
+    };
+
+    if (isError) {
+        if (error instanceof AudioNotFoundError) {
+            return (
+                <span className={styles.audioUnavailable}>
+                    &#x1F507; {label} audio unavailable
+                </span>
+            );
+        }
+        return (
+            <span className={styles.audioError}>
+                &#x26A0;&#xFE0F; {label} audio failed to load
+            </span>
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            className={`${styles.audioButton}${isLoading ? ` ${styles.audioButtonLoading}` : ""}`}
+            onClick={handlePlay}
+            disabled={isLoading || !url}
+            aria-label={`Play ${label} audio for ${word}`}
+        >
+            {isLoading ? "Loading\u2026" : `\uD83D\uDD0A ${label}`}
+        </button>
+    );
+}
 
 type VocabStudyPanelProps = {
     topic: VocabularyTopicWithWords;
@@ -107,10 +154,17 @@ export function VocabStudyPanel({
                 />
             </div>
 
-            <button
-                type="button"
+            <div
+                role="button"
+                tabIndex={0}
                 className={styles.cardViewport}
                 onClick={() => setIsFlipped((value) => !value)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setIsFlipped((value) => !value);
+                    }
+                }}
                 aria-label={isFlipped ? "Show front side" : "Show back side"}
             >
                 <div
@@ -121,20 +175,41 @@ export function VocabStudyPanel({
                     >
                         <h3 className={styles.word}>{currentCard.word}</h3>
                         <p className={styles.hint}>Tap card to flip</p>
+                        <div className={styles.audioRow}>
+                            <AudioButton
+                                word={currentCard.word}
+                                type="word"
+                                label="Pronunciation"
+                            />
+                        </div>
                     </article>
 
                     <article
                         className={`${styles.cardFace} ${styles.cardBack}`}
                     >
                         <div className={styles.details}>
-                            <p>
-                                <strong>Meaning:</strong>{" "}
-                                {currentCard.meaning || "-"}
-                            </p>
-                            <p>
-                                <strong>Example:</strong>{" "}
-                                {currentCard.example || "-"}
-                            </p>
+                            <div className={styles.detailItem}>
+                                <p>
+                                    <strong>Meaning:</strong>{" "}
+                                    {currentCard.meaning || "-"}
+                                </p>
+                                <AudioButton
+                                    word={currentCard.word}
+                                    type="meaning"
+                                    label="Meaning"
+                                />
+                            </div>
+                            <div className={styles.detailItem}>
+                                <p>
+                                    <strong>Example:</strong>{" "}
+                                    {currentCard.example || "-"}
+                                </p>
+                                <AudioButton
+                                    word={currentCard.word}
+                                    type="example"
+                                    label="Example"
+                                />
+                            </div>
                             <p>
                                 <strong>Translation:</strong>{" "}
                                 {currentCard.translation || "-"}
@@ -142,7 +217,7 @@ export function VocabStudyPanel({
                         </div>
                     </article>
                 </div>
-            </button>
+            </div>
 
             <div className={styles.controls}>
                 <button

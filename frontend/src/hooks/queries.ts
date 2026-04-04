@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { answersService } from "../services/answers.service";
+import { audioService } from "../services/audio.service";
+import type { VocabAudioType } from "../services/audio.service";
 import { authService } from "../services/auth.service";
 import { dashboardService } from "../services/dashboard.service";
 import { questionOptionsService } from "../services/question-options.service";
@@ -177,5 +179,15 @@ export function useStudentQuizAttempts(studentId?: string) {
         queryKey: ["student-quiz-attempts", studentId],
         enabled: Boolean(studentId),
         queryFn: () => quizAttemptsService.listByStudentId(studentId as string),
+    });
+}
+
+export function useVocabAudio(word: string, type: VocabAudioType) {
+    return useQuery<string>({
+        queryKey: ["vocab-audio", word.toLowerCase(), type],
+        queryFn: () => audioService.fetchVocabAudio(word, type),
+        retry: false,
+        staleTime: Infinity,
+        gcTime: Infinity,
     });
 }

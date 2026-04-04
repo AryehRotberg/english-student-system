@@ -16,4 +16,14 @@ export class CreateSpeechDto {
     @IsOptional()
     @ApiProperty({ required: false })
     speed?: number;
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({ required: false })
+    bucket?: string;
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({ required: false })
+    path?: string;
 }

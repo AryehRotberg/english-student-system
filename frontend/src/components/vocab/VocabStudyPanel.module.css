@@ -55,7 +55,6 @@
 
 .cardViewport {
     background: transparent;
-    border: none;
     cursor: pointer;
     display: block;
     margin: 0 auto;
@@ -63,6 +62,13 @@
     padding: 0;
     perspective: 1200px;
     width: 100%;
+    outline: none;
+}
+
+.cardViewport:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 4px;
+    border-radius: 14px;
 }
 
 .cardInner {
@@ -159,6 +165,59 @@
 .emptyState {
     color: #6b7280;
     margin: 0;
+}
+
+.audioRow {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.audioButton {
+    align-items: center;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    color: #1d4ed8;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.82rem;
+    font-weight: 600;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+}
+
+.audioButton:hover:not(:disabled) {
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.audioButton:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.audioButtonLoading {
+    color: #6b7280;
+    border-color: #e5e7eb;
+    background: #f9fafb;
+}
+
+.audioUnavailable {
+    color: #9ca3af;
+    font-size: 0.78rem;
+}
+
+.audioError {
+    color: #dc2626;
+    font-size: 0.78rem;
 }
 
 @media (max-width: 640px) {

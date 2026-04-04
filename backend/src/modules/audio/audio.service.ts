@@ -1,12 +1,14 @@
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import Sentry from '../../config/sentry';
+import { SupabaseService } from '../../config/supabase.client';
 import { CreateSpeechDto } from './dto/create-speech-dto';
 
 @Injectable()
-export class TexttospeechService {
+export class AudioService {
     private elevenlabs: ElevenLabsClient;
 
-    constructor() {
+    constructor(private readonly supabaseService: SupabaseService) {
         this.elevenlabs = new ElevenLabsClient();
     }
 
@@ -14,7 +16,9 @@ export class TexttospeechService {
         const {
             text,
             voiceId = 'BtWabtumIemAotTjP5sk',
-            speed = 0.9,
+            speed = 1.0,
+            bucket,
+            path,
         } = createSpeechDto;
 
         try {
@@ -30,16 +34,27 @@ export class TexttospeechService {
                 },
             );
 
-            const chunks: Uint8Array[] = [];
+            const buffer = await this.streamToBuffer(audioStream);
 
-            for await (const chunk of audioStream) {
-                chunks.push(chunk);
+            if (bucket && path) {
+                await this.supabaseService.uploadToBucket(buffer, bucket, path);
             }
 
-            return Buffer.concat(chunks);
+            return buffer;
         } catch (error) {
             console.error('Error converting text to speech:', error);
+            Sentry.captureException(error);
             throw error;
         }
+    }
+
+    private async streamToBuffer(
+        stream: AsyncIterable<Uint8Array>,
+    ): Promise<Buffer> {
+        const chunks: Uint8Array[] = [];
+        for await (const chunk of stream) {
+            chunks.push(chunk);
+        }
+        return Buffer.concat(chunks);
     }
 }
