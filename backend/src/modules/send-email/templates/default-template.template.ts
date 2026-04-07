@@ -4,7 +4,7 @@ type HtmlBodyTemplateParams = {
     cards?: string;
 };
 
-export const htmlBody = (
+export const defaultTemplate = (
     { title, body, cards = '' }: HtmlBodyTemplateParams,
     portalUrl: string,
 ): string => {

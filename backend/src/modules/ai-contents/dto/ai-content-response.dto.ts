@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AiContent } from '../entities.ts/ai-content';
+import { AiContent } from '../entities/ai-content';
 
 export class AiContentResponseDto {
     @ApiProperty()

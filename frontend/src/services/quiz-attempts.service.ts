@@ -34,8 +34,11 @@ class QuizAttemptsService {
         points?: number;
         startedAt?: string;
         completedAt?: string;
-    }) {
-        const response = await this.httpClient.post("/quiz-attempts", payload);
+    }): Promise<QuizAttemptApiItem> {
+        const response = await this.httpClient.post<QuizAttemptApiItem>(
+            "/quiz-attempts",
+            payload,
+        );
         return response.data;
     }
 

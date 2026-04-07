@@ -1,15 +1,13 @@
+-- Uses v_assignment_item_progress view (see backend/src/db/views/v_assignment_item_progress.sql)
 SELECT
-	AI.CONTENT_TYPE AS "contentType",
-	COUNT(*)::INT AS "totalItems",
-	COUNT(*) FILTER (
-		WHERE
-			AI.STATUS = 'completed'
-	)::INT AS "completedItems"
+	P.CONTENT_TYPE AS "contentType",
+	SUM(P.TOTAL_ITEMS)::INT AS "totalItems",
+	SUM(P.COMPLETED_ITEMS)::INT AS "completedItems"
 FROM
-	PUBLIC.ASSIGNMENT_ITEMS AI
-	JOIN PUBLIC.ASSIGNMENTS A ON AI.ASSIGNMENT_ID = A.ID
+	V_ASSIGNMENT_ITEM_PROGRESS P
+	JOIN PUBLIC.ASSIGNMENTS A ON A.ID = P.ASSIGNMENT_ID
 WHERE
 	A.USER_ID = $1
 	AND A.STATUS = 'assigned'
 GROUP BY
-	AI.CONTENT_TYPE;
+	P.CONTENT_TYPE;

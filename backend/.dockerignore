@@ -1,0 +1,67 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+# package-lock.json is needed for npm ci
+
+# Environment files
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+*.md
+CHANGELOG.md
+LICENSE
+
+# Test files
+test
+tests
+__tests__
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+coverage
+.nyc_output
+
+# Build files (keep these out of Docker)
+dist
+build
+
+# Logs
+logs
+*.log
+
+# Docker & deployment scripts
+Dockerfile
+.dockerignore
+docker-compose.yml
+google_cloud_run.sh
+deploy-gcp.sh
+build-docker.sh
+run-docker.sh
+*.sh
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml

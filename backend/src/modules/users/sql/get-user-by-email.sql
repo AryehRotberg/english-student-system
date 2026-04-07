@@ -1,11 +1,14 @@
 SELECT
-    ID,
-    NAME,
-    EMAIL,
-    PASSWORD,
-    ROLE,
-    CREATED_AT AS "createdAt"
+	U.ID,
+	U.NAME,
+	U.EMAIL,
+	U.PASSWORD,
+	U.ROLE,
+	T.NAME AS "teacherName",
+	T.EMAIL AS "teacherEmail",
+	U.CREATED_AT AS "createdAt"
 FROM
-    USERS
+	USERS U
+	LEFT JOIN USERS T ON T.ID = U.TEACHER_ID
 WHERE
-    EMAIL = $1;
+	U.EMAIL = $1;

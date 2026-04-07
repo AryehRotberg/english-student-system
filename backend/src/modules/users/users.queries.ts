@@ -15,11 +15,6 @@ export const getAllUsersQuery = PostgresService.readSql(
     'get-all-users.sql',
 );
 
-export const getAllStudentsQuery = PostgresService.readSql(
-    __dirname,
-    'get-all-students.sql',
-);
-
 export const deleteUserQuery = PostgresService.readSql(
     __dirname,
     'delete-user.sql',

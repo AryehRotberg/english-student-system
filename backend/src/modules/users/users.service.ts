@@ -6,7 +6,7 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './entities/user.entity';
 import {
     deleteUserQuery,
-    getAllStudentsQuery,
+    getAllUsersQuery,
     getUserByEmailQuery,
     insertUserQuery,
 } from './users.queries';
@@ -49,8 +49,8 @@ export class UsersService {
     }
 
     async getAllStudents(): Promise<UserResponseDto[]> {
-        const students =
-            await this.postgresService.query<User>(getAllStudentsQuery);
+        const users = await this.postgresService.query<User>(getAllUsersQuery);
+        const students = users.filter((user) => user.role === 'student');
         return UserResponseDto.fromEntities(students);
     }
 

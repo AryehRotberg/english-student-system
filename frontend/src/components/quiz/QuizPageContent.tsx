@@ -16,13 +16,14 @@ import {
     useStudentAnswersByAttempt,
 } from "../../hooks/queries";
 import styles from "../../pages/Quiz/QuizPage.module.css";
-import { assignmentEmailService } from "../../services/assignment-email.service";
+import { sendEmailService } from "../../services/send-email.service";
 
 type QuizPageContentProps = {
     quizId: string;
+    quizTitle: string;
 };
 
-export function QuizPageContent({ quizId }: QuizPageContentProps) {
+export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     const [isCompleted, setIsCompleted] = useState(false);
     const [viewAttemptId, setViewAttemptId] = useState<string | null>(null);
 
@@ -58,13 +59,26 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
             !hasAutoStarted.current
         ) {
             hasAutoStarted.current = true;
-            startAttemptMutation.mutate({ quizId, userId: user.id });
+            void (async () => {
+                const attempt = await startAttemptMutation.mutateAsync({
+                    quizId,
+                    userId: user.id,
+                });
+                await sendEmailService.sendCustomEmail({
+                    name: user.name,
+                    email: user.teacherEmail!,
+                    subject: `${user.name} has started quiz "${quizTitle}"`,
+                    title: `Quiz Attempt Started`,
+                    body: `${user.name} has started a quiz attempt for quiz ${quizTitle} on ${new Date(attempt.startedAt).toLocaleString()}.`,
+                });
+            })();
         }
     }, [
         isAttemptLoading,
         attempts.length,
         user?.id,
         quizId,
+        quizTitle,
         startAttemptMutation,
     ]);
 
@@ -121,9 +135,7 @@ export function QuizPageContent({ quizId }: QuizPageContentProps) {
         setIsCompleted(true);
         setViewAttemptId(attemptId);
 
-        if (user?.id) {
-            await assignmentEmailService.sendCompletionEmail(attemptId);
-        }
+        await sendEmailService.sendCompletionEmail(attemptId);
     };
 
     const handleViewAttempt = (id: string) => {

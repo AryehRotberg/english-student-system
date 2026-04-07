@@ -4,5 +4,7 @@ export interface User {
     email: string;
     password: string;
     role: string;
+    teacherName?: string | null;
+    teacherEmail?: string | null;
     createdAt: Date;
 }

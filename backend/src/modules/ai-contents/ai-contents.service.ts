@@ -6,7 +6,7 @@ import {
 } from './ai-contents.queries';
 import { AiContentResponseDto } from './dto/ai-content-response.dto';
 import { CreateAiContentDto } from './dto/create-ai-content.dto';
-import { AiContent } from './entities.ts/ai-content';
+import { AiContent } from './entities/ai-content';
 
 @Injectable()
 export class AiContentsService {

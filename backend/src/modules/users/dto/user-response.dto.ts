@@ -1,5 +1,5 @@
-import { User } from '../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../entities/user.entity';
 
 export class UserResponseDto {
     @ApiProperty()
@@ -10,6 +10,10 @@ export class UserResponseDto {
     readonly email: string;
     @ApiProperty()
     readonly role: string;
+    @ApiProperty()
+    readonly teacherName?: string | null;
+    @ApiProperty()
+    readonly teacherEmail?: string | null;
     @ApiProperty()
     readonly createdAt: Date;
 
@@ -23,7 +27,9 @@ export class UserResponseDto {
             name: user.name,
             email: user.email,
             role: user.role,
-            createdAt: user.createdAt
+            teacherName: user.teacherName,
+            teacherEmail: user.teacherEmail,
+            createdAt: user.createdAt,
         });
     }
 
