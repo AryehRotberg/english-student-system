@@ -59,14 +59,11 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
             !hasAutoStarted.current
         ) {
             hasAutoStarted.current = true;
-            console.log("Auto-starting quiz attempt for user", user.id);
             void (async () => {
                 const attempt = await startAttemptMutation.mutateAsync({
                     quizId,
                     userId: user.id,
                 });
-
-                console.log("Started quiz attempt with ID", attempt.id);
 
                 await sendEmailService.sendCustomEmail({
                     name: user.name,
@@ -75,8 +72,6 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
                     title: `Quiz Attempt Started`,
                     body: `${user.name} has started a quiz attempt for quiz ${quizTitle} on ${new Date(attempt.startedAt).toLocaleString()}.`,
                 });
-
-                console.log("Sent quiz start email notification for attempt ID", attempt.id);
             })();
         }
     }, [
