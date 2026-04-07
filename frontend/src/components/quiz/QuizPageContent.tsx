@@ -62,7 +62,7 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
             email: user.teacherEmail!,
             subject: `${user.name} has started quiz "${quizTitle}"`,
             title: `Quiz Attempt Started`,
-            body: `${user.name} has started a quiz attempt for quiz ${quizTitle} on ${new Date(attempt.startedAt).toLocaleString()}.`,
+            body: `${user.name} has started a quiz attempt for quiz "${quizTitle}" on ${new Date(attempt.startedAt).toLocaleString()}.`,
         });
     }, [quizId, quizTitle, user, startAttemptMutation]);
 
