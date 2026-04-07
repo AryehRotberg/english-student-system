@@ -16,6 +16,7 @@ export function VocabPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const { data: topics = [] } = useVocabularyTopics();
     const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+    const [filterQuery, setFilterQuery] = useState("");
 
     const topicIdFromUrl = searchParams.get("topicId");
     const activeTopicId = selectedTopicId ?? topicIdFromUrl;
@@ -49,6 +50,12 @@ export function VocabPage() {
                   words,
               };
 
+    const filteredTopics = filterQuery.trim()
+        ? topics.filter((t) =>
+              t.topic.toLowerCase().includes(filterQuery.toLowerCase()),
+          )
+        : topics;
+
     const handleSelectTopic = (topic: VocabularyTopicPreview) => {
         setSelectedTopicId(topic.id);
         setSearchParams({ topicId: topic.id });
@@ -69,16 +76,52 @@ export function VocabPage() {
                 />
             ) : (
                 <section className={styles.topicSection}>
-                    <h2 className={styles.heading}>Vocabulary Studio</h2>
+                    <div className={styles.sectionHeader}>
+                        <div>
+                            <h1 className={styles.heading}>
+                                Vocabulary Studio
+                            </h1>
+                            <p className={styles.subtitle}>
+                                Select a topic to study and expand your
+                                vocabulary.
+                            </p>
+                        </div>
+                        <div className={styles.filterWrap}>
+                            <svg
+                                className={styles.filterIcon}
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                                width="18"
+                                height="18"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                />
+                            </svg>
+                            <input
+                                className={styles.filterInput}
+                                type="search"
+                                placeholder="Filter by topic…"
+                                value={filterQuery}
+                                onChange={(e) => setFilterQuery(e.target.value)}
+                                aria-label="Filter vocabulary topics"
+                            />
+                        </div>
+                    </div>
 
-                    {topics.length > 0 ? (
+                    {filteredTopics.length > 0 ? (
                         <VocabularyTopicGrid
-                            topics={topics}
+                            topics={filteredTopics}
                             onSelectTopic={handleSelectTopic}
                         />
                     ) : (
                         <p className={styles.emptyState}>
-                            No vocabulary topics found yet.
+                            {filterQuery.trim()
+                                ? "No topics match your search."
+                                : "No vocabulary topics found yet."}
                         </p>
                     )}
                 </section>

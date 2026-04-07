@@ -1,123 +1,157 @@
 .page {
-  background: #f8fafc;
-  border-radius: 12px;
-  display: grid;
-  gap: 0;
-  margin-top: 0.25rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: grid;
+    gap: 0;
+    margin-top: 0.25rem;
 }
 
 .content {
-  padding: 1.3rem;
+    padding: 1.3rem;
 }
 
 .introRow {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.6rem;
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.6rem;
 }
 
 .heading {
-  color: #0f172a;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  font-size: clamp(1.8rem, 2.8vw, 2.05rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0;
+    color: #0f172a;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-size: clamp(1.8rem, 2.8vw, 2.05rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
 }
 
 .subtitle {
-  color: #64748b;
-  margin: 0.45rem 0 0;
+    color: #64748b;
+    margin: 0.45rem 0 0;
 }
 
 .grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
 .card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  display: flex;
-  flex-direction: column;
-  min-height: 208px;
-  padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    min-height: 208px;
+    padding: 1rem;
 }
 
 .title {
-  color: #0f172a;
-  font-size: 1.08rem;
-  font-weight: 700;
-  line-height: 1.35;
-  margin: 0;
+    color: #0f172a;
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0;
 }
 
 .description {
-  color: #475569;
-  flex-grow: 1;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  margin: 0.55rem 0 1rem;
+    color: #475569;
+    flex-grow: 1;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0.55rem 0 1rem;
 }
 
 .cta {
-  align-items: center;
-  background: #2563eb;
-  border: none;
-  border-radius: 10px;
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 0.95rem;
-  font-weight: 700;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-top: auto;
-  min-height: 42px;
-  padding: 0.6rem 0.9rem;
-  transition: background-color 0.18s ease;
-  width: 100%;
+    align-items: center;
+    background: #2563eb;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.95rem;
+    font-weight: 700;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: auto;
+    min-height: 42px;
+    padding: 0.6rem 0.9rem;
+    transition: background-color 0.18s ease;
+    width: 100%;
 }
 
 .cta:hover {
-  background: #1d4ed8;
+    background: #1d4ed8;
 }
 
 .ctaIcon {
-  height: 20px;
-  width: 20px;
+    height: 20px;
+    width: 20px;
 }
 
 .emptyWrap {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.filterWrap {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.filterWrap:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.filterIcon {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.filterInput {
+    background: transparent;
+    border: none;
+    color: #0f172a;
+    font-size: 0.9rem;
+    outline: none;
+    width: 200px;
 }
 
 .empty {
-  color: #64748b;
-  margin: 0;
+    color: #64748b;
+    margin: 0;
 }
 
 @media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (min-width: 1120px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+    .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 640px) {
-  .content {
-    padding: 1rem;
-  }
+    .content {
+        padding: 1rem;
+    }
 }

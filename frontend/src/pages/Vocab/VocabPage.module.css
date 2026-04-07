@@ -12,10 +12,59 @@
     padding: 1rem;
 }
 
+.sectionHeader {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 1.6rem;
+}
+
 .heading {
-    color: #111827;
-    font-size: 1.2rem;
+    color: #0f172a;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-size: clamp(1.8rem, 2.8vw, 2.05rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
     margin: 0;
+}
+
+.subtitle {
+    color: #64748b;
+    margin: 0.45rem 0 0;
+}
+
+.filterWrap {
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.filterWrap:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.filterIcon {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.filterInput {
+    background: transparent;
+    border: none;
+    color: #0f172a;
+    font-size: 0.9rem;
+    outline: none;
+    width: 200px;
 }
 
 .topicGrid {
