@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { QuizActiveView } from "../../components/quiz/QuizActiveView";
 import { QuizResultsPanel } from "../../components/quiz/QuizResultsPanel";
 import { QuizRetakeScreen } from "../../components/quiz/QuizRetakeScreen";
@@ -51,6 +51,21 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
         selectedAttemptId ?? undefined,
     );
 
+    const startAttemptAndNotify = useCallback(async () => {
+        if (!user?.id) return;
+        const attempt = await startAttemptMutation.mutateAsync({
+            quizId,
+            userId: user.id,
+        });
+        await sendEmailService.sendCustomEmail({
+            name: user.name,
+            email: user.teacherEmail!,
+            subject: `${user.name} has started quiz "${quizTitle}"`,
+            title: `Quiz Attempt Started`,
+            body: `${user.name} has started a quiz attempt for quiz ${quizTitle} on ${new Date(attempt.startedAt).toLocaleString()}.`,
+        });
+    }, [quizId, quizTitle, user, startAttemptMutation]);
+
     useEffect(() => {
         if (
             !isAttemptLoading &&
@@ -59,29 +74,9 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
             !hasAutoStarted.current
         ) {
             hasAutoStarted.current = true;
-            void (async () => {
-                const attempt = await startAttemptMutation.mutateAsync({
-                    quizId,
-                    userId: user.id,
-                });
-
-                await sendEmailService.sendCustomEmail({
-                    name: user.name,
-                    email: user.teacherEmail!,
-                    subject: `${user.name} has started quiz "${quizTitle}"`,
-                    title: `Quiz Attempt Started`,
-                    body: `${user.name} has started a quiz attempt for quiz ${quizTitle} on ${new Date(attempt.startedAt).toLocaleString()}.`,
-                });
-            })();
+            void startAttemptAndNotify();
         }
-    }, [
-        isAttemptLoading,
-        attempts.length,
-        user?.id,
-        quizId,
-        quizTitle,
-        startAttemptMutation,
-    ]);
+    }, [isAttemptLoading, attempts.length, user?.id, startAttemptAndNotify]);
 
     const completedAttempts = attempts.filter(
         (attempt) => attempt.completedAt !== null,
@@ -119,11 +114,9 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     }
 
     const handleStartOrRetake = async () => {
-        if (user?.id) {
-            setIsCompleted(false);
-            setViewAttemptId(null);
-            await startAttemptMutation.mutateAsync({ quizId, userId: user.id });
-        }
+        setIsCompleted(false);
+        setViewAttemptId(null);
+        await startAttemptAndNotify();
     };
 
     const handleQuestionSubmitted = async (isLastQuestion: boolean) => {

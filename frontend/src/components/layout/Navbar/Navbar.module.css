@@ -22,8 +22,10 @@
 
 .logoWrap {
     align-items: center;
+    cursor: pointer;
     display: inline-flex;
     gap: 0.75rem;
+    text-decoration: none;
 }
 
 .menuToggle {

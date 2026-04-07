@@ -62,12 +62,12 @@ export function Navbar({ sticky = true }: NavbarProps) {
                     .filter(Boolean)
                     .join(" ")}
             >
-                <div className={styles.logoWrap}>
+                <NavLink to="/" className={styles.logoWrap}>
                     <img src="/open-book.png" alt="" width="24" height="24" />
                     <span className={styles.logoText}>
                         English Student System
                     </span>
-                </div>
+                </NavLink>
 
                 <nav className={styles.nav} aria-label="Primary navigation">
                     {user?.role !== "teacher" &&
