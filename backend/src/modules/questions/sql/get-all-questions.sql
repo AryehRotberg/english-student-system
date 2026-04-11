@@ -3,7 +3,6 @@ SELECT
     QUESTION,
     QUESTION_TYPE AS "questionType",
     HINTS,
-    AUDIO_URL AS "audioUrl",
     CREATED_AT AS "createdAt"
 FROM
     QUESTIONS

@@ -26,7 +26,8 @@ export class AudioService {
                 voiceId,
                 {
                     text: text,
-                    modelId: 'eleven_flash_v2_5',
+                    // modelId: 'eleven_flash_v2_5',
+                    modelId: 'eleven_v3',
                     voiceSettings: {
                         speed: speed,
                     },

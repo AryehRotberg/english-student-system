@@ -15,7 +15,6 @@ SELECT
     I.QUESTION_ID AS "questionId",
     Q.QUESTION,
     Q.QUESTION_TYPE AS "questionType",
-    Q.AUDIO_URL AS "audioUrl",
     I.MAX_POINTS AS "maxPoints"
 FROM
     inserted I

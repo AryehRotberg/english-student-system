@@ -23,14 +23,12 @@ class AudioService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    async fetchVocabAudio(word: string, type: VocabAudioType): Promise<string> {
-        const path = buildVocabPath(word, type);
-
+    private async downloadAudio(bucket: string, path: string): Promise<string> {
         try {
             const response = await this.httpClient.get<ArrayBuffer>(
                 "/audio/download",
                 {
-                    params: { bucket: "vocabulary", path },
+                    params: { bucket, path },
                     responseType: "arraybuffer",
                 },
             );
@@ -43,6 +41,14 @@ class AudioService {
             }
             throw err;
         }
+    }
+
+    fetchVocabAudio(word: string, type: VocabAudioType): Promise<string> {
+        return this.downloadAudio("vocabulary", buildVocabPath(word, type));
+    }
+
+    fetchQuestionAudio(questionId: string): Promise<string> {
+        return this.downloadAudio("questions", `${questionId}.mp3`);
     }
 }
 

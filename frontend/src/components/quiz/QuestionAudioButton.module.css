@@ -1,0 +1,28 @@
+.speakerButton {
+    align-items: center;
+    background: transparent;
+    border: 1px solid #c8cfee;
+    border-radius: 8px;
+    color: var(--ink-700);
+    cursor: pointer;
+    display: flex;
+    flex-shrink: 0;
+    padding: 0.3rem 0.4rem;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+.speakerButton:hover:not(:disabled) {
+    background: #eef1ff;
+    color: #2a5bff;
+}
+
+.speakerButton:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.speakerButtonLoading {
+    opacity: 0.6;
+}

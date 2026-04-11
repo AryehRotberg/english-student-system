@@ -18,11 +18,11 @@ export class QuestionsService {
     async create(
         createQuestionDto: CreateQuestionDto,
     ): Promise<QuestionResponseDto> {
-        const { question, questionType, audioUrl } = createQuestionDto;
+        const { question, questionType } = createQuestionDto;
 
         const [result] = await this.postgresService.query<Question>(
             createQuestionQuery,
-            [question, questionType, audioUrl ?? null],
+            [question, questionType],
         );
 
         return QuestionResponseDto.fromEntity(result);

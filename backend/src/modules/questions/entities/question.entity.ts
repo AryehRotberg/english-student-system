@@ -3,6 +3,5 @@ export class Question {
     question: string;
     hints: string;
     questionType: string;
-    audioUrl: string | null;
     createdAt: Date;
 }
