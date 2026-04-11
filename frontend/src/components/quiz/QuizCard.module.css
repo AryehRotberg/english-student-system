@@ -17,11 +17,20 @@
     margin: 0 0 1rem;
 }
 
+.promptRow {
+    align-items: flex-start;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin: 0 0 1rem;
+}
+
 .prompt {
     color: var(--ink-900);
+    flex: 1;
     font-family: "Sora", sans-serif;
     font-size: 1.22rem;
-    margin: 0 0 1rem;
+    margin: 0;
 }
 
 .options {

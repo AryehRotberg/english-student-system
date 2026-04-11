@@ -1,5 +1,5 @@
-import { Question } from '../entities/question.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Question } from '../entities/question.entity';
 
 export class QuestionResponseDto {
     @ApiProperty()
@@ -10,8 +10,6 @@ export class QuestionResponseDto {
     readonly hints: string;
     @ApiProperty()
     readonly questionType: string;
-    @ApiProperty()
-    readonly audioUrl: string | null;
     @ApiProperty()
     readonly createdAt: Date;
 
@@ -25,7 +23,6 @@ export class QuestionResponseDto {
             question: question.question,
             hints: question.hints,
             questionType: question.questionType,
-            audioUrl: question.audioUrl,
             createdAt: question.createdAt,
         });
     }

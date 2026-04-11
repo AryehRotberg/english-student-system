@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSubmitStudentAnswer } from "../../hooks/mutations";
 import type { QuizQuestion } from "../../types/quiz";
 import { isUuid } from "../../utils/isUuid";
+import { QuestionAudioButton } from "./QuestionAudioButton";
 import styles from "./QuizCard.module.css";
 
 type QuizCardProps = {
@@ -49,7 +50,10 @@ export function QuizCard({
                 Question {question.questionNumber} / {question.totalQuestions}
             </p>
 
-            <h2 className={styles.prompt}>{question.prompt}</h2>
+            <div className={styles.promptRow}>
+                <h2 className={styles.prompt}>{question.prompt}</h2>
+                <QuestionAudioButton questionId={question.questionId} />
+            </div>
 
             {question.hints && (
                 <p className={styles.hints}>Hint: {question.hints}</p>

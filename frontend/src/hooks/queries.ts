@@ -182,12 +182,28 @@ export function useStudentQuizAttempts(studentId?: string) {
     });
 }
 
-export function useVocabAudio(word: string, type: VocabAudioType) {
-    return useQuery<string>({
-        queryKey: ["vocab-audio", word.toLowerCase(), type],
-        queryFn: () => audioService.fetchVocabAudio(word, type),
+function audioQuery(queryKey: unknown[], queryFn: () => Promise<string>) {
+    return {
+        queryKey,
+        queryFn,
         retry: false,
         staleTime: Infinity,
         gcTime: Infinity,
-    });
+    } as const;
+}
+
+export function useVocabAudio(word: string, type: VocabAudioType) {
+    return useQuery<string>(
+        audioQuery(["vocab-audio", word.toLowerCase(), type], () =>
+            audioService.fetchVocabAudio(word, type),
+        ),
+    );
+}
+
+export function useQuestionAudio(questionId: string) {
+    return useQuery<string>(
+        audioQuery(["question-audio", questionId], () =>
+            audioService.fetchQuestionAudio(questionId),
+        ),
+    );
 }

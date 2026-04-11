@@ -1,5 +1,5 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateQuestionDto {
     @IsString()
@@ -9,9 +9,4 @@ export class CreateQuestionDto {
     @IsString()
     @ApiProperty()
     questionType: string;
-
-    @IsOptional()
-    @IsUrl()
-    @ApiPropertyOptional()
-    audioUrl?: string;
 }

@@ -19,7 +19,6 @@ SELECT
     U.QUESTION_ID AS "questionId",
     Q.QUESTION,
     Q.QUESTION_TYPE AS "questionType",
-    Q.AUDIO_URL AS "audioUrl",
     U.MAX_POINTS AS "maxPoints"
 FROM
     updated U
