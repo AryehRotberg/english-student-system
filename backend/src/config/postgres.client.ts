@@ -30,13 +30,13 @@ export class PostgresService {
             path.join(__dirname, '..', '..', 'certs', 'prod-ca-2021.crt'),
         ];
 
-        const caCert = certPaths.find(
-            (p) =>
-                fs.existsSync(p) &&
-                Logger.log(`Loaded SSL certificate from: ${p}`),
-        )
-            ? fs.readFileSync(certPaths.find(fs.existsSync)!, 'utf8')
-            : undefined;
+        const validPath = certPaths.find((p) => fs.existsSync(p));
+        let caCert: string | undefined = undefined;
+
+        if (validPath) {
+            Logger.log(`Loaded SSL certificate from: ${validPath}`);
+            caCert = fs.readFileSync(validPath, 'utf8');
+        }
 
         if (!caCert) {
             Logger.warn(

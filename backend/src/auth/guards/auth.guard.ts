@@ -46,12 +46,10 @@ export class AuthGuard implements CanActivate {
                 throw new UnauthorizedException('Invalid token');
             }
 
-            const user = await this.usersService.findOneByEmail(decoded.email);
-            if (!user) {
-                return null;
-            }
-
-            return UserResponseDto.fromEntity(user);
+            return {
+                ...decoded,
+                createdAt: new Date(decoded.createdAt),
+            } as UserResponseDto;
         } catch (error) {
             Sentry.captureException(error);
             console.error('Error verifying token:', error);
