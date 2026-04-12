@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { User } from "../modules/users/entities/user.entity";
+import { UserResponseDto } from '../modules/users/dto/user-response.dto';
+import { User } from '../modules/users/entities/user.entity';
 
 @Injectable()
 export class JwtService {
@@ -25,11 +26,16 @@ export class JwtService {
     }
 
     generateToken(user: User): string {
-        return jwt.sign({
-            sub: user.id,
-            email: user.email,
-            role: user.role,
-        }, this.jwtSecret, { expiresIn: this.jwtExpiration });
+        const userDto = UserResponseDto.fromEntity(user);
+
+        return jwt.sign(
+            {
+                ...userDto,
+                sub: userDto.id,
+            },
+            this.jwtSecret,
+            { expiresIn: this.jwtExpiration },
+        );
     }
 
     verifyToken(token: string): jwt.JwtPayload {
