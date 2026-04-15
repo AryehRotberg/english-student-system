@@ -1,8 +1,8 @@
-import type { StudentAnswerApiItem } from "../../services/student-answers.service";
-import type { QuizAttemptApiItem } from "../../types/api-items/quiz-attempt";
-import type { QuizQuestion } from "../../types/quiz";
-import { QuizAttemptHistoryPanel } from "./QuizAttemptHistoryPanel";
-import styles from "../../pages/Quiz/QuizPage.module.css";
+import type { StudentAnswerApiItem } from '../../services/student-answers.service';
+import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
+import type { QuizQuestion } from '../../types/quiz';
+import { QuizAttemptHistoryPanel } from './QuizAttemptHistoryPanel';
+import styles from '../../pages/Quiz/QuizPage.module.css';
 
 type Props = {
     questions: QuizQuestion[];
@@ -39,11 +39,11 @@ export function QuizResultsPanel({
 
     return (
         <section className={styles.completedPanel}>
-            <h2>{isCompleted ? "Quiz completed" : "Quiz results"}</h2>
+            <h2>{isCompleted ? 'Quiz completed' : 'Quiz results'}</h2>
             <p>
                 {isCompleted
                     ? `You answered all ${questions.length} questions.`
-                    : "Review a previous attempt result."}
+                    : 'Review a previous attempt result.'}
             </p>
 
             <div className={styles.resultGradeHeader}>
@@ -56,7 +56,7 @@ export function QuizResultsPanel({
                 <div>
                     <p className={styles.gradeResultTitle}>Quiz Results</p>
                     <p className={styles.gradeResultSub}>
-                        Score: <strong>{finalScore.toFixed(2)}</strong> /{" "}
+                        Score: <strong>{finalScore.toFixed(2)}</strong> /{' '}
                         {totalPossible.toFixed(2)} points
                     </p>
                 </div>
@@ -84,7 +84,7 @@ export function QuizResultsPanel({
                                             : styles.resultWrongBadge
                                     }
                                 >
-                                    {isCorrect ? "Correct" : "Wrong"}
+                                    {isCorrect ? 'Correct' : 'Wrong'}
                                 </span>
                             </div>
                             <p className={styles.questionCardPrompt}>

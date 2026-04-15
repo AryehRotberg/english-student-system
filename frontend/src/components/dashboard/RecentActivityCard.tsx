@@ -1,28 +1,28 @@
-import type { RecentActivity } from "../../types/activity";
-import styles from "../../pages/Dashboard/DashboardPage.module.css";
+import type { RecentActivity } from '../../types/activity';
+import styles from '../../pages/Dashboard/DashboardPage.module.css';
 
 type Props = {
     activities: RecentActivity[];
     onViewFullHistory: () => void;
 };
 
-const activityIconMap = ["assignment", "verified", "star", "menu_book"];
+const activityIconMap = ['assignment', 'verified', 'star', 'menu_book'];
 
 function formatDueDate(dueDate: string | null) {
     if (!dueDate) {
-        return "No due date";
+        return 'No due date';
     }
 
     const parsedDate = new Date(dueDate);
     if (Number.isNaN(parsedDate.getTime())) {
-        return "No due date";
+        return 'No due date';
     }
 
     return `Due ${parsedDate.toLocaleDateString(undefined, {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
     })}`;
 }
 

@@ -28,7 +28,7 @@
 .prompt {
     color: var(--ink-900);
     flex: 1;
-    font-family: "Sora", sans-serif;
+    font-family: 'Sora', sans-serif;
     font-size: 1.22rem;
     margin: 0;
 }

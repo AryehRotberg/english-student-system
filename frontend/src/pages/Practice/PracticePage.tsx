@@ -1,5 +1,5 @@
-import { PracticeCenter } from "../../components/practice/PracticeCenter";
-import styles from "./PracticePage.module.css";
+import { PracticeCenter } from '../../components/practice/PracticeCenter';
+import styles from './PracticePage.module.css';
 
 export function PracticePage() {
     return (

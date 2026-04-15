@@ -84,21 +84,6 @@ export class PostgresService implements OnModuleInit {
         }
     }
 
-    private loadAllSqlFiles(dir: string) {
-        const files = fs.readdirSync(dir);
-
-        for (const file of files) {
-            const fullPath = path.join(dir, file);
-
-            if (fs.statSync(fullPath).isDirectory()) {
-                this.loadAllSqlFiles(fullPath);
-            } else if (fullPath.endsWith('.sql')) {
-                const content = fs.readFileSync(fullPath, 'utf8');
-                this.sqlCache.set(fullPath, content);
-            }
-        }
-    }
-
     async query<T = any>(query: string, parameters?: any[]): Promise<T[]> {
         try {
             const result = await this.pool.query(query, parameters ?? []);
@@ -120,5 +105,20 @@ export class PostgresService implements OnModuleInit {
             throw new Error(`SQL file missing from cache: ${key}`);
         }
         return query;
+    }
+
+    private loadAllSqlFiles(dir: string) {
+        const files = fs.readdirSync(dir);
+
+        for (const file of files) {
+            const fullPath = path.join(dir, file);
+
+            if (fs.statSync(fullPath).isDirectory()) {
+                this.loadAllSqlFiles(fullPath);
+            } else if (fullPath.endsWith('.sql')) {
+                const content = fs.readFileSync(fullPath, 'utf8');
+                this.sqlCache.set(fullPath, content);
+            }
+        }
     }
 }

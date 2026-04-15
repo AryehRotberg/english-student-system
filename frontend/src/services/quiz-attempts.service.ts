@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import type { QuizAttemptApiItem } from "../types/api-items/quiz-attempt";
-import { httpClientService } from "./http-client.service";
+import type { AxiosInstance } from 'axios';
+import type { QuizAttemptApiItem } from '../types/api-items/quiz-attempt';
+import { httpClientService } from './http-client.service';
 
 class QuizAttemptsService {
     private readonly httpClient: AxiosInstance;
@@ -36,7 +36,7 @@ class QuizAttemptsService {
         completedAt?: string;
     }): Promise<QuizAttemptApiItem> {
         const response = await this.httpClient.post<QuizAttemptApiItem>(
-            "/quiz-attempts",
+            '/quiz-attempts',
             payload,
         );
         return response.data;

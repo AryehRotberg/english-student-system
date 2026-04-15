@@ -1,7 +1,7 @@
-import type { AxiosInstance } from "axios";
-import type { RawQuizQuestionAdminItem } from "../types/admin-query-items";
-import type { QuizQuestion } from "../types/quiz";
-import { httpClientService } from "./http-client.service";
+import type { AxiosInstance } from 'axios';
+import type { RawQuizQuestionAdminItem } from '../types/admin-query-items';
+import type { QuizQuestion } from '../types/quiz';
+import { httpClientService } from './http-client.service';
 
 class QuizQuestionsService {
     private readonly httpClient: AxiosInstance;
@@ -22,7 +22,7 @@ class QuizQuestionsService {
         const data = response.data;
 
         if (!Array.isArray(data) || data.length === 0) {
-            throw new Error("No quiz questions found for this quiz.");
+            throw new Error('No quiz questions found for this quiz.');
         }
 
         return data as QuizQuestion[];
@@ -46,7 +46,7 @@ class QuizQuestionsService {
         questionId: string;
         maxPoints: number;
     }) {
-        const response = await this.httpClient.post("/quiz-questions", payload);
+        const response = await this.httpClient.post('/quiz-questions', payload);
         return response.data;
     }
 

@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
-import type { QuestionAdminItem } from "../types/admin-query-items";
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
+import type { QuestionAdminItem } from '../types/admin-query-items';
 
 class QuestionsService {
     private readonly httpClient: AxiosInstance;
@@ -10,7 +10,7 @@ class QuestionsService {
     }
 
     public async list() {
-        const response = await this.httpClient.get("/questions");
+        const response = await this.httpClient.get('/questions');
         return response.data;
     }
 
@@ -24,7 +24,7 @@ class QuestionsService {
         questionType: string;
         audioUrl?: string;
     }) {
-        const response = await this.httpClient.post("/questions", payload);
+        const response = await this.httpClient.post('/questions', payload);
         return response.data;
     }
 }

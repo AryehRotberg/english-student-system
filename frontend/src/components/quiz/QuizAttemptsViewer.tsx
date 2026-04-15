@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
-import { useStudentAnswersByAttempt } from "../../hooks/queries";
-import type { QuizAttemptApiItem } from "../../types/api-items/quiz-attempt";
-import type { QuizQuestion } from "../../types/quiz";
-import { QuizResultsPanel } from "./QuizResultsPanel";
+import { useMemo, useState } from 'react';
+import { useStudentAnswersByAttempt } from '../../hooks/queries';
+import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
+import type { QuizQuestion } from '../../types/quiz';
+import { QuizResultsPanel } from './QuizResultsPanel';
 
 type QuizAttemptsViewerProps = {
     questions: QuizQuestion[];

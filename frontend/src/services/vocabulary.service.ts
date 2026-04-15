@@ -1,12 +1,12 @@
-import type { AxiosInstance } from "axios";
-import type { VocabularyTopicApiItem } from "../types/api-items/vocabulary-topic";
-import type { VocabularyTopicWordApiItem } from "../types/api-items/vocabulary-topic-word";
+import type { AxiosInstance } from 'axios';
+import type { VocabularyTopicApiItem } from '../types/api-items/vocabulary-topic';
+import type { VocabularyTopicWordApiItem } from '../types/api-items/vocabulary-topic-word';
 import type {
     VocabularyTopicPreview,
     VocabularyTopicWithWords,
     VocabularyWord,
-} from "../types/vocabulary";
-import { httpClientService } from "./http-client.service";
+} from '../types/vocabulary';
+import { httpClientService } from './http-client.service';
 
 class VocabularyService {
     private readonly httpClient: AxiosInstance;
@@ -16,7 +16,7 @@ class VocabularyService {
     ): VocabularyTopicPreview {
         return {
             id: topic.id,
-            topic: topic.topic?.trim() || "Untitled topic",
+            topic: topic.topic?.trim() || 'Untitled topic',
             description: topic.description,
             createdAt: topic.createdAt,
         };
@@ -26,7 +26,7 @@ class VocabularyService {
         return {
             id: word.id,
             vocabularyId: word.vocabularyId,
-            word: word.word?.trim() || "",
+            word: word.word?.trim() || '',
             meaning: word.meaning,
             example: word.example,
             translation: word.translation,
@@ -40,7 +40,7 @@ class VocabularyService {
     public async listTopics(): Promise<VocabularyTopicApiItem[]> {
         const response =
             await this.httpClient.get<VocabularyTopicApiItem[]>(
-                "/vocabulary-topics",
+                '/vocabulary-topics',
             );
         return Array.isArray(response.data) ? response.data : [];
     }

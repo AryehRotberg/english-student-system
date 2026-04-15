@@ -26,7 +26,7 @@ WITH
                     QO.ID
             ) AS options
         FROM
-            QUESTION_OPTIONS QO
+            QUESTION_CHOICES QO
             JOIN quiz_questions QQ ON QQ.QUESTION_ID = QO.QUESTION_ID
         GROUP BY
             QO.QUESTION_ID
@@ -36,7 +36,7 @@ WITH
             A.QUESTION_ID,
             MAX(A.BLANK_INDEX) AS blank_count
         FROM
-            ANSWERS A
+            QUESTION_ACCEPTED_ANSWERS A
             JOIN quiz_questions QQ ON QQ.QUESTION_ID = A.QUESTION_ID
         GROUP BY
             A.QUESTION_ID

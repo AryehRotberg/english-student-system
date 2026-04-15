@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useAllStudents } from "../../hooks/queries";
-import styles from "../../pages/Admin/AdminPage.module.css";
-import type { AuthUser } from "../../types/auth";
-import { StudentProgressDetail } from "./StudentProgressDetail";
+import { useState } from 'react';
+import { useAllStudents } from '../../hooks/queries';
+import styles from '../../pages/Admin/AdminPage.module.css';
+import type { AuthUser } from '../../types/auth';
+import { StudentProgressDetail } from './StudentProgressDetail';
 
 function getInitials(name: string): string {
     return name
@@ -10,8 +10,8 @@ function getInitials(name: string): string {
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase() ?? "")
-        .join("");
+        .map((part) => part[0]?.toUpperCase() ?? '')
+        .join('');
 }
 
 export function StudentProgressSection() {
@@ -52,7 +52,7 @@ export function StudentProgressSection() {
             {students.map((student) => (
                 <div key={student.id} className={styles.studentCard}>
                     <div className={styles.studentAvatar}>
-                        {getInitials(student.name || "?")}
+                        {getInitials(student.name || '?')}
                     </div>
                     <div className={styles.studentCardBody}>
                         <p className={styles.studentCardName}>{student.name}</p>

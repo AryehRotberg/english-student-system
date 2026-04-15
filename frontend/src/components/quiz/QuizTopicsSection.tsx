@@ -1,25 +1,25 @@
-import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import remarkGfm from "remark-gfm";
-import styles from "../../pages/Quiz/QuizPage.module.css";
-import type { QuizTopic } from "../../types/quiz";
+import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
+import styles from '../../pages/Quiz/QuizPage.module.css';
+import type { QuizTopic } from '../../types/quiz';
 
 const SANITIZE_SCHEMA = {
     ...defaultSchema,
     tagNames: [
         ...(defaultSchema.tagNames || []),
-        "table",
-        "thead",
-        "tbody",
-        "tr",
-        "td",
-        "th",
+        'table',
+        'thead',
+        'tbody',
+        'tr',
+        'td',
+        'th',
     ],
     attributes: {
         ...defaultSchema.attributes,
-        th: ["align"],
-        td: ["align"],
+        th: ['align'],
+        td: ['align'],
     },
 };
 

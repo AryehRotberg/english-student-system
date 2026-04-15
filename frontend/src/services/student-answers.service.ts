@@ -1,5 +1,5 @@
-import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
 
 export type StudentAnswerApiItem = {
     id: string;
@@ -37,7 +37,7 @@ class StudentAnswersService {
         feedback?: string | null;
     }) {
         const response = await this.httpClient.post(
-            "/student-answers",
+            '/student-answers',
             payload,
         );
         return response.data;

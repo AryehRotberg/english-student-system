@@ -1,20 +1,22 @@
-import type { FormEvent } from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLogin } from "../../hooks/mutations";
-import styles from "./LoginPage.module.css";
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLogin } from '../../hooks/mutations';
+import styles from './LoginPage.module.css';
 
 export function LoginPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const loginMutation = useLogin();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         await loginMutation.mutateAsync({ email, password });
-        navigate("/", { replace: true });
+        const redirect = searchParams.get('redirect');
+        navigate(redirect ?? '/', { replace: true });
     };
 
     return (
@@ -58,7 +60,7 @@ export function LoginPage() {
                     disabled={loginMutation.isPending}
                     type="submit"
                 >
-                    {loginMutation.isPending ? "Signing in..." : "Login"}
+                    {loginMutation.isPending ? 'Signing in...' : 'Login'}
                 </button>
 
                 {loginMutation.isError ? (

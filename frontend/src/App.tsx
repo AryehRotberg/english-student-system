@@ -1,21 +1,21 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import "./App.css";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { Navbar } from "./components/layout/Navbar/Navbar";
-import { useAuth } from "./contexts/AuthContext";
-import { useAuthUser } from "./hooks/queries";
-import { AdminPage } from "./pages/Admin/AdminPage";
-import { DashboardPage } from "./pages/Dashboard/DashboardPage";
-import { LoginPage } from "./pages/Login/LoginPage";
-import { PracticePage } from "./pages/Practice/PracticePage";
-import { QuizPage } from "./pages/Quiz/QuizPage";
-import { QuizListPage } from "./pages/QuizList/QuizListPage";
-import { ReadingPage } from "./pages/Reading/ReadingPage";
-import { VocabPage } from "./pages/Vocab/VocabPage";
+import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
+import './App.css';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { Navbar } from './components/layout/Navbar/Navbar';
+import { useAuth } from './contexts/AuthContext';
+import { useAuthUser } from './hooks/queries';
+import { AdminPage } from './pages/Admin/AdminPage';
+import { DashboardPage } from './pages/Dashboard/DashboardPage';
+import { LoginPage } from './pages/Login/LoginPage';
+import { PracticePage } from './pages/Practice/PracticePage';
+import { QuizPage } from './pages/Quiz/QuizPage';
+import { QuizListPage } from './pages/QuizList/QuizListPage';
+import { ReadingPage } from './pages/Reading/ReadingPage';
+import { VocabPage } from './pages/Vocab/VocabPage';
 
 function ProtectedPage({ children }: { children: React.ReactNode }) {
     const { data: user } = useAuthUser();
-    if (user?.role === "teacher") {
+    if (user?.role === 'teacher') {
         return <Navigate to="/admin" replace />;
     }
     return (
@@ -42,10 +42,17 @@ function AdminProtectedPage() {
     );
 }
 
+function LoginRoute({ isTeacher }: { isTeacher: boolean }) {
+    const [searchParams] = useSearchParams();
+    const redirect =
+        searchParams.get('redirect') ?? (isTeacher ? '/admin' : '/');
+    return <Navigate to={redirect} replace />;
+}
+
 function App() {
     const { isAuthenticated } = useAuth();
     const { data: user } = useAuthUser();
-    const isTeacher = user?.role === "teacher";
+    const isTeacher = user?.role === 'teacher';
 
     return (
         <Routes>
@@ -53,7 +60,7 @@ function App() {
                 path="/login"
                 element={
                     isAuthenticated ? (
-                        <Navigate to={isTeacher ? "/admin" : "/"} replace />
+                        <LoginRoute isTeacher={isTeacher} />
                     ) : (
                         <LoginPage />
                     )
@@ -115,9 +122,9 @@ function App() {
                         to={
                             isAuthenticated
                                 ? isTeacher
-                                    ? "/admin"
-                                    : "/"
-                                : "/login"
+                                    ? '/admin'
+                                    : '/'
+                                : '/login'
                         }
                         replace
                     />

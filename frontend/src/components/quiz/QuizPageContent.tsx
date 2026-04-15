@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { QuizActiveView } from "../../components/quiz/QuizActiveView";
-import { QuizAttemptsViewer } from "../../components/quiz/QuizAttemptsViewer";
-import { QuizRetakeScreen } from "../../components/quiz/QuizRetakeScreen";
-import { QuizSetupScreen } from "../../components/quiz/QuizSetupScreen";
-import { QuizTopicsSection } from "../../components/quiz/QuizTopicsSection";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { QuizActiveView } from '../../components/quiz/QuizActiveView';
+import { QuizAttemptsViewer } from '../../components/quiz/QuizAttemptsViewer';
+import { QuizRetakeScreen } from '../../components/quiz/QuizRetakeScreen';
+import { QuizSetupScreen } from '../../components/quiz/QuizSetupScreen';
+import { QuizTopicsSection } from '../../components/quiz/QuizTopicsSection';
 import {
     useStartQuizAttempt,
     useSubmitQuizAttempt,
-} from "../../hooks/mutations";
+} from '../../hooks/mutations';
 import {
     useAuthUser,
     useQuizAttempts,
     useQuizQuestions,
     useQuizTopics,
     useStudentAnswersByAttempt,
-} from "../../hooks/queries";
-import styles from "../../pages/Quiz/QuizPage.module.css";
-import { sendEmailService } from "../../services/send-email.service";
+} from '../../hooks/queries';
+import styles from '../../pages/Quiz/QuizPage.module.css';
+import { sendEmailService } from '../../services/send-email.service';
 
 type QuizPageContentProps = {
     quizId: string;

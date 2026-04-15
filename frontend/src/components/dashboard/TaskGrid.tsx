@@ -1,6 +1,6 @@
-import type { DailyTask } from "../../types/task";
-import type { AssignmentTopic } from "../../types/task";
-import styles from "./TaskGrid.module.css";
+import type { DailyTask } from '../../types/task';
+import type { AssignmentTopic } from '../../types/task';
+import styles from './TaskGrid.module.css';
 
 type TaskGridProps = {
     tasks: DailyTask[];

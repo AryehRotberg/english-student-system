@@ -1,93 +1,93 @@
 .panel {
-  background: var(--surface-0);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow: 0 10px 24px rgba(37, 51, 105, 0.1);
-  padding: 1.1rem;
+    background: var(--surface-0);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 10px 24px rgba(37, 51, 105, 0.1);
+    padding: 1.1rem;
 }
 
 .heading {
-  color: var(--ink-900);
-  font-family: 'Sora', sans-serif;
-  font-size: 1.3rem;
-  margin: 0 0 1rem;
+    color: var(--ink-900);
+    font-family: 'Sora', sans-serif;
+    font-size: 1.3rem;
+    margin: 0 0 1rem;
 }
 
 .filters {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 1rem;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1rem;
 }
 
 .filterLabel {
-  color: #1b202b;
-  font-weight: 700;
-  margin-right: 0.25rem;
+    color: #1b202b;
+    font-weight: 700;
+    margin-right: 0.25rem;
 }
 
 .chip {
-  background: #eef2ff;
-  border: 1px solid #a2add7;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-  min-width: 50px;
-  padding: 0.3rem 0.7rem;
+    background: #eef2ff;
+    border: 1px solid #a2add7;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    min-width: 50px;
+    padding: 0.3rem 0.7rem;
 }
 
 .chipActive {
-  background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
-  border-color: transparent;
-  color: #fff;
+    background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
+    border-color: transparent;
+    color: #fff;
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .row {
-  align-items: center;
-  border: 1px solid #ccd3ee;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  padding: 0.85rem;
+    align-items: center;
+    border: 1px solid #ccd3ee;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.85rem;
 }
 
 .title {
-  font-size: 1.03rem;
-  margin: 0;
+    font-size: 1.03rem;
+    margin: 0;
 }
 
 .level {
-  color: #586579;
-  font-size: 0.96rem;
+    color: #586579;
+    font-size: 0.96rem;
 }
 
 .meta {
-  color: #637084;
-  margin: 0.3rem 0 0;
+    color: #637084;
+    margin: 0.3rem 0 0;
 }
 
 .readButton {
-  background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
-  border: 1px solid #203176;
-  border-radius: 8px;
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: 700;
-  min-width: 82px;
-  padding: 0.5rem 0.8rem;
+    background: linear-gradient(120deg, #2a5bff 0%, #00a4bd 100%);
+    border: 1px solid #203176;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 700;
+    min-width: 82px;
+    padding: 0.5rem 0.8rem;
 }
 
 @media (max-width: 640px) {
-  .row {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+    .row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
 }

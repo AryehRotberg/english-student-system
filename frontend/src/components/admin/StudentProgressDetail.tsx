@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
     useQuizQuestions,
     useStudentAnswersByAttempt,
     useStudentQuizAttempts,
-} from "../../hooks/queries";
-import styles from "../../pages/Admin/AdminPage.module.css";
-import type { AuthUser } from "../../types/auth";
+} from '../../hooks/queries';
+import styles from '../../pages/Admin/AdminPage.module.css';
+import type { AuthUser } from '../../types/auth';
 
 type Props = {
     student: AuthUser;
@@ -89,7 +89,7 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                             Quiz Results
                         </p>
                         <p className={styles.attemptResultSub}>
-                            Score: <strong>{finalScore.toFixed(2)}</strong> /{" "}
+                            Score: <strong>{finalScore.toFixed(2)}</strong> /{' '}
                             {totalPossible.toFixed(2)} points
                         </p>
                     </div>
@@ -117,7 +117,7 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                                                 : styles.wrongBadge
                                         }
                                     >
-                                        {isCorrect ? "Correct" : "Wrong"}
+                                        {isCorrect ? 'Correct' : 'Wrong'}
                                     </span>
                                 </div>
                                 <p className={styles.questionResultPrompt}>
@@ -159,8 +159,8 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                         .split(/\s+/)
                         .filter(Boolean)
                         .slice(0, 2)
-                        .map((p) => p[0]?.toUpperCase() ?? "")
-                        .join("")}
+                        .map((p) => p[0]?.toUpperCase() ?? '')
+                        .join('')}
                 </div>
                 <div>
                     <h3 className={styles.studentDetailName}>{student.name}</h3>
@@ -169,7 +169,7 @@ export function StudentProgressDetail({ student, onBack }: Props) {
             </div>
 
             {attempts.length === 0 ? (
-                <p className={styles.empty} style={{ marginTop: "1.5rem" }}>
+                <p className={styles.empty} style={{ marginTop: '1.5rem' }}>
                     No completed attempts yet.
                 </p>
             ) : (
@@ -212,10 +212,10 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                                     <p className={styles.attemptCardDate}>
                                         {completedAt
                                             ? completedAt.toLocaleString()
-                                            : "Completed attempt"}
+                                            : 'Completed attempt'}
                                     </p>
                                     <p className={styles.attemptCardScore}>
-                                        Score:{" "}
+                                        Score:{' '}
                                         <strong>{score.toFixed(2)}</strong>
                                     </p>
                                 </div>

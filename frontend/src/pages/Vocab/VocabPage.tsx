@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { VocabStudyPanel } from "../../components/vocab/VocabStudyPanel";
-import { VocabularyTopicGrid } from "../../components/vocab/VocabularyTopicGrid";
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { VocabStudyPanel } from '../../components/vocab/VocabStudyPanel';
+import { VocabularyTopicGrid } from '../../components/vocab/VocabularyTopicGrid';
 import {
     useVocabularyTopicWords,
     useVocabularyTopics,
-} from "../../hooks/queries";
+} from '../../hooks/queries';
 import type {
     VocabularyTopicPreview,
     VocabularyTopicWithWords,
-} from "../../types/vocabulary";
-import styles from "./VocabPage.module.css";
+} from '../../types/vocabulary';
+import styles from './VocabPage.module.css';
 
 export function VocabPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const { data: topics = [] } = useVocabularyTopics();
     const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
-    const [filterQuery, setFilterQuery] = useState("");
+    const [filterQuery, setFilterQuery] = useState('');
 
-    const topicIdFromUrl = searchParams.get("topicId");
+    const topicIdFromUrl = searchParams.get('topicId');
     const activeTopicId = selectedTopicId ?? topicIdFromUrl;
 
     const { data: words = [], isLoading: isWordsLoading } =
@@ -120,8 +120,8 @@ export function VocabPage() {
                     ) : (
                         <p className={styles.emptyState}>
                             {filterQuery.trim()
-                                ? "No topics match your search."
-                                : "No vocabulary topics found yet."}
+                                ? 'No topics match your search.'
+                                : 'No vocabulary topics found yet.'}
                         </p>
                     )}
                 </section>

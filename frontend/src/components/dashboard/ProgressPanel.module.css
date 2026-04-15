@@ -8,7 +8,7 @@
 
 .heading {
     color: var(--ink-900);
-    font-family: "Sora", sans-serif;
+    font-family: 'Sora', sans-serif;
     font-size: 1.2rem;
     margin: 0 0 0.95rem;
 }
@@ -36,7 +36,7 @@
 
 .bar {
     color: #1a2040;
-    font-family: "Fira Code", "Consolas", monospace;
+    font-family: 'Fira Code', 'Consolas', monospace;
     font-size: 0.93rem;
     letter-spacing: 0.02em;
 }

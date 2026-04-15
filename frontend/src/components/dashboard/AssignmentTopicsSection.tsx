@@ -1,5 +1,5 @@
-import type { AssignmentTopic } from "../../types/task";
-import styles from "../../pages/Dashboard/DashboardPage.module.css";
+import type { AssignmentTopic } from '../../types/task';
+import styles from '../../pages/Dashboard/DashboardPage.module.css';
 
 type Props = {
     topics: AssignmentTopic[];

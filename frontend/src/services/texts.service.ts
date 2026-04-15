@@ -5,49 +5,61 @@ import type { TextAdminItem } from '../types/admin-query-items';
 import type { ReadingItem, ReadingLevel } from '../types/reading';
 
 class TextsService {
-  private readonly httpClient: AxiosInstance;
+    private readonly httpClient: AxiosInstance;
 
-  private toReadingLevel(value: string): ReadingLevel {
-    if (value === 'A2' || value === 'B1' || value === 'B2' || value === 'C1') {
-      return value;
+    private toReadingLevel(value: string): ReadingLevel {
+        if (
+            value === 'A2' ||
+            value === 'B1' ||
+            value === 'B2' ||
+            value === 'C1'
+        ) {
+            return value;
+        }
+
+        return 'B1';
     }
 
-    return 'B1';
-  }
-
-  constructor() {
-    this.httpClient = httpClientService.getInstance();
-  }
-
-  public async list() {
-    const response = await this.httpClient.get('/texts');
-    return response.data;
-  }
-
-  public async getReadingLibrary(): Promise<ReadingItem[]> {
-    const data = (await this.list()) as TextApiItem[];
-
-    if (!Array.isArray(data)) {
-      return [];
+    constructor() {
+        this.httpClient = httpClientService.getInstance();
     }
 
-    return data.map((item) => ({
-      id: item.id,
-      title: item.title,
-      level: this.toReadingLevel(item.level),
-      minutes: Math.min(Math.max(Math.ceil((item.content?.length ?? 800) / 170), 3), 12),
-    }));
-  }
+    public async list() {
+        const response = await this.httpClient.get('/texts');
+        return response.data;
+    }
 
-  public async listAdmin(): Promise<TextAdminItem[]> {
-    const data = await this.list();
-    return Array.isArray(data) ? (data as TextAdminItem[]) : [];
-  }
+    public async getReadingLibrary(): Promise<ReadingItem[]> {
+        const data = (await this.list()) as TextApiItem[];
 
-  public async create(payload: { title: string; content: string; level: string }) {
-    const response = await this.httpClient.post('/texts', payload);
-    return response.data;
-  }
+        if (!Array.isArray(data)) {
+            return [];
+        }
+
+        return data.map((item) => ({
+            id: item.id,
+            title: item.title,
+            level: this.toReadingLevel(item.level),
+            minutes: Math.min(
+                Math.max(Math.ceil((item.content?.length ?? 800) / 170), 3),
+                12,
+            ),
+        }));
+    }
+
+    public async listAdmin(): Promise<TextAdminItem[]> {
+        const data = await this.list();
+        return Array.isArray(data) ? (data as TextAdminItem[]) : [];
+    }
+
+    public async create(payload: {
+        title: string;
+        content: string;
+        level: string;
+    }) {
+        const response = await this.httpClient.post('/texts', payload);
+        return response.data;
+    }
 }
 
 export const textsService = new TextsService();

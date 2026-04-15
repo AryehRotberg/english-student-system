@@ -1,9 +1,9 @@
 export type AdminTab =
-    | "quizzes"
-    | "questions"
-    | "quiz-builder"
-    | "texts"
-    | "student-progress";
+    | 'quizzes'
+    | 'questions'
+    | 'quiz-builder'
+    | 'texts'
+    | 'student-progress';
 
 export interface TabDef {
     id: AdminTab;
@@ -110,35 +110,35 @@ function BarChartIcon() {
 
 export const adminTabs: TabDef[] = [
     {
-        id: "student-progress",
-        label: "Student Progress",
+        id: 'student-progress',
+        label: 'Student Progress',
         description:
-            "Track academic performance, quiz completion rates, and individual learning milestones.",
+            'Track academic performance, quiz completion rates, and individual learning milestones.',
         icon: <BarChartIcon />,
     },
     {
-        id: "quizzes",
-        label: "Quizzes",
-        description: "Create and manage quizzes for your students.",
+        id: 'quizzes',
+        label: 'Quizzes',
+        description: 'Create and manage quizzes for your students.',
         icon: <ClipboardIcon />,
     },
     {
-        id: "questions",
-        label: "Questions",
+        id: 'questions',
+        label: 'Questions',
         description:
-            "Add and edit fill-in-the-blank and multiple-choice questions.",
+            'Add and edit fill-in-the-blank and multiple-choice questions.',
         icon: <HelpCircleIcon />,
     },
     {
-        id: "quiz-builder",
-        label: "Quiz Builder",
-        description: "Assemble questions into quizzes and set the order.",
+        id: 'quiz-builder',
+        label: 'Quiz Builder',
+        description: 'Assemble questions into quizzes and set the order.',
         icon: <WrenchIcon />,
     },
     {
-        id: "texts",
-        label: "Texts",
-        description: "Manage reading texts used across lessons and quizzes.",
+        id: 'texts',
+        label: 'Texts',
+        description: 'Manage reading texts used across lessons and quizzes.',
         icon: <FileTextIcon />,
     },
 ];

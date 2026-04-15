@@ -316,8 +316,8 @@
     margin-top: 0.5rem;
 }
 
-.inlineForm input[type="text"],
-.inlineForm input:not([type="checkbox"]):not([type="number"]) {
+.inlineForm input[type='text'],
+.inlineForm input:not([type='checkbox']):not([type='number']) {
     flex: 1;
     min-width: 160px;
     padding: 0.4rem 0.65rem;
@@ -335,7 +335,7 @@
     width: 100%;
 }
 
-.inlineEdit input:not([type="checkbox"]) {
+.inlineEdit input:not([type='checkbox']) {
     flex: 1;
     min-width: 120px;
     padding: 0.3rem 0.55rem;
@@ -633,7 +633,7 @@
     color: #991b1b;
 }
 
-.attemptGradeBadge[data-pass="true"] {
+.attemptGradeBadge[data-pass='true'] {
     background: #d1fae5;
     color: #065f46;
 }

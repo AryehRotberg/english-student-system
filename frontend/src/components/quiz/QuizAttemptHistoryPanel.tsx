@@ -1,5 +1,5 @@
-import type { QuizAttemptApiItem } from "../../types/api-items/quiz-attempt";
-import styles from "../../pages/Quiz/QuizPage.module.css";
+import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
+import styles from '../../pages/Quiz/QuizPage.module.css';
 
 type Props = {
     attempts: QuizAttemptApiItem[];
@@ -26,10 +26,10 @@ export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
                                 <strong>
                                     {completedAt
                                         ? completedAt.toLocaleString()
-                                        : "Completed attempt"}
+                                        : 'Completed attempt'}
                                 </strong>
                                 <p>
-                                    Score:{" "}
+                                    Score:{' '}
                                     {Number(attempt.points ?? 0).toFixed(2)}
                                 </p>
                             </div>

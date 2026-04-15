@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
-import type { QuizSummary, QuizTopic } from "../types/quiz";
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
+import type { QuizSummary, QuizTopic } from '../types/quiz';
 
 class QuizzesService {
     private readonly httpClient: AxiosInstance;
@@ -10,7 +10,7 @@ class QuizzesService {
     }
 
     public async list(): Promise<QuizSummary[]> {
-        const response = await this.httpClient.get<QuizSummary[]>("/quizzes");
+        const response = await this.httpClient.get<QuizSummary[]>('/quizzes');
         return response.data;
     }
 
@@ -22,7 +22,7 @@ class QuizzesService {
     }
 
     public async create(payload: { title: string; description?: string }) {
-        const response = await this.httpClient.post("/quizzes", payload);
+        const response = await this.httpClient.post('/quizzes', payload);
         return response.data;
     }
 }
