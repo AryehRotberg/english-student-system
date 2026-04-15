@@ -17,7 +17,7 @@ export class SendEmailService {
     }
 
     async sendFromDto(sendEmailDto: SendEmailDto) {
-        const { name, email, subject, title, body } = sendEmailDto;
+        const { email, subject, title, body } = sendEmailDto;
 
         const safeTitle = escapeHtml(title);
         const safeBody = escapeHtml(body)

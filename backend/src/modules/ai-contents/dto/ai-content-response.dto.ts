@@ -5,11 +5,15 @@ export class AiContentResponseDto {
     @ApiProperty()
     readonly id: string;
     @ApiProperty()
+    readonly model: string;
+    @ApiProperty()
     readonly content: string;
     @ApiProperty()
     readonly contentType: string;
     @ApiProperty()
     readonly isApproved: boolean;
+    @ApiProperty()
+    readonly additionalInstructions: string;
     @ApiProperty()
     readonly createdAt: Date;
 
@@ -20,9 +24,11 @@ export class AiContentResponseDto {
     static fromEntity(aiContent: AiContent): AiContentResponseDto {
         return new AiContentResponseDto({
             id: aiContent.id,
+            model: aiContent.model,
             content: aiContent.content,
             contentType: aiContent.contentType,
             isApproved: aiContent.isApproved,
+            additionalInstructions: aiContent.additionalInstructions,
             createdAt: aiContent.createdAt,
         });
     }

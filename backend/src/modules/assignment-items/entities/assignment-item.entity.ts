@@ -6,6 +6,6 @@ export class AssignmentItem {
     assignmentDueDate: string | null;
     contentId: string;
     contentType: string;
-    status: 'assigned' | 'completed';
+    isCompleted: boolean;
     title: string;
 }

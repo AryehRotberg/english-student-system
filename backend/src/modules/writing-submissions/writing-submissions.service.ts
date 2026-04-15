@@ -5,23 +5,18 @@ import { GetWritingSubmissionsFilterDto } from './dto/get-writing-submissions-fi
 import { UpdateWritingSubmissionDto } from './dto/update-writing-submission.dto';
 import { WritingSubmissionResponseDto } from './dto/writing-submission-response.dto';
 import { WritingSubmission } from './entities/writing-submission.entity';
-import {
-    createWritingSubmissionQuery,
-    getWritingSubmissionsQuery,
-    updateWritingSubmissionQuery,
-} from './writing-submissions.queries';
 
 @Injectable()
 export class WritingSubmissionsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findAll(
         filter: GetWritingSubmissionsFilterDto,
     ): Promise<WritingSubmissionResponseDto[]> {
         const { userId, taskId } = filter;
 
-        const submissions = await this.postgresService.query<WritingSubmission>(
-            getWritingSubmissionsQuery,
+        const submissions = await this.pgService.query<WritingSubmission>(
+            this.pgService.getSql(__dirname, 'getWritingSubmissions.sql'),
             [userId ?? null, taskId ?? null],
         );
 
@@ -33,8 +28,8 @@ export class WritingSubmissionsService {
     ): Promise<WritingSubmissionResponseDto> {
         const { taskId, userId, content } = createWritingSubmissionDto;
 
-        const [result] = await this.postgresService.query<WritingSubmission>(
-            createWritingSubmissionQuery,
+        const [result] = await this.pgService.query<WritingSubmission>(
+            this.pgService.getSql(__dirname, 'createWritingSubmission.sql'),
             [taskId, userId, content],
         );
 
@@ -47,8 +42,8 @@ export class WritingSubmissionsService {
     ): Promise<WritingSubmissionResponseDto> {
         const { feedback, score, reviewedAt } = updateWritingSubmissionDto;
 
-        const [result] = await this.postgresService.query<WritingSubmission>(
-            updateWritingSubmissionQuery,
+        const [result] = await this.pgService.query<WritingSubmission>(
+            this.pgService.getSql(__dirname, 'updateWritingSubmission.sql'),
             [id, feedback ?? null, score ?? null, reviewedAt ?? new Date()],
         );
 

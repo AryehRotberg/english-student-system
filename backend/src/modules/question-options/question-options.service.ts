@@ -5,26 +5,23 @@ import { GetQuestionOptionsFilterDto } from './dto/get-question-options-filter.d
 import { QuestionOptionResponseDto } from './dto/question-option-response.dto';
 import { UpdateQuestionOptionDto } from './dto/update-question-option.dto';
 import { QuestionOption } from './entities/question-option.entity';
-import {
-    createQuestionOptionQuery,
-    getQuestionOptionsByQuestionIdQuery,
-    updateQuestionOptionQuery,
-} from './question-options.queries';
 
 @Injectable()
 export class QuestionOptionsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findByQuestionId(
         filter: GetQuestionOptionsFilterDto,
     ): Promise<QuestionOptionResponseDto[]> {
         const { questionId } = filter;
 
-        const questionOptions =
-            await this.postgresService.query<QuestionOption>(
-                getQuestionOptionsByQuestionIdQuery,
-                [questionId],
-            );
+        const questionOptions = await this.pgService.query<QuestionOption>(
+            this.pgService.getSql(
+                __dirname,
+                'get-question-options-by-question-id.sql',
+            ),
+            [questionId],
+        );
 
         return QuestionOptionResponseDto.fromEntities(questionOptions);
     }
@@ -34,8 +31,8 @@ export class QuestionOptionsService {
     ): Promise<QuestionOptionResponseDto> {
         const { questionId, optionText, isCorrect } = createQuestionOptionDto;
 
-        const [result] = await this.postgresService.query<QuestionOption>(
-            createQuestionOptionQuery,
+        const [result] = await this.pgService.query<QuestionOption>(
+            this.pgService.getSql(__dirname, 'create-question-option.sql'),
             [questionId, optionText, isCorrect],
         );
 
@@ -48,8 +45,8 @@ export class QuestionOptionsService {
     ): Promise<QuestionOptionResponseDto> {
         const { questionId, optionText, isCorrect } = updateQuestionOptionDto;
 
-        const [result] = await this.postgresService.query<QuestionOption>(
-            updateQuestionOptionQuery,
+        const [result] = await this.pgService.query<QuestionOption>(
+            this.pgService.getSql(__dirname, 'update-question-option.sql'),
             [id, questionId ?? null, optionText ?? null, isCorrect ?? null],
         );
 

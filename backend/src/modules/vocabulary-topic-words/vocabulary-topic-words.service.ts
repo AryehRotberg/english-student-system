@@ -4,22 +4,21 @@ import { CreateVocabularyTopicWordDto } from './dto/create-vocabulary-topic-word
 import { GetVocabularyTopicWordsFilterDto } from './dto/get-vocabulary-topic-words-filter.dto';
 import { VocabularyTopicWordResponseDto } from './dto/vocabulary-topic-word-response.dto';
 import { VocabularyTopicWord } from './entities/vocabulary-topic-word.entity';
-import {
-    createVocabularyTopicWordQuery,
-    getVocabularyTopicWordsByTopicIdQuery,
-} from './vocabulary-topic-words.queries';
 
 @Injectable()
 export class VocabularyTopicWordsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findByTopicId(
         filter: GetVocabularyTopicWordsFilterDto,
     ): Promise<VocabularyTopicWordResponseDto[]> {
         const { topicId } = filter;
 
-        const words = await this.postgresService.query<VocabularyTopicWord>(
-            getVocabularyTopicWordsByTopicIdQuery,
+        const words = await this.pgService.query<VocabularyTopicWord>(
+            this.pgService.getSql(
+                __dirname,
+                'get-vocabulary-topic-words-by-topic-id.sql',
+            ),
             [topicId],
         );
 
@@ -31,8 +30,8 @@ export class VocabularyTopicWordsService {
     ): Promise<VocabularyTopicWordResponseDto> {
         const { vocabularyId, topicId } = createVocabularyTopicWordDto;
 
-        const [result] = await this.postgresService.query<VocabularyTopicWord>(
-            createVocabularyTopicWordQuery,
+        const [result] = await this.pgService.query<VocabularyTopicWord>(
+            this.pgService.getSql(__dirname, 'create-vocabulary-topic-word.sql'),
             [vocabularyId, topicId],
         );
 

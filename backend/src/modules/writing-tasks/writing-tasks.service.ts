@@ -3,18 +3,14 @@ import { PostgresService } from '../../config/postgres.client';
 import { CreateWritingTaskDto } from './dto/create-writing-task.dto';
 import { WritingTaskResponseDto } from './dto/writing-task-response.dto';
 import { WritingTask } from './entities/writing-task.entity';
-import {
-    createWritingTaskQuery,
-    getAllWritingTasksQuery,
-} from './writing-tasks.queries';
 
 @Injectable()
 export class WritingTasksService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findAll(): Promise<WritingTaskResponseDto[]> {
-        const tasks = await this.postgresService.query<WritingTask>(
-            getAllWritingTasksQuery,
+        const tasks = await this.pgService.query<WritingTask>(
+            this.pgService.getSql(__dirname, 'getAllWritingTasks.sql'),
         );
         return WritingTaskResponseDto.fromEntities(tasks);
     }
@@ -24,8 +20,8 @@ export class WritingTasksService {
     ): Promise<WritingTaskResponseDto> {
         const { title, instructions, minWords } = createWritingTaskDto;
 
-        const [result] = await this.postgresService.query<WritingTask>(
-            createWritingTaskQuery,
+        const [result] = await this.pgService.query<WritingTask>(
+            this.pgService.getSql(__dirname, 'createWritingTask.sql'),
             [title, instructions, minWords],
         );
 

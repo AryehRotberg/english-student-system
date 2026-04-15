@@ -17,7 +17,7 @@ export class AssignmentItemResponseDto {
     @ApiProperty()
     readonly contentType: string;
     @ApiProperty()
-    readonly status: 'assigned' | 'completed';
+    readonly isCompleted: boolean;
     @ApiProperty()
     readonly title: string;
 
@@ -36,7 +36,7 @@ export class AssignmentItemResponseDto {
             assignmentDueDate: assignmentItem.assignmentDueDate,
             contentId: assignmentItem.contentId,
             contentType: assignmentItem.contentType,
-            status: assignmentItem.status,
+            isCompleted: assignmentItem.isCompleted,
             title: assignmentItem.title,
         };
         return new AssignmentItemResponseDto(props);

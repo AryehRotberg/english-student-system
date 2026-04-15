@@ -4,7 +4,7 @@ SELECT
     TITLE,
     DESCRIPTION,
     DUE_DATE AS "dueDate",
-    STATUS,
+    IS_COMPLETED AS "isCompleted",
     CREATED_AT AS "createdAt"
 FROM
     ASSIGNMENTS

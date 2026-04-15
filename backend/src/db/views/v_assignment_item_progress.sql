@@ -8,7 +8,7 @@ SELECT
     COUNT(*)::INT AS total_items,
     COUNT(*) FILTER (
         WHERE
-            AI.STATUS = 'completed'
+            AI.IS_COMPLETED = TRUE
     )::INT AS completed_items
 FROM
     ASSIGNMENT_ITEMS AI

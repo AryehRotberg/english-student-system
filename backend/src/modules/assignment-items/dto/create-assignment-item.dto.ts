@@ -14,8 +14,4 @@ export class CreateAssignmentItemDto {
     @IsOptional()
     @ApiPropertyOptional()
     contentId?: string;
-
-    @IsIn(['assigned', 'completed'])
-    @ApiProperty()
-    status: 'assigned' | 'completed';
 }
