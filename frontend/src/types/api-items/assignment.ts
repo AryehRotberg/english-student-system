@@ -2,6 +2,6 @@ export type AssignmentApiItem = {
     id: string;
     title: string;
     description: string;
-    status: 'assigned' | 'completed';
+    isCompleted: boolean;
     createdAt: string;
 };

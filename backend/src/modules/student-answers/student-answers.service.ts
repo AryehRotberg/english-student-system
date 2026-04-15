@@ -1,8 +1,7 @@
 import {
     BadRequestException,
     Injectable,
-    Logger,
-    NotFoundException,
+    NotFoundException
 } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
 import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
@@ -10,20 +9,11 @@ import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
 import { CorrectOption, ValidAnswer } from './entities/grading-data';
 import { StudentAnswer } from './entities/student-answer.entity';
 import { StudentAnswersCommon } from './student-answers.common';
-import {
-    deleteStudentAnswerQuery,
-    getAllStudentAnswersQuery,
-    getCorrectOptionsQuery,
-    getStudentAnswerByIdQuery,
-    getStudentAnswersByAttemptQuery,
-    getValidAnswersQuery,
-    upsertStudentAnswerQuery,
-} from './student-answers.queries';
 
 @Injectable()
 export class StudentAnswersService {
     constructor(
-        private readonly postgresService: PostgresService,
+        private readonly pgService: PostgresService,
         private readonly studentAnswersCommon: StudentAnswersCommon,
     ) {}
 
@@ -47,8 +37,8 @@ export class StudentAnswersService {
             scores,
         );
 
-        const results = await this.postgresService.query<StudentAnswer>(
-            upsertStudentAnswerQuery,
+        const results = await this.pgService.query<StudentAnswer>(
+            this.pgService.getSql(__dirname, 'upsert-student-answer.sql'),
             [
                 attemptId,
                 questionId,
@@ -63,15 +53,15 @@ export class StudentAnswersService {
     }
 
     async findAll(): Promise<StudentAnswerResponseDto[]> {
-        const answers = await this.postgresService.query<StudentAnswer>(
-            getAllStudentAnswersQuery,
+        const answers = await this.pgService.query<StudentAnswer>(
+            this.pgService.getSql(__dirname, 'get-all-student-answers.sql'),
         );
         return StudentAnswerResponseDto.fromEntities(answers);
     }
 
     async findOne(id: string): Promise<StudentAnswerResponseDto> {
-        const [answer] = await this.postgresService.query<StudentAnswer>(
-            getStudentAnswerByIdQuery,
+        const [answer] = await this.pgService.query<StudentAnswer>(
+            this.pgService.getSql(__dirname, 'get-student-answer-by-id.sql'),
             [id],
         );
 
@@ -85,16 +75,19 @@ export class StudentAnswersService {
     async findByAttempt(
         attemptId: string,
     ): Promise<StudentAnswerResponseDto[]> {
-        const answers = await this.postgresService.query<StudentAnswer>(
-            getStudentAnswersByAttemptQuery,
+        const answers = await this.pgService.query<StudentAnswer>(
+            this.pgService.getSql(
+                __dirname,
+                'get-student-answers-by-attempt.sql',
+            ),
             [attemptId],
         );
         return StudentAnswerResponseDto.fromEntities(answers);
     }
 
     async remove(id: string): Promise<StudentAnswerResponseDto> {
-        const [result] = await this.postgresService.query<StudentAnswer>(
-            deleteStudentAnswerQuery,
+        const [result] = await this.pgService.query<StudentAnswer>(
+            this.pgService.getSql(__dirname, 'delete-student-answer.sql'),
             [id],
         );
 
@@ -114,8 +107,8 @@ export class StudentAnswersService {
         }
 
         if (selectedOptionId) {
-            const [result] = await this.postgresService.query<CorrectOption>(
-                getCorrectOptionsQuery,
+            const [result] = await this.pgService.query<CorrectOption>(
+                this.pgService.getSql(__dirname, 'get-correct-options.sql'),
                 [attemptId, questionId],
             );
 
@@ -131,8 +124,8 @@ export class StudentAnswersService {
         }
 
         if (textAnswers && textAnswers.length > 0) {
-            const results = await this.postgresService.query<ValidAnswer>(
-                getValidAnswersQuery,
+            const results = await this.pgService.query<ValidAnswer>(
+                this.pgService.getSql(__dirname, 'get-valid-answers.sql'),
                 [attemptId, questionId],
             );
 

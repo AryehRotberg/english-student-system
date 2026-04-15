@@ -5,20 +5,14 @@ import { GetQuizQuestionsFilterDto } from './dto/get-quiz-questions-filter.dto';
 import { QuizQuestionResponseDto } from './dto/quiz-question-response.dto';
 import { UpdateQuizQuestionDto } from './dto/update-quiz-question.dto';
 import { QuizQuestion } from './entities/quiz-question';
-import {
-    createQuizQuestionQuery,
-    getFullQuizQuestionsQuery,
-    getQuizQuestionsByQuizIdQuery,
-    updateQuizQuestionQuery,
-} from './quiz-questions.queries';
 
 @Injectable()
 export class QuizQuestionsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async getFullQuiz(quizId: string) {
-        const questionsRaw = await this.postgresService.query<any>(
-            getFullQuizQuestionsQuery,
+        const questionsRaw = await this.pgService.query<any>(
+            this.pgService.getSql(__dirname, 'get-full-quiz-questions.sql'),
             [quizId],
         );
 
@@ -37,8 +31,11 @@ export class QuizQuestionsService {
     async findByQuizId(filter: GetQuizQuestionsFilterDto) {
         const { quizId } = filter;
 
-        const questions = await this.postgresService.query<QuizQuestion>(
-            getQuizQuestionsByQuizIdQuery,
+        const questions = await this.pgService.query<QuizQuestion>(
+            this.pgService.getSql(
+                __dirname,
+                'get-quiz-questions-by-quiz-id.sql',
+            ),
             [quizId],
         );
 
@@ -50,11 +47,10 @@ export class QuizQuestionsService {
     ): Promise<QuizQuestionResponseDto> {
         const { quizId, questionId, maxPoints } = createQuizQuestionDto;
 
-        const [createdQuizQuestion] =
-            await this.postgresService.query<QuizQuestion>(
-                createQuizQuestionQuery,
-                [quizId, questionId, maxPoints],
-            );
+        const [createdQuizQuestion] = await this.pgService.query<QuizQuestion>(
+            this.pgService.getSql(__dirname, 'create-quiz-question.sql'),
+            [quizId, questionId, maxPoints],
+        );
 
         return QuizQuestionResponseDto.fromEntity(createdQuizQuestion);
     }
@@ -63,16 +59,15 @@ export class QuizQuestionsService {
         id: string,
         updateQuizQuestionDto: UpdateQuizQuestionDto,
     ): Promise<QuizQuestionResponseDto> {
-        const [updatedQuizQuestion] =
-            await this.postgresService.query<QuizQuestion>(
-                updateQuizQuestionQuery,
-                [
-                    id,
-                    updateQuizQuestionDto.quizId ?? null,
-                    updateQuizQuestionDto.questionId ?? null,
-                    updateQuizQuestionDto.maxPoints ?? null,
-                ],
-            );
+        const [updatedQuizQuestion] = await this.pgService.query<QuizQuestion>(
+            this.pgService.getSql(__dirname, 'update-quiz-question.sql'),
+            [
+                id,
+                updateQuizQuestionDto.quizId ?? null,
+                updateQuizQuestionDto.questionId ?? null,
+                updateQuizQuestionDto.maxPoints ?? null,
+            ],
+        );
 
         if (!updatedQuizQuestion) {
             throw new NotFoundException('Quiz question not found');

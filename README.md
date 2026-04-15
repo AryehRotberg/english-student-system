@@ -9,7 +9,7 @@ This system supports student learning workflows (reading, vocabulary, quizzes, w
 - Frontend: React 19 + TypeScript + Vite
 - Backend: NestJS 11 + TypeScript + PostgreSQL
 - Background jobs: BullMQ + Redis
-- AI quiz generation: LangChain + Google Gemini
+- AI quiz generation: LangChain + Claude (Anthropic)
 - Text-to-speech: ElevenLabs (`eleven_flash_v2_5` model)
 - Auth: JWT stored in HTTP-only cookies
 - Data fetching: TanStack Query
@@ -139,8 +139,6 @@ erDiagram
     TOPICS ||--o{ QUIZ_TOPICS : mapped_to
 ```
 
-> ⚠️ Note: You currently have both `quizzes.topic_id` and `quiz_topics`. Consider choosing one approach (one-to-many vs many-to-many).
-
 ---
 
 ### 📝 Writing System
@@ -171,7 +169,7 @@ erDiagram
     ASSIGNMENTS ||--o{ ASSIGNMENT_ITEMS : contains
 ```
 
-> ℹ️ `assignment_items` uses a polymorphic pattern (`content_type`, `content_id`) and may reference multiple content types (quizzes, texts, etc.).
+> ℹ️ `assignment_items` uses a polymorphic pattern (`content_type`, `content_id`) and may reference multiple content types (quizzes, texts, etc.). Both `assignments` and `assignment_items` use an `is_completed` boolean column (default `false`) instead of a `status` text column to track completion state.
 
 ---
 
@@ -269,10 +267,10 @@ Example response:
 
 ```json
 {
-    "id": "2e2fcbf3-1f6b-4a19-a2ab-8f1ba78b8880",
-    "title": "Past Simple Review",
-    "description": "Mixed grammar and vocabulary",
-    "createdAt": "2026-03-23T11:42:10.000Z"
+  "id": "2e2fcbf3-1f6b-4a19-a2ab-8f1ba78b8880",
+  "title": "Past Simple Review",
+  "description": "Mixed grammar and vocabulary",
+  "createdAt": "2026-03-23T11:42:10.000Z"
 }
 ```
 
@@ -335,8 +333,8 @@ Response: `audio/mpeg` binary stream (MP3, 44100 Hz, 128 kbps).
 
 - Login endpoint sets `access_token` cookie.
 - Cookie is HTTP-only and environment-sensitive:
-    - production: `secure: true`, `sameSite: none`
-    - development: `secure: false`, `sameSite: lax`
+  - production: `secure: true`, `sameSite: none`
+  - development: `secure: false`, `sameSite: lax`
 - Protected backend routes use guards that verify token + role.
 - Teacher-only routes are guarded by role checks.
 
@@ -362,9 +360,9 @@ If you introduce additional roles (for example a dedicated `admin` backend role)
 Validation strategy:
 
 - A global `ValidationPipe` is enabled with:
-    - `whitelist: true`
-    - `forbidNonWhitelisted: true`
-    - `transform: true`
+  - `whitelist: true`
+  - `forbidNonWhitelisted: true`
+  - `transform: true`
 - DTOs use `class-validator` and `class-transformer` decorators for runtime request validation and type coercion.
 
 Error handling strategy:
@@ -405,16 +403,16 @@ Component architecture:
 
 - `src/pages/` contains screen-level orchestration and route entry points.
 - `src/components/` contains reusable feature and layout components.
-    - `src/components/admin/` contains admin panel sub-components:
-        - `admin-tabs.tsx` — tab definitions, icon components, and `adminTabs` array
-        - `AdminSidebar.tsx` — desktop sidebar with brand header and nav items
-        - `AdminMobileNav.tsx` — fixed mobile bottom navigation bar
-        - `StudentProgressSection.tsx` — student card grid
-        - `StudentProgressDetail.tsx` — attempt list and per-question result cards
-    - `src/components/quiz/` contains quiz flow components:
-        - `QuizResultsPanel.tsx` — grade badge + per-question pass/fail cards
-        - `QuizRetakeScreen.tsx` — retake prompt card with styled button
-        - `QuizAttemptHistoryPanel.tsx` — previous attempt list with "View results"
+  - `src/components/admin/` contains admin panel sub-components:
+    - `admin-tabs.tsx` — tab definitions, icon components, and `adminTabs` array
+    - `AdminSidebar.tsx` — desktop sidebar with brand header and nav items
+    - `AdminMobileNav.tsx` — fixed mobile bottom navigation bar
+    - `StudentProgressSection.tsx` — student card grid
+    - `StudentProgressDetail.tsx` — attempt list and per-question result cards
+  - `src/components/quiz/` contains quiz flow components:
+    - `QuizResultsPanel.tsx` — grade badge + per-question pass/fail cards
+    - `QuizRetakeScreen.tsx` — retake prompt card with styled button
+    - `QuizAttemptHistoryPanel.tsx` — previous attempt list with "View results"
 - `src/services/` contains API-domain service wrappers.
 - `src/hooks/` contains query/mutation hooks and shared behavior.
 
@@ -427,7 +425,7 @@ This separation keeps UI rendering concerns, data fetching, and API communicatio
 - PostgreSQL (`pg` Pool)
 - Redis (Upstash Redis SDK for cache, Redis connection for BullMQ)
 - BullMQ (`@nestjs/bullmq` + `bullmq`)
-- LangChain + Google Gemini (`@langchain/google-genai`)
+- LangChain + Claude (`@langchain/anthropic`)
 - ElevenLabs (`@elevenlabs/elevenlabs-js`) — text-to-speech
 - class-validator / class-transformer
 - Argon2 (password hashing)
@@ -450,7 +448,7 @@ This separation keeps UI rendering concerns, data fetching, and API communicatio
 - PostgreSQL database (or managed Postgres such as Supabase)
 - Redis instance (Upstash Redis recommended for current cache setup)
 - ElevenLabs account with API key (for TTS)
-- Google AI / Gemini API key (for quiz generation)
+- Anthropic API key (for quiz generation)
 
 ## Environment Configuration
 
@@ -471,7 +469,7 @@ REDIS_URL=your_upstash_rest_url
 REDIS_TOKEN=your_upstash_rest_token
 REDIS_FULL_URL=your_redis_connection_url_for_bullmq
 
-GOOGLE_API_KEY=your_google_genai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 
@@ -488,12 +486,12 @@ Notes:
 - `FRONTEND_URL` is used by CORS and email templates.
 - `REDIS_URL`/`REDIS_TOKEN` are used by the cache layer (`RedisService`).
 - `REDIS_FULL_URL` is used by BullMQ queue workers.
-- `GOOGLE_API_KEY` is used by the LLM provider for quiz generation.
+- `ANTHROPIC_API_KEY` is used by the LLM provider for quiz generation.
 - `ELEVENLABS_API_KEY` is picked up automatically by the ElevenLabs SDK from the environment.
 - SSL cert support is implemented in `backend/certs/prod-ca-2021.crt` if present.
 - Current frontend HTTP client logic uses:
-    - development: `http://localhost:3000`
-    - production: `/api` (rewritten by Vercel)
+  - development: `http://localhost:3000`
+  - production: `/api` (rewritten by Vercel)
 
 ## Local Development
 
@@ -572,25 +570,25 @@ Frontend currently has lint/build validation via npm scripts.
 - Rotate any credentials that were previously committed or shared.
 - Use distinct credentials per environment (development/staging/production).
 - Consider adding:
-    - `backend/.env.example` with placeholder values
-    - secret scanning in CI
+  - `backend/.env.example` with placeholder values
+  - secret scanning in CI
 - The `POST /texttospeech/convert` endpoint is currently unguarded — consider adding `AuthGuard` or `TeacherGuard` before deploying to production.
 
 ## Troubleshooting
 
 - CORS/auth cookie issues:
-    - ensure `FRONTEND_URL` matches your active frontend origin
-    - ensure frontend requests use `withCredentials: true`
+  - ensure `FRONTEND_URL` matches your active frontend origin
+  - ensure frontend requests use `withCredentials: true`
 - Database connection issues:
-    - verify Postgres host/port/SSL cert and credentials
+  - verify Postgres host/port/SSL cert and credentials
 - Redis/queue issues:
-    - verify `REDIS_URL`, `REDIS_TOKEN`, and `REDIS_FULL_URL`
+  - verify `REDIS_URL`, `REDIS_TOKEN`, and `REDIS_FULL_URL`
 - LLM generation issues:
-    - verify `GOOGLE_API_KEY` and outbound network access
+  - verify `ANTHROPIC_API_KEY` and outbound network access
 - TTS issues:
-    - verify `ELEVENLABS_API_KEY` is set and the account has available credits
+  - verify `ELEVENLABS_API_KEY` is set and the account has available credits
 - Login token issues:
-    - verify `JWT_SECRET` is set and consistent
+  - verify `JWT_SECRET` is set and consistent
 
 ## License
 
@@ -601,7 +599,7 @@ This repository includes an MIT license file at `LICENSE`.
 - Frontend: React 19 + TypeScript + Vite
 - Backend: NestJS 11 + TypeScript + PostgreSQL
 - Background jobs: BullMQ + Redis
-- AI quiz generation: LangChain + Google Gemini
+- AI quiz generation: LangChain + Claude (Anthropic)
 - Auth: JWT stored in HTTP-only cookies
 - Data fetching: TanStack Query
 - Error monitoring: Sentry (frontend + backend)
@@ -721,8 +719,6 @@ erDiagram
     TOPICS ||--o{ QUIZ_TOPICS : mapped_to
 ```
 
-> ⚠️ Note: You currently have both `quizzes.topic_id` and `quiz_topics`. Consider choosing one approach (one-to-many vs many-to-many).
-
 ---
 
 ### 📝 Writing System
@@ -753,7 +749,7 @@ erDiagram
     ASSIGNMENTS ||--o{ ASSIGNMENT_ITEMS : contains
 ```
 
-> ℹ️ `assignment_items` uses a polymorphic pattern (`content_type`, `content_id`) and may reference multiple content types (quizzes, texts, etc.).
+> ℹ️ `assignment_items` uses a polymorphic pattern (`content_type`, `content_id`) and may reference multiple content types (quizzes, texts, etc.). Both `assignments` and `assignment_items` use an `is_completed` boolean column (default `false`) instead of a `status` text column to track completion state.
 
 ## Example End-to-End Flows
 
@@ -827,10 +823,10 @@ Example response:
 
 ```json
 {
-    "id": "2e2fcbf3-1f6b-4a19-a2ab-8f1ba78b8880",
-    "title": "Past Simple Review",
-    "description": "Mixed grammar and vocabulary",
-    "createdAt": "2026-03-23T11:42:10.000Z"
+  "id": "2e2fcbf3-1f6b-4a19-a2ab-8f1ba78b8880",
+  "title": "Past Simple Review",
+  "description": "Mixed grammar and vocabulary",
+  "createdAt": "2026-03-23T11:42:10.000Z"
 }
 ```
 
@@ -865,8 +861,8 @@ Content-Type: application/json
 
 - Login endpoint sets `access_token` cookie.
 - Cookie is HTTP-only and environment-sensitive:
-    - production: `secure: true`, `sameSite: none`
-    - development: `secure: false`, `sameSite: lax`
+  - production: `secure: true`, `sameSite: none`
+  - development: `secure: false`, `sameSite: lax`
 - Protected backend routes use guards that verify token + role.
 - Teacher-only routes are guarded by role checks.
 
@@ -889,9 +885,9 @@ If you introduce additional roles (for example a dedicated `admin` backend role)
 Validation strategy:
 
 - A global `ValidationPipe` is enabled with:
-    - `whitelist: true`
-    - `forbidNonWhitelisted: true`
-    - `transform: true`
+  - `whitelist: true`
+  - `forbidNonWhitelisted: true`
+  - `transform: true`
 - DTOs use `class-validator` and `class-transformer` decorators for runtime request validation and type coercion.
 
 Error handling strategy:
@@ -943,7 +939,7 @@ This separation keeps UI rendering concerns, data fetching, and API communicatio
 - PostgreSQL (`pg` Pool)
 - Redis (Upstash Redis SDK for cache, Redis connection for BullMQ)
 - BullMQ (`@nestjs/bullmq` + `bullmq`)
-- LangChain + Google Gemini (`@langchain/google-genai`)
+- LangChain + Claude (`@langchain/anthropic`)
 - class-validator / class-transformer
 - Argon2 (password hashing)
 - jsonwebtoken
@@ -984,7 +980,7 @@ REDIS_URL=your_upstash_rest_url
 REDIS_TOKEN=your_upstash_rest_token
 REDIS_FULL_URL=your_redis_connection_url_for_bullmq
 
-GOOGLE_API_KEY=your_google_genai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 
 EMAIL_USER=your_email_address
 EMAIL_PASS=your_email_app_password
@@ -999,11 +995,11 @@ Notes:
 - `FRONTEND_URL` is used by CORS and email templates.
 - `REDIS_URL`/`REDIS_TOKEN` are used by the cache layer (`RedisService`).
 - `REDIS_FULL_URL` is used by BullMQ queue workers.
-- `GOOGLE_API_KEY` is used by the LLM provider for quiz generation.
+- `ANTHROPIC_API_KEY` is used by the LLM provider for quiz generation.
 - SSL cert support is implemented in `backend/certs/prod-ca-2021.crt` if present.
 - Current frontend HTTP client logic uses:
-    - development: `http://localhost:3000`
-    - production: `/api` (rewritten by Vercel)
+  - development: `http://localhost:3000`
+  - production: `/api` (rewritten by Vercel)
 
 ## Local Development
 
@@ -1079,22 +1075,22 @@ Frontend currently has lint/build validation via npm scripts.
 - Rotate any credentials that were previously committed or shared.
 - Use distinct credentials per environment (development/staging/production).
 - Consider adding:
-    - `backend/.env.example` with placeholder values
-    - secret scanning in CI
+  - `backend/.env.example` with placeholder values
+  - secret scanning in CI
 
 ## Troubleshooting
 
 - CORS/auth cookie issues:
-    - ensure `FRONTEND_URL` matches your active frontend origin
-    - ensure frontend requests use `withCredentials: true`
+  - ensure `FRONTEND_URL` matches your active frontend origin
+  - ensure frontend requests use `withCredentials: true`
 - Database connection issues:
-    - verify Postgres host/port/SSL cert and credentials
+  - verify Postgres host/port/SSL cert and credentials
 - Redis/queue issues:
-    - verify `REDIS_URL`, `REDIS_TOKEN`, and `REDIS_FULL_URL`
+  - verify `REDIS_URL`, `REDIS_TOKEN`, and `REDIS_FULL_URL`
 - LLM generation issues:
-    - verify `GOOGLE_API_KEY` and outbound network access
+  - verify `ANTHROPIC_API_KEY` and outbound network access
 - Login token issues:
-    - verify `JWT_SECRET` is set and consistent
+  - verify `JWT_SECRET` is set and consistent
 
 ## License
 

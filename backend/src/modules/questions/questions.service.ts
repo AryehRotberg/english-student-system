@@ -3,15 +3,15 @@ import { PostgresService } from '../../config/postgres.client';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { QuestionResponseDto } from './dto/question-response.dto';
 import { Question } from './entities/question.entity';
-import { createQuestionQuery, getAllQuestionsQuery } from './questions.queries';
 
 @Injectable()
 export class QuestionsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findAll(): Promise<QuestionResponseDto[]> {
-        const questions =
-            await this.postgresService.query<Question>(getAllQuestionsQuery);
+        const questions = await this.pgService.query<Question>(
+            this.pgService.getSql(__dirname, 'get-all-questions.sql'),
+        );
         return QuestionResponseDto.fromEntities(questions);
     }
 
@@ -20,8 +20,8 @@ export class QuestionsService {
     ): Promise<QuestionResponseDto> {
         const { question, questionType } = createQuestionDto;
 
-        const [result] = await this.postgresService.query<Question>(
-            createQuestionQuery,
+        const [result] = await this.pgService.query<Question>(
+            this.pgService.getSql(__dirname, 'create-question.sql'),
             [question, questionType],
         );
 

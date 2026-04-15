@@ -1,7 +1,7 @@
 INSERT INTO
     QUESTIONS (QUESTION, QUESTION_TYPE)
 VALUES
-    ($1, $2, $3) RETURNING ID,
+    ($1, $2) RETURNING ID,
     QUESTION,
     QUESTION_TYPE AS "questionType",
     CREATED_AT AS "createdAt";

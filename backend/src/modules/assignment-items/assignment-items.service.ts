@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import {
-    createAssignmentItemQuery,
-    getAssignmentItemsByUserIdQuery,
-} from './assignment-items.queries';
 import { AssignmentItemResponseDto } from './dto/assignment-item-response.dto';
 import { CreateAssignmentItemDto } from './dto/create-assignment-item.dto';
 import { GetAssignmentItemsFilterDto } from './dto/get-asssignment-items-filter.dto';
@@ -11,18 +7,20 @@ import { AssignmentItem } from './entities/assignment-item.entity';
 
 @Injectable()
 export class AssignmentItemsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findByUserId(
         filter: GetAssignmentItemsFilterDto,
     ): Promise<AssignmentItemResponseDto[]> {
         const { userId } = filter;
 
-        const assignmentItems =
-            await this.postgresService.query<AssignmentItem>(
-                getAssignmentItemsByUserIdQuery,
-                [userId],
-            );
+        const assignmentItems = await this.pgService.query<AssignmentItem>(
+            this.pgService.getSql(
+                __dirname,
+                'get-assignment-items-by-user-id.sql',
+            ),
+            [userId],
+        );
 
         return AssignmentItemResponseDto.fromEntities(assignmentItems);
     }
@@ -30,14 +28,14 @@ export class AssignmentItemsService {
     async create(
         createAssignmentItemDto: CreateAssignmentItemDto,
     ): Promise<AssignmentItemResponseDto> {
-        const { assignmentId, contentType, contentId, status } =
+        const { assignmentId, contentType, contentId } =
             createAssignmentItemDto;
 
-        const result = await this.postgresService.query(
-            createAssignmentItemQuery,
-            [assignmentId, contentType, contentId, status],
+        const [result] = await this.pgService.query<AssignmentItem>(
+            this.pgService.getSql(__dirname, 'create-assignment-item.sql'),
+            [assignmentId, contentType, contentId],
         );
 
-        return AssignmentItemResponseDto.fromEntity(result[0]);
+        return AssignmentItemResponseDto.fromEntity(result);
     }
 }

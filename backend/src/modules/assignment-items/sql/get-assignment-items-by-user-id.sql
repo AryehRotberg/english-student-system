@@ -4,7 +4,7 @@ SELECT
     A.TITLE AS "assignmentTitle",
     A.DESCRIPTION AS "assignmentDescription",
     A.DUE_DATE AS "assignmentDueDate",
-    AI.STATUS AS "status",
+    AI.IS_COMPLETED AS "isCompleted",
     AI.CONTENT_TYPE AS "contentType",
     AI.CONTENT_ID AS "contentId",
     COALESCE(Q.TITLE, T.TITLE, W.TITLE, VT.TOPIC) AS "title"

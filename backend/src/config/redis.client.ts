@@ -1,101 +1,44 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Redis } from '@upstash/redis';
-
-interface CacheOptions {
-    ttl?: number;
-}
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
+import { Redis } from 'ioredis';
 
 @Injectable()
-export class RedisService {
+export class RedisService implements OnApplicationShutdown {
     private redisClient: Redis;
-    private pendingRefreshes = new Map<string, Promise<any>>();
 
     constructor() {
-        const redisUrl = process.env.REDIS_URL;
-        const redisToken = process.env.REDIS_TOKEN;
+        const fullRedisUrl = process.env.REDIS_FULL_URL;
 
-        if (!redisUrl || !redisToken) {
-            throw new Error('REDIS_URL and REDIS_TOKEN are required.');
+        if (!fullRedisUrl) {
+            throw new Error('REDIS_FULL_URL is required.');
         }
 
-        this.redisClient = new Redis({
-            url: redisUrl,
-            token: redisToken,
+        this.redisClient = new Redis(fullRedisUrl, {
+            tls: {
+                rejectUnauthorized: false,
+            },
         });
     }
 
-    getClient(): Redis {
-        return this.redisClient;
+    onApplicationShutdown() {
+        this.redisClient.disconnect();
     }
 
     async getOrFetch<T>(
         key: string,
         fetcher: () => Promise<T>,
-        options: CacheOptions = {},
+        ttl: number = 86400,
     ): Promise<T> {
-        // Check if a fetch for this key is already in progress
-        if (this.pendingRefreshes.has(key)) {
-            return this.pendingRefreshes.get(key);
+        const cached = await this.redisClient.get(key).catch(() => null);
+        if (cached) return JSON.parse(cached);
+
+        const data = await fetcher();
+
+        if (data !== undefined && data !== null) {
+            this.redisClient
+                .set(key, JSON.stringify(data), 'EX', ttl)
+                .catch(Logger.error);
         }
 
-        const { ttl = 86400 } = options; // Default TTL: 24 hours
-
-        const promise = (async () => {
-            try {
-                try {
-                    const cached = await this.redisClient.get<T>(key);
-                    if (cached) {
-                        return cached;
-                    }
-                } catch (error) {
-                    Logger.error('[Cache] Redis get error:', error);
-                }
-
-                const data = await fetcher();
-
-                if (data !== undefined && data !== null) {
-                    await this.redisClient
-                        .set(key, data, { ex: ttl })
-                        .catch((e) =>
-                            Logger.error('[Cache] Redis set error:', e),
-                        );
-                }
-
-                return data;
-            } finally {
-                // Cleanup pending promise
-                this.pendingRefreshes.delete(key);
-            }
-        })();
-
-        this.pendingRefreshes.set(key, promise);
-        return promise;
-    }
-
-    async invalidate(pattern: string) {
-        try {
-            if (!pattern.includes('*')) {
-                await this.redisClient.del(pattern);
-                return;
-            }
-
-            let cursor = 0;
-            do {
-                const [nextCursor, keys] = await this.redisClient.scan(cursor, {
-                    match: pattern,
-                    count: 100,
-                });
-
-                if (keys.length > 0) {
-                    await this.redisClient.del(...keys);
-                }
-
-                cursor = Number(nextCursor);
-            } while (cursor !== 0);
-
-            Logger.log(`[Cache] Invalidated pattern: ${pattern}`);
-        } catch (error) {
-            Logger.error('[Cache] Invalidation error:', error);
-        }
+        return data;
     }
 }

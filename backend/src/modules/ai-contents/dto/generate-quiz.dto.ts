@@ -20,6 +20,14 @@ export class GenerateQuizDto {
 
     @ApiPropertyOptional({
         description:
+            'The target proficiency level of the quiz audience (e.g., "Beginner (CEFR A1/A2)", "Intermediate (CEFR B1/B2)", "Advanced (CEFR C1/C2)")',
+    })
+    @IsOptional()
+    @IsString()
+    targetLevel?: string;
+
+    @ApiPropertyOptional({
+        description:
             'Additional instructions to guide quiz generation (e.g., focus on a specific subtopic, use a certain style, etc.)',
     })
     @IsOptional()

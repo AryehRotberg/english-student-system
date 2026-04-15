@@ -20,6 +20,7 @@ export class QuizGeneratorWorker extends WorkerHost {
             topic,
             openEndedCount,
             multipleChoiceCount,
+            targetLevel,
             additionalInstructions,
         } = job.data;
 
@@ -27,12 +28,15 @@ export class QuizGeneratorWorker extends WorkerHost {
             topic,
             openEndedCount,
             multipleChoiceCount,
+            targetLevel,
             additionalInstructions,
         });
 
         const result = await this.aiContentsService.create({
+            model: this.llmService.LLM_MODEL,
             content: JSON.stringify(llmResponse),
             contentType: 'quiz',
+            additionalInstructions: additionalInstructions || null,
         });
 
         return result;

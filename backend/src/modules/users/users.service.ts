@@ -4,17 +4,11 @@ import { PostgresService } from '../../config/postgres.client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { User } from './entities/user.entity';
-import {
-    deleteUserQuery,
-    getAllUsersQuery,
-    getUserByEmailQuery,
-    insertUserQuery,
-} from './users.queries';
 
 @Injectable()
 export class UsersService {
     constructor(
-        private readonly postgresService: PostgresService,
+        private readonly pgService: PostgresService,
         private readonly hashingService: HashingService,
     ) {}
 
@@ -30,33 +24,33 @@ export class UsersService {
 
         const hashedPassword = await this.hashingService.hash(password);
 
-        const result = await this.postgresService.query<User>(insertUserQuery, [
-            name,
-            email,
-            hashedPassword,
-            'student',
-        ]);
+        const result = await this.pgService.query<User>(
+            this.pgService.getSql(__dirname, 'insert-user.sql'),
+            [name, email, hashedPassword, 'student'],
+        );
 
         return UserResponseDto.fromEntity(result[0]);
     }
 
     async findOneByEmail(email: string): Promise<User | null> {
-        const [result] = await this.postgresService.query<User>(
-            getUserByEmailQuery,
+        const [result] = await this.pgService.query<User>(
+            this.pgService.getSql(__dirname, 'get-user-by-email.sql'),
             [email],
         );
         return result || null;
     }
 
     async getAllStudents(): Promise<UserResponseDto[]> {
-        const users = await this.postgresService.query<User>(getAllUsersQuery);
+        const users = await this.pgService.query<User>(
+            this.pgService.getSql(__dirname, 'get-all-users.sql'),
+        );
         const students = users.filter((user) => user.role === 'student');
         return UserResponseDto.fromEntities(students);
     }
 
     async remove(id: string): Promise<UserResponseDto> {
-        const [result] = await this.postgresService.query<User>(
-            deleteUserQuery,
+        const [result] = await this.pgService.query<User>(
+            this.pgService.getSql(__dirname, 'delete-user.sql'),
             [id],
         );
         return UserResponseDto.fromEntity(result);

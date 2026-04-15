@@ -4,7 +4,6 @@ SELECT
     QQ.QUESTION_ID AS "questionId",
     Q.QUESTION,
     Q.QUESTION_TYPE AS "questionType",
-    Q.AUDIO_URL AS "audioUrl",
     QQ.MAX_POINTS AS "maxPoints"
 FROM
     QUIZ_QUESTIONS QQ

@@ -4,6 +4,6 @@ export class Assignment {
     title: string;
     description: string;
     dueDate: Date;
-    status: 'assigned' | 'completed';
+    isCompleted: boolean;
     createdAt: Date;
 }

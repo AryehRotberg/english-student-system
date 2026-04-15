@@ -5,10 +5,6 @@ import { AssignmentItemResponseDto } from '../assignment-items/dto/assignment-it
 import { AssignmentsService } from '../assignments/assignments.service';
 import { AssignmentResponseDto } from '../assignments/dto/assignment-response.dto';
 import { UserResponseDto } from '../users/dto/user-response.dto';
-import {
-    getContentProgressQuery,
-    getQuizProgressQuery,
-} from './dashboard.queries';
 import { ProgressMetric } from './entities/progress-metric';
 
 const DEFAULT_ASSIGNMENT_DESCRIPTION = 'No assignment description.';
@@ -16,7 +12,7 @@ const DEFAULT_ASSIGNMENT_DESCRIPTION = 'No assignment description.';
 @Injectable()
 export class DashboardService {
     constructor(
-        private readonly postgresService: PostgresService,
+        private readonly pgService: PostgresService,
         private readonly assignmentItemsService: AssignmentItemsService,
         private readonly assignmentsService: AssignmentsService,
     ) {}
@@ -32,12 +28,18 @@ export class DashboardService {
         ] = await Promise.all([
             this.assignmentsService.findByUserId({ userId }),
             this.assignmentItemsService.findByUserId({ userId }),
-            this.postgresService.query<any>(getQuizProgressQuery, [userId]),
-            this.postgresService.query<any>(getContentProgressQuery, [userId]),
+            this.pgService.query<any>(
+                this.pgService.getSql(__dirname, 'get-quiz-progress.sql'),
+                [userId],
+            ),
+            this.pgService.query<any>(
+                this.pgService.getSql(__dirname, 'get-content-progress.sql'),
+                [userId],
+            ),
         ]);
 
         const activeAssignmentItems = assignmentItems.filter(
-            (item) => item.status !== 'completed',
+            (item) => !item.isCompleted,
         );
 
         return {
@@ -47,7 +49,7 @@ export class DashboardService {
                 .filter((item) => Boolean(item.contentId))
                 .map((item) => this.toAssignmentTopic(item)),
             activities: assignments
-                .filter((a) => a.status === 'assigned')
+                .filter((a) => !a.isCompleted)
                 .slice(0, 5)
                 .map((a) => this.toActivity(a)),
             progress: this.buildProgressMetrics(
@@ -65,7 +67,7 @@ export class DashboardService {
 
         if (quizData.length > 0) {
             const totalPercent = quizData.reduce((sum, row) => {
-                if (row.completedAt || row.assignmentStatus === 'completed')
+                if (row.completedAt || row.assignmentStatus === true)
                     return sum + 100;
                 if (row.totalQuestions === 0) return sum;
                 return (

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { QuizActiveView } from "../../components/quiz/QuizActiveView";
-import { QuizResultsPanel } from "../../components/quiz/QuizResultsPanel";
+import { QuizAttemptsViewer } from "../../components/quiz/QuizAttemptsViewer";
 import { QuizRetakeScreen } from "../../components/quiz/QuizRetakeScreen";
 import { QuizSetupScreen } from "../../components/quiz/QuizSetupScreen";
 import { QuizTopicsSection } from "../../components/quiz/QuizTopicsSection";
@@ -45,12 +45,6 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
         attemptId ?? undefined,
     );
 
-    const selectedAttemptId =
-        viewAttemptId ?? (isCompleted ? attemptId : undefined);
-    const { data: viewedStudentAnswers = [] } = useStudentAnswersByAttempt(
-        selectedAttemptId ?? undefined,
-    );
-
     const startAttemptAndNotify = useCallback(async () => {
         if (!user?.id) return;
         const attempt = await startAttemptMutation.mutateAsync({
@@ -81,33 +75,7 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     const completedAttempts = attempts.filter(
         (attempt) => attempt.completedAt !== null,
     );
-    const isViewingResults = Boolean(selectedAttemptId);
-
-    const selectedAttempt =
-        attempts.find((attempt) => attempt.id === selectedAttemptId) ?? null;
-
-    const { totalPossible, finalScore, gradePercent } = useMemo(() => {
-        const safeQuestions = questions ?? [];
-        const totalPossible = safeQuestions.reduce(
-            (sum, question) => sum + question.maxPoints,
-            0,
-        );
-        const earned = safeQuestions.reduce((sum, question) => {
-            const studentAnswerPoints = viewedStudentAnswers
-                .filter((answer) => answer.questionId === question.questionId)
-                .reduce(
-                    (total, answer) => total + Number(answer?.points ?? 0),
-                    0,
-                );
-            return sum + studentAnswerPoints;
-        }, 0);
-        const finalScore = Number(selectedAttempt?.points ?? earned);
-        const gradePercent =
-            totalPossible > 0
-                ? Math.round((finalScore / totalPossible) * 100)
-                : 0;
-        return { totalPossible, finalScore, gradePercent };
-    }, [questions, viewedStudentAnswers, selectedAttempt]);
+    const isViewingResults = viewAttemptId !== null;
 
     if (!quizId || !questions || questions.length === 0 || isAttemptLoading) {
         return <p>Loading...</p>;
@@ -163,16 +131,12 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
             <QuizTopicsSection topics={topics} />
 
             {isViewingResults ? (
-                <QuizResultsPanel
+                <QuizAttemptsViewer
                     questions={questions}
-                    answers={viewedStudentAnswers}
-                    isCompleted={isCompleted}
-                    gradePercent={gradePercent}
-                    finalScore={finalScore}
-                    totalPossible={totalPossible}
                     completedAttempts={completedAttempts}
-                    onBackToCurrentQuiz={handleBackToCurrentQuiz}
-                    onViewAttempt={handleViewAttempt}
+                    isCompleted={isCompleted}
+                    initialAttemptId={viewAttemptId}
+                    onBack={handleBackToCurrentQuiz}
                 />
             ) : (
                 <QuizActiveView

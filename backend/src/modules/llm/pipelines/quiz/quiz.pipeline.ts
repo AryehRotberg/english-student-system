@@ -1,4 +1,4 @@
-import { buildQuizPrompt } from './quiz.prompt';
+import { buildQuizPrompt, TargetLevel } from './quiz.prompt';
 import { QuizSchema } from './quiz.schema';
 import { normalizeQuiz } from './quiz.transformer';
 import { validateQuestions } from './quiz.validator';
@@ -10,12 +10,14 @@ export const quizPipeline = {
         topic: string;
         openEndedCount: number;
         multipleChoiceCount: number;
+        targetLevel?: TargetLevel;
         additionalInstructions?: string;
     }) => {
         return buildQuizPrompt(
             input.topic,
             input.openEndedCount,
             input.multipleChoiceCount,
+            input.targetLevel,
             input.additionalInstructions,
         );
     },

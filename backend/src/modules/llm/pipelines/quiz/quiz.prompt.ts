@@ -1,82 +1,87 @@
 import { Logger } from '@nestjs/common';
 
+export type TargetLevel =
+    | 'Beginner (CEFR A1)'
+    | 'Elementary (CEFR A2)'
+    | 'Intermediate (CEFR B1)'
+    | 'Upper-Intermediate (CEFR B2)'
+    | 'Advanced (CEFR C1)'
+    | 'Proficient (CEFR C2)';
+
 export function buildQuizPrompt(
     topic: string,
     openEndedCount: number,
     multipleChoiceCount: number,
+    targetLevel: TargetLevel = 'Intermediate (CEFR B1)',
     additionalInstructions?: string,
 ): string {
     Logger.debug(
-        `Building quiz prompt with topic="${topic}", openEndedCount=${openEndedCount}, multipleChoiceCount=${multipleChoiceCount}`,
+        `Building quiz prompt with topic="${topic}", openEndedCount=${openEndedCount}, multipleChoiceCount=${multipleChoiceCount}, targetLevel=${targetLevel}`,
     );
 
     const extra = additionalInstructions?.trim();
 
     return `
-        You are an expert English teacher.
+You are an expert English teacher writing a structured quiz.
 
-        Generate a quiz based on the topic: "${topic}".
+# CORE PARAMETERS
+- Topic: "${topic}"
+- Target Audience: ${targetLevel}
+- Open-Ended Questions: ${openEndedCount}
+- Multiple Choice Questions: ${multipleChoiceCount}
 
-        Requirements:
-        - Total open-ended questions: ${openEndedCount}
-        - Total multiple choice questions: ${multipleChoiceCount}
+# 1. AUDIENCE CALIBRATION (CRITICAL)
+- CALIBRATE sentence structure, thematic complexity, and surrounding vocabulary EXACTLY to the Target Audience.
+- For Beginner/Young (e.g., 6th grade, CEFR A1-A2): Use short, direct sentences. Contexts must be concrete and familiar.
+- For Advanced (e.g., PhD, CEFR C1-C2): Use sophisticated syntax, abstract concepts, and highly advanced surrounding vocabulary. Contexts must be professional or academic.
+- The cognitive load required to deduce the answer must precisely match the Target Audience.
 
-        ${
-            extra
-                ? `
-        Additional Instructions (CRITICAL):
-        ${extra}
+# 2. CONTENT GENERATION RULES
+Analyze the Topic and Additional Instructions. Determine if this is a Grammar quiz or a Vocabulary quiz:
 
-        - These instructions OVERRIDE stylistic preferences (tone, style, examples)
-        - These instructions MUST NOT break structural rules (blanks, answers, schema)
-        `
-                : ''
-        }
+IF GRAMMAR (e.g., Tenses, Prepositions):
+- Provide the base verb form or root word in parentheses immediately following the blank. Example: "She [BLANK] (drive) to work yesterday."
+- Ensure the surrounding sentence contains enough temporal or structural context to deduce the correct grammar.
 
-        Difficulty Rules (CRITICAL):
-        - Assign a difficulty_score (1-10) to every question.
-        - Ensure a progressive spread of difficulty.
-        - Multiple choice questions should generally be the easiest.
-        - Open-ended questions should progressively test advanced concepts.
+IF VOCABULARY:
+- Do NOT provide parentheses hints, definitions, or root words. Rely ENTIRELY on the sentence's contextual clues.
+- BAD: "The [BLANK] (a person who investigates) examined the scene."
+- GOOD: "When the local police ran out of leads, they hired a private [BLANK] to secretly follow the suspect."
+- If a list of words is provided, test each word exactly once. Do not put two target vocabulary words in a single question. 
+- If a part of speech is specified (e.g., "Figure (noun)"), use it strictly in that form.
 
-        Rules for Blanks and Verb Hints (CRITICAL):
-        - Do NOT use underscores.
-        - You MUST use the exact string [BLANK] to represent a missing word.
-        - You MUST provide the base form of the target verb in parentheses as a hint (e.g., "(drive)", "(cry)").
-        - GOOD Multiple Choice: "The dog [BLANK] (jump) over the fence."
-        - GOOD Open Ended: "Where [BLANK] you [BLANK] (drive) when the tire went flat?"
-        - GOOD Open Ended: "Why [BLANK] she [BLANK] (cry) during the movie?"
+# 3. OUTPUT MECHANICS & STRICT VALIDATION (FATAL IF FAILED)
+Your output is processed by a strict script. You MUST adhere to these structural rules:
 
-        General Rules:
-        - Questions must be grammatically correct and natural
-        - Avoid repetition and trivial sentences
-        - Ensure variety in sentence structure
-        - Do NOT include explanations
+GENERAL:
+- Blanks: Use the exact string [BLANK]. Do NOT use underscores.
 
-        Multiple choice rules:
-        - Exactly one [BLANK] per question
-        - Provide exactly 4 options
-        - Only ONE correct answer
+MULTIPLE CHOICE:
+- You MUST include EXACTLY ONE [BLANK] in the question string. Zero blanks or two blanks will crash the system.
+- You MUST provide exactly 4 options.
+- EXACTLY 1 option must be correct.
 
-        Open-ended rules:
-        - May contain one or more [BLANK]s
-        - Each [BLANK] must have a corresponding answer in the answers array
-        - Provide answers with correct blankIndex (starting from 1, matching left-to-right order)
+OPEN-ENDED:
+- May contain one or more [BLANK]s. 
+- You MUST map answers to blanks using a left-to-right \`blankIndex\` starting at 1.
+- EVERY [BLANK] in the sentence MUST have at least one corresponding answer. If there are 3 [BLANK]s, there must be answers for index 1, 2, and 3.
+- NEVER provide an answer with a \`blankIndex\` higher than the total number of [BLANK]s in the sentence.
+- NO DUPLICATES: NEVER output the exact same text twice for the same \`blankIndex\` (case-insensitive). "Cannot" and "cannot" are duplicates. 
+- Answer Variations: Include ALL common valid variations (e.g., "do not see", "don't see") as separate objects sharing the SAME \`blankIndex\`.
 
-        Answer Variations (CRITICAL):
-        - Multiple correct answers may exist for a single blank.
-        - You MUST include ALL common valid variations as separate answer objects.
-        - Each variation must use the SAME blankIndex.
+# 4. DIFFICULTY SCORING
+- Assign a \`difficulty_score\` (1-10) to every question.
+- 1 = Effortless for the Target Audience; 10 = Maximum cognitive load for the Target Audience.
+- Ensure a progressive spread of difficulty across the quiz.
 
-        Examples:
-        - "do not see" → add both:
-        - "do not see"
-        - "don't see"
-
-        Rules:
-        - Include both contracted and non-contracted forms when applicable
-        - Do NOT include incorrect or unnatural forms
-        - Do NOT duplicate identical answers
-        - All answers for the same blank must share the same blankIndex
-    `;
+${
+    extra
+        ? `
+# 5. OVERRIDE INSTRUCTIONS (CRITICAL)
+${extra}
+- These override instructions take precedence over stylistic preferences but MUST NOT break Section 3 Validation constraints.
+`
+        : ''
+}
+    `.trim();
 }

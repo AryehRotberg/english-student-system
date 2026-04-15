@@ -13,7 +13,7 @@ export class AssignmentResponseDto {
     @ApiProperty()
     readonly dueDate: Date;
     @ApiProperty()
-    readonly status: 'assigned' | 'completed';
+    readonly isCompleted: boolean;
     @ApiProperty()
     readonly createdAt: Date;
 
@@ -28,7 +28,7 @@ export class AssignmentResponseDto {
             title: assignment.title,
             description: assignment.description,
             dueDate: assignment.dueDate,
-            status: assignment.status,
+            isCompleted: assignment.isCompleted,
             createdAt: assignment.createdAt,
         };
         return new AssignmentResponseDto(props);

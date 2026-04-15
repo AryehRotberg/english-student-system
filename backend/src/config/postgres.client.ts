@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -7,9 +7,9 @@ import pg from 'pg';
 const { Pool } = pg;
 
 @Injectable()
-export class PostgresService {
+export class PostgresService implements OnModuleInit {
     private pool: pg.Pool;
-    private static sqlCache = new Map<string, string>();
+    private sqlCache = new Map<string, string>();
 
     constructor() {
         const requiredEnv = [
@@ -67,6 +67,38 @@ export class PostgresService {
         });
     }
 
+    async onModuleInit() {
+        const baseDir = path.join(process.cwd(), 'dist');
+        this.loadAllSqlFiles(baseDir);
+        Logger.log(
+            `[PostgresService] Pre-warmed cache with ${this.sqlCache.size} SQL queries.`,
+        );
+
+        try {
+            const client = await this.pool.connect();
+            client.release();
+            Logger.log('Database connected successfully');
+        } catch (err) {
+            Logger.error('Failed to connect to database on startup', err);
+            throw err;
+        }
+    }
+
+    private loadAllSqlFiles(dir: string) {
+        const files = fs.readdirSync(dir);
+
+        for (const file of files) {
+            const fullPath = path.join(dir, file);
+
+            if (fs.statSync(fullPath).isDirectory()) {
+                this.loadAllSqlFiles(fullPath);
+            } else if (fullPath.endsWith('.sql')) {
+                const content = fs.readFileSync(fullPath, 'utf8');
+                this.sqlCache.set(fullPath, content);
+            }
+        }
+    }
+
     async query<T = any>(query: string, parameters?: any[]): Promise<T[]> {
         try {
             const result = await this.pool.query(query, parameters ?? []);
@@ -81,14 +113,12 @@ export class PostgresService {
         }
     }
 
-    static readSql(callerDir: string, fileName: string): string {
-        const fullPath = path.join(callerDir, 'sql', fileName);
-
-        if (!this.sqlCache.has(fullPath)) {
-            const content = fs.readFileSync(fullPath, 'utf8');
-            this.sqlCache.set(fullPath, content);
+    getSql(moduleName: string, fileName: string): string {
+        const key = path.join(moduleName, 'sql', fileName);
+        const query = this.sqlCache.get(key);
+        if (!query) {
+            throw new Error(`SQL file missing from cache: ${key}`);
         }
-
-        return this.sqlCache.get(fullPath)!;
+        return query;
     }
 }

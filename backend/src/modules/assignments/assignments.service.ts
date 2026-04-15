@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import {
-    createAssignmentQuery,
-    getAssignmentsByUserIdQuery,
-} from './assignments.queries';
 import { AssignmentResponseDto } from './dto/assignment-response.dto';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { GetAssignmentsFilterDto } from './dto/get-assignments-filter.dto';
@@ -11,17 +7,20 @@ import { Assignment } from './entities/assignment.entity';
 
 @Injectable()
 export class AssignmentsService {
-    constructor(private readonly postgresService: PostgresService) {}
+    constructor(private readonly pgService: PostgresService) {}
 
     async findByUserId(
         filter: GetAssignmentsFilterDto,
     ): Promise<AssignmentResponseDto[]> {
         const { userId } = filter;
 
-        const assignments = await this.postgresService.query<Assignment>(
-            getAssignmentsByUserIdQuery,
-            [userId],
+        const query = this.pgService.getSql(
+            __dirname,
+            'get-assignments-by-user-id.sql',
         );
+        const assignments = await this.pgService.query<Assignment>(query, [
+            userId,
+        ]);
         return AssignmentResponseDto.fromEntities(assignments);
     }
 
@@ -30,7 +29,8 @@ export class AssignmentsService {
     ): Promise<AssignmentResponseDto> {
         const { userId, title, description, dueDate } = createAssignmentDto;
 
-        const result = await this.postgresService.query(createAssignmentQuery, [
+        const query = this.pgService.getSql(__dirname, 'create-assignment.sql');
+        const result = await this.pgService.query<Assignment>(query, [
             userId,
             title,
             description,

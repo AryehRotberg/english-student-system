@@ -3,7 +3,7 @@ export type AssignmentTopicApiItem = {
     assignmentId: string;
     assignmentTitle: string;
     assignmentDescription: string;
-    status: "assigned" | "completed";
+    isCompleted: boolean;
     contentType: "quiz" | "text" | "writing" | "vocabulary";
     contentId: string;
     title: string;

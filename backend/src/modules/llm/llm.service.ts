@@ -1,12 +1,21 @@
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+// import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatAnthropic } from '@langchain/anthropic';
 import { Injectable } from '@nestjs/common';
 import { LlmPipeline } from './llm.types';
 
 @Injectable()
 export class LlmService {
-    private readonly model = new ChatGoogleGenerativeAI({
-        model: 'gemini-3-flash-preview',
-        // model: 'gemini-3.1-flash-lite-preview',
+    // private readonly model = new ChatGoogleGenerativeAI({
+    //     model: 'gemini-3-flash-preview',
+    //     // model: 'gemini-3.1-flash-lite-preview',
+    //     temperature: 0.7,
+    //     maxRetries: 1,
+    // });
+
+    LLM_MODEL = 'claude-haiku-4-5-20251001';
+
+    private readonly model = new ChatAnthropic({
+        model: this.LLM_MODEL,
         temperature: 0.7,
         maxRetries: 1,
     });
