@@ -5,14 +5,14 @@ export type QuestionAdminItem = {
     audioUrl?: string | null;
 };
 
-export type QuestionOptionAdminItem = {
+export type QuestionChoiceAdminItem = {
     id: string;
     questionId: string;
     optionText: string;
     isCorrect: boolean;
 };
 
-export type AnswerAdminItem = {
+export type QuestionAcceptedAnswerAdminItem = {
     id: string;
     questionId: string;
     answer: string;

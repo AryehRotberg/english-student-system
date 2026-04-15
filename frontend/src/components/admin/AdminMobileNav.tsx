@@ -1,5 +1,5 @@
-import styles from "../../pages/Admin/AdminPage.module.css";
-import type { AdminTab, TabDef } from "./admin-tabs";
+import styles from '../../pages/Admin/AdminPage.module.css';
+import type { AdminTab, TabDef } from './admin-tabs';
 
 interface Props {
     tabs: TabDef[];

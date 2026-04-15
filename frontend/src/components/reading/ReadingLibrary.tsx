@@ -1,15 +1,15 @@
-import { useMemo, useState } from "react";
-import type { ReadingItem, ReadingLevel } from "../../types/reading";
-import styles from "./ReadingLibrary.module.css";
+import { useMemo, useState } from 'react';
+import type { ReadingItem, ReadingLevel } from '../../types/reading';
+import styles from './ReadingLibrary.module.css';
 
-const levels: ReadingLevel[] = ["A2", "B1", "B2", "C1"];
+const levels: ReadingLevel[] = ['A2', 'B1', 'B2', 'C1'];
 
 type ReadingLibraryProps = {
     items: ReadingItem[];
 };
 
 export function ReadingLibrary({ items }: ReadingLibraryProps) {
-    const [selectedLevel, setSelectedLevel] = useState<ReadingLevel>("B1");
+    const [selectedLevel, setSelectedLevel] = useState<ReadingLevel>('B1');
 
     const filteredItems = useMemo(
         () => items.filter((item) => item.level === selectedLevel),
@@ -43,7 +43,7 @@ export function ReadingLibrary({ items }: ReadingLibraryProps) {
                     <article key={item.id} className={styles.row}>
                         <div>
                             <h3 className={styles.title}>
-                                {item.title}{" "}
+                                {item.title}{' '}
                                 <span className={styles.level}>
                                     ({item.level})
                                 </span>

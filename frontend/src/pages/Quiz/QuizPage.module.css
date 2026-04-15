@@ -286,7 +286,7 @@
     color: #991b1b;
 }
 
-.gradeBadge[data-pass="true"] {
+.gradeBadge[data-pass='true'] {
     background: #d1fae5;
     color: #065f46;
 }

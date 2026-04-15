@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import type { AuthUser } from "../types/auth";
-import { httpClientService } from "./http-client.service";
+import type { AxiosInstance } from 'axios';
+import type { AuthUser } from '../types/auth';
+import { httpClientService } from './http-client.service';
 
 class UsersService {
     private readonly httpClient: AxiosInstance;
@@ -11,7 +11,7 @@ class UsersService {
 
     public async listAllStudents(): Promise<AuthUser[]> {
         const response =
-            await this.httpClient.get<AuthUser[]>("/users/students");
+            await this.httpClient.get<AuthUser[]>('/users/students');
         return response.data;
     }
 

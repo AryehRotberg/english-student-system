@@ -1,9 +1,9 @@
-import { useMemo, useState } from "react";
-import { useVocabAudio } from "../../hooks/queries";
-import { AudioNotFoundError } from "../../services/audio.service";
-import type { VocabAudioType } from "../../services/audio.service";
-import type { VocabularyTopicWithWords } from "../../types/vocabulary";
-import styles from "./VocabStudyPanel.module.css";
+import { useMemo, useState } from 'react';
+import { useVocabAudio } from '../../hooks/queries';
+import { AudioNotFoundError } from '../../services/audio.service';
+import type { VocabAudioType } from '../../services/audio.service';
+import type { VocabularyTopicWithWords } from '../../types/vocabulary';
+import styles from './VocabStudyPanel.module.css';
 
 type AudioButtonProps = {
     word: string;
@@ -39,12 +39,12 @@ function AudioButton({ word, type, label }: AudioButtonProps) {
     return (
         <button
             type="button"
-            className={`${styles.audioButton}${isLoading ? ` ${styles.audioButtonLoading}` : ""}`}
+            className={`${styles.audioButton}${isLoading ? ` ${styles.audioButtonLoading}` : ''}`}
             onClick={handlePlay}
             disabled={isLoading || !url}
             aria-label={`Play ${label} audio for ${word}`}
         >
-            {isLoading ? "Loading\u2026" : `\uD83D\uDD0A ${label}`}
+            {isLoading ? 'Loading\u2026' : `\uD83D\uDD0A ${label}`}
         </button>
     );
 }
@@ -160,15 +160,15 @@ export function VocabStudyPanel({
                 className={styles.cardViewport}
                 onClick={() => setIsFlipped((value) => !value)}
                 onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
+                    if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         setIsFlipped((value) => !value);
                     }
                 }}
-                aria-label={isFlipped ? "Show front side" : "Show back side"}
+                aria-label={isFlipped ? 'Show front side' : 'Show back side'}
             >
                 <div
-                    className={`${styles.cardInner} ${isFlipped ? styles.cardInnerFlipped : ""}`}
+                    className={`${styles.cardInner} ${isFlipped ? styles.cardInnerFlipped : ''}`}
                 >
                     <article
                         className={`${styles.cardFace} ${styles.cardFront}`}
@@ -190,8 +190,8 @@ export function VocabStudyPanel({
                         <div className={styles.details}>
                             <div className={styles.detailItem}>
                                 <p>
-                                    <strong>Meaning:</strong>{" "}
-                                    {currentCard.meaning || "-"}
+                                    <strong>Meaning:</strong>{' '}
+                                    {currentCard.meaning || '-'}
                                 </p>
                                 <AudioButton
                                     word={currentCard.word}
@@ -201,8 +201,8 @@ export function VocabStudyPanel({
                             </div>
                             <div className={styles.detailItem}>
                                 <p>
-                                    <strong>Example:</strong>{" "}
-                                    {currentCard.example || "-"}
+                                    <strong>Example:</strong>{' '}
+                                    {currentCard.example || '-'}
                                 </p>
                                 <AudioButton
                                     word={currentCard.word}
@@ -211,8 +211,8 @@ export function VocabStudyPanel({
                                 />
                             </div>
                             <p>
-                                <strong>Translation:</strong>{" "}
-                                {currentCard.translation || "-"}
+                                <strong>Translation:</strong>{' '}
+                                {currentCard.translation || '-'}
                             </p>
                         </div>
                     </article>

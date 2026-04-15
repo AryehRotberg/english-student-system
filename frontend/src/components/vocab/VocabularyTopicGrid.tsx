@@ -1,6 +1,6 @@
-import type { VocabularyTopicPreview } from "../../types/vocabulary";
-import { VocabularyTopicCard } from "./VocabularyTopicCard";
-import styles from "../../pages/Vocab/VocabPage.module.css";
+import type { VocabularyTopicPreview } from '../../types/vocabulary';
+import { VocabularyTopicCard } from './VocabularyTopicCard';
+import styles from '../../pages/Vocab/VocabPage.module.css';
 
 type VocabularyTopicGridProps = {
     topics: VocabularyTopicPreview[];

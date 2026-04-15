@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuizzes } from "../../hooks/queries";
-import styles from "./QuizListPage.module.css";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuizzes } from '../../hooks/queries';
+import styles from './QuizListPage.module.css';
 
 export function QuizListPage() {
     const navigate = useNavigate();
     const { data: quizzes = [] } = useQuizzes();
-    const [filterQuery, setFilterQuery] = useState("");
+    const [filterQuery, setFilterQuery] = useState('');
 
     const filtered = filterQuery.trim()
         ? quizzes.filter((q) =>
@@ -57,7 +57,7 @@ export function QuizListPage() {
                             <article className={styles.card} key={quiz.id}>
                                 <h3 className={styles.title}>{quiz.title}</h3>
                                 <p className={styles.description}>
-                                    {quiz.description || "No description."}
+                                    {quiz.description || 'No description.'}
                                 </p>
 
                                 <button
@@ -86,8 +86,8 @@ export function QuizListPage() {
                     <div className={styles.emptyWrap}>
                         <p className={styles.empty}>
                             {filterQuery.trim()
-                                ? "No quizzes match your search."
-                                : "No quizzes found."}
+                                ? 'No quizzes match your search.'
+                                : 'No quizzes found.'}
                         </p>
                     </div>
                 )}

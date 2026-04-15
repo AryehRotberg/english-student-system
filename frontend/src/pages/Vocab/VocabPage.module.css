@@ -23,7 +23,7 @@
 
 .heading {
     color: #0f172a;
-    font-family: "Inter", "Segoe UI", sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
     font-size: clamp(1.8rem, 2.8vw, 2.05rem);
     font-weight: 700;
     letter-spacing: -0.02em;

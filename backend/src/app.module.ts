@@ -6,13 +6,13 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule as AppConfigModule } from './config/config.module';
 import { AiContentsModule } from './modules/ai-contents/ai-contents.module';
-import { AnswersModule } from './modules/answers/answers.module';
+import { QuestionAcceptedAnswersModule } from './modules/question-accepted-answers/question-accepted-answers.module';
 import { AssignmentItemsModule } from './modules/assignment-items/assignment-items.module';
 import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { AudioModule } from './modules/audio/audio.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LlmModule } from './modules/llm/llm.module';
-import { QuestionOptionsModule } from './modules/question-options/question-options.module';
+import { QuestionChoicesModule } from './modules/question-choices/question-choices.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { QuizAttemptsModule } from './modules/quiz-attempts/quiz-attempts.module';
 import { QuizQuestionsModule } from './modules/quiz-questions/quiz-questions.module';
@@ -46,14 +46,14 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
         QuizzesModule,
         QuestionsModule,
         QuizQuestionsModule,
-        QuestionOptionsModule,
+        QuestionChoicesModule,
         TextsModule,
         WritingTasksModule,
         WritingSubmissionsModule,
         UsersModule,
         QuizAttemptsModule,
         StudentAnswersModule,
-        AnswersModule,
+        QuestionAcceptedAnswersModule,
         VocabularyModule,
         VocabularyTopicsModule,
         VocabularyTopicWordsModule,

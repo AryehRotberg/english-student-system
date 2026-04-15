@@ -1,8 +1,8 @@
 WITH inserted AS (
     INSERT INTO
-        QUIZ_QUESTIONS (QUIZ_ID, QUESTION_ID, MAX_POINTS)
+        QUIZ_QUESTIONS (QUIZ_ID, QUESTION_ID, MAX_POINTS, ORDER_INDEX)
     VALUES
-        ($1, $2, $3)
+        ($1, $2, $3, $4)
     RETURNING
         ID,
         QUIZ_ID,

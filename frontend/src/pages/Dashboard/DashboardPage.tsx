@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
-import { AssignmentTopicsSection } from "../../components/dashboard/AssignmentTopicsSection";
-import { DashboardHero } from "../../components/dashboard/DashboardHero";
-import { QuizProgressCard } from "../../components/dashboard/QuizProgressCard";
-import { RecentActivityCard } from "../../components/dashboard/RecentActivityCard";
-import { TodayTasksSection } from "../../components/dashboard/TodayTasksSection";
-import { useDashboardOverview } from "../../hooks/queries";
-import styles from "./DashboardPage.module.css";
+import { useNavigate } from 'react-router-dom';
+import { AssignmentTopicsSection } from '../../components/dashboard/AssignmentTopicsSection';
+import { DashboardHero } from '../../components/dashboard/DashboardHero';
+import { QuizProgressCard } from '../../components/dashboard/QuizProgressCard';
+import { RecentActivityCard } from '../../components/dashboard/RecentActivityCard';
+import { TodayTasksSection } from '../../components/dashboard/TodayTasksSection';
+import { useDashboardOverview } from '../../hooks/queries';
+import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
     const navigate = useNavigate();
@@ -16,30 +16,30 @@ export function DashboardPage() {
     }
 
     const quizProgress =
-        data.progress.find((item) => item.id === "quiz")?.percent ??
-        data.progress.find((item) => item.label.toLowerCase() === "quiz")
+        data.progress.find((item) => item.id === 'quiz')?.percent ??
+        data.progress.find((item) => item.label.toLowerCase() === 'quiz')
             ?.percent ??
         0;
 
     const featuredTask = data.tasks[0] ?? null;
 
     const getAssignmentRoute = (
-        contentType: "quiz" | "text" | "writing" | "vocabulary",
+        contentType: 'quiz' | 'text' | 'writing' | 'vocabulary',
         contentId: string,
     ) => {
-        if (contentType === "quiz") {
+        if (contentType === 'quiz') {
             return `/quiz/${contentId}`;
         }
 
-        if (contentType === "text") {
-            return "/reading";
+        if (contentType === 'text') {
+            return '/reading';
         }
 
-        if (contentType === "vocabulary") {
+        if (contentType === 'vocabulary') {
             return `/vocab?topicId=${contentId}`;
         }
 
-        return "/practice";
+        return '/practice';
     };
 
     const handleOpenAssignment = () => {
@@ -63,13 +63,13 @@ export function DashboardPage() {
                     <DashboardHero
                         studentName={data.studentName}
                         taskCount={data.tasks.length}
-                        onViewSchedule={() => navigate("/practice")}
+                        onViewSchedule={() => navigate('/practice')}
                     />
 
                     <TodayTasksSection
                         featuredTask={featuredTask}
                         hasAssignments={data.assignmentTopics.length > 0}
-                        onViewAll={() => navigate("/practice")}
+                        onViewAll={() => navigate('/practice')}
                         onOpenAssignment={handleOpenAssignment}
                     />
 
@@ -90,7 +90,7 @@ export function DashboardPage() {
                     <QuizProgressCard quizProgress={quizProgress} />
                     <RecentActivityCard
                         activities={data.activities}
-                        onViewFullHistory={() => navigate("/practice")}
+                        onViewFullHistory={() => navigate('/practice')}
                     />
                 </aside>
             </div>

@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useSubmitStudentAnswer } from "../../hooks/mutations";
-import type { QuizQuestion } from "../../types/quiz";
-import { isUuid } from "../../utils/isUuid";
-import { QuestionAudioButton } from "./QuestionAudioButton";
-import styles from "./QuizCard.module.css";
+import { useState } from 'react';
+import { useSubmitStudentAnswer } from '../../hooks/mutations';
+import type { QuizQuestion } from '../../types/quiz';
+import { isUuid } from '../../utils/isUuid';
+import { QuestionAudioButton } from './QuestionAudioButton';
+import styles from './QuizCard.module.css';
 
 type QuizCardProps = {
     attemptId: string;
@@ -18,9 +18,9 @@ export function QuizCard({
     isLastQuestion,
     onSubmitted,
 }: QuizCardProps) {
-    const [selectedOptionId, setSelectedOptionId] = useState<string>("");
+    const [selectedOptionId, setSelectedOptionId] = useState<string>('');
     const [blankAnswers, setBlankAnswers] = useState<string[]>(
-        Array.from({ length: question.blankCount || 1 }, () => ""),
+        Array.from({ length: question.blankCount || 1 }, () => ''),
     );
     const submitMutation = useSubmitStudentAnswer();
     const isMultipleChoice = question.options.length > 0;
@@ -100,10 +100,10 @@ export function QuizCard({
                 disabled={!canSubmit || submitMutation.isPending}
             >
                 {submitMutation.isPending
-                    ? "Submitting..."
+                    ? 'Submitting...'
                     : isLastQuestion
-                      ? "Finish Quiz"
-                      : "Next"}
+                      ? 'Finish Quiz'
+                      : 'Next'}
             </button>
 
             {!isUuid(attemptId) ? (

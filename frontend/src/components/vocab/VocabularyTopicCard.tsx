@@ -1,5 +1,5 @@
-import type { VocabularyTopicPreview } from "../../types/vocabulary";
-import styles from "./VocabularyTopicCard.module.css";
+import type { VocabularyTopicPreview } from '../../types/vocabulary';
+import styles from './VocabularyTopicCard.module.css';
 
 type VocabularyTopicCardProps = {
     topic: VocabularyTopicPreview;

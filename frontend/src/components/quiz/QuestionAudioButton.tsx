@@ -1,6 +1,6 @@
-import { useQuestionAudio } from "../../hooks/queries";
-import { AudioNotFoundError } from "../../services/audio.service";
-import styles from "./QuestionAudioButton.module.css";
+import { useQuestionAudio } from '../../hooks/queries';
+import { AudioNotFoundError } from '../../services/audio.service';
+import styles from './QuestionAudioButton.module.css';
 
 type QuestionAudioButtonProps = {
     questionId: string;
@@ -31,7 +31,7 @@ export function QuestionAudioButton({ questionId }: QuestionAudioButtonProps) {
     return (
         <button
             type="button"
-            className={`${styles.speakerButton}${isLoading ? ` ${styles.speakerButtonLoading}` : ""}`}
+            className={`${styles.speakerButton}${isLoading ? ` ${styles.speakerButtonLoading}` : ''}`}
             onClick={handlePlay}
             disabled={isLoading || !url}
             aria-label="Play question audio"

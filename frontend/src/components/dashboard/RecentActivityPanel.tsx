@@ -1,5 +1,5 @@
-import type { RecentActivity } from "../../types/activity";
-import styles from "./RecentActivityPanel.module.css";
+import type { RecentActivity } from '../../types/activity';
+import styles from './RecentActivityPanel.module.css';
 
 type RecentActivityPanelProps = {
     activities: RecentActivity[];

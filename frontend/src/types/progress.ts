@@ -1,5 +1,5 @@
 export type ProgressItem = {
-  id: string;
-  label: string;
-  percent: number;
+    id: string;
+    label: string;
+    percent: number;
 };

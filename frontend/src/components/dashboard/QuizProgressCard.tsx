@@ -1,4 +1,4 @@
-import styles from "../../pages/Dashboard/DashboardPage.module.css";
+import styles from '../../pages/Dashboard/DashboardPage.module.css';
 
 type Props = {
     quizProgress: number;

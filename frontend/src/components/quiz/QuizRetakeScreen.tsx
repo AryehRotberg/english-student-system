@@ -1,6 +1,6 @@
-import { QuizAttemptHistoryPanel } from "../../components/quiz/QuizAttemptHistoryPanel";
-import styles from "../../pages/Quiz/QuizPage.module.css";
-import type { QuizAttemptApiItem } from "../../types/api-items/quiz-attempt";
+import { QuizAttemptHistoryPanel } from '../../components/quiz/QuizAttemptHistoryPanel';
+import styles from '../../pages/Quiz/QuizPage.module.css';
+import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 
 type QuizRetakeScreenProps = {
     questionCount: number;
@@ -28,7 +28,7 @@ export function QuizRetakeScreen({
                     disabled={isPending}
                     type="button"
                 >
-                    {isPending ? "Starting..." : "Retake Quiz"}
+                    {isPending ? 'Starting...' : 'Retake Quiz'}
                 </button>
             </section>
             <QuizAttemptHistoryPanel

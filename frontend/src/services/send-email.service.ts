@@ -1,5 +1,5 @@
-import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
 
 class SendEmailService {
     private readonly httpClient: AxiosInstance;
@@ -10,7 +10,7 @@ class SendEmailService {
 
     public async sendCompletionEmail(attemptId: string) {
         const response = await this.httpClient.post(
-            "/send-email/assignment-completion",
+            '/send-email/assignment-completion',
             { attemptId },
         );
         return response.data;
@@ -23,7 +23,7 @@ class SendEmailService {
         title: string;
         body: string;
     }) {
-        const response = await this.httpClient.post("/send-email", {
+        const response = await this.httpClient.post('/send-email', {
             name: content.name,
             email: content.email,
             subject: content.subject,

@@ -1,6 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsUUID } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateQuizQuestionDto {
     @IsUUID()
@@ -15,4 +15,9 @@ export class CreateQuizQuestionDto {
     @IsNumber()
     @ApiProperty()
     maxPoints: number;
+
+    @Type(() => Number)
+    @IsNumber()
+    @ApiProperty()
+    orderIndex: number;
 }

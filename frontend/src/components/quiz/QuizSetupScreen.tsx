@@ -1,4 +1,4 @@
-import styles from "../../pages/Quiz/QuizPage.module.css";
+import styles from '../../pages/Quiz/QuizPage.module.css';
 
 export function QuizSetupScreen() {
     return (

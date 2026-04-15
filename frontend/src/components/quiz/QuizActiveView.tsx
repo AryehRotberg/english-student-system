@@ -1,7 +1,7 @@
-import { QuizAttemptHistoryPanel } from "../../components/quiz/QuizAttemptHistoryPanel";
-import { QuizCard } from "../../components/quiz/QuizCard";
-import type { QuizAttemptApiItem } from "../../types/api-items/quiz-attempt";
-import type { QuizQuestion } from "../../types/quiz";
+import { QuizAttemptHistoryPanel } from '../../components/quiz/QuizAttemptHistoryPanel';
+import { QuizCard } from '../../components/quiz/QuizCard';
+import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
+import type { QuizQuestion } from '../../types/quiz';
 
 type QuizActiveViewProps = {
     attemptId: string;

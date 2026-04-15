@@ -42,6 +42,8 @@ Analyze the Topic and Additional Instructions. Determine if this is a Grammar qu
 IF GRAMMAR (e.g., Tenses, Prepositions):
 - Provide the base verb form or root word in parentheses immediately following the blank. Example: "She [BLANK] (drive) to work yesterday."
 - Ensure the surrounding sentence contains enough temporal or structural context to deduce the correct grammar.
+- STRICT TENSE ISOLATION (CRITICAL): You MUST strictly isolate the target grammar. If the topic is "Future Simple", do NOT test Future Perfect or Future Continuous. To increase the difficulty_score, use more complex surrounding vocabulary and abstract contexts, NEVER mutate the target grammar itself.
+- TARGETED BLANKS ONLY (CRITICAL): If the sentence requires a mixed grammar structure (e.g., a First Conditional requiring both Present Simple and Future Simple), ONLY put the [BLANK] on the specific verb that matches the Topic. Pre-fill the other verbs in the sentence. Do NOT test prerequisite grammar.
 
 IF VOCABULARY:
 - Do NOT provide parentheses hints, definitions, or root words. Rely ENTIRELY on the sentence's contextual clues.

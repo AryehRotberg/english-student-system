@@ -1,6 +1,6 @@
-import type { ProgressItem } from "../../types/progress";
-import { toProgressBar } from "../../utils/progress";
-import styles from "./ProgressPanel.module.css";
+import type { ProgressItem } from '../../types/progress';
+import { toProgressBar } from '../../utils/progress';
+import styles from './ProgressPanel.module.css';
 
 type ProgressPanelProps = {
     progress: ProgressItem[];

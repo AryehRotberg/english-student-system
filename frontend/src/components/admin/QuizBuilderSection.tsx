@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
     useCreateQuizQuestion,
     useUpdateQuizQuestion,
-} from "../../hooks/mutations";
+} from '../../hooks/mutations';
 import {
     useQuestions,
     useQuizzes,
     useRawQuizQuestions,
     type QuestionAdminItem,
     type RawQuizQuestionAdminItem,
-} from "../../hooks/queries";
-import styles from "../../pages/Admin/AdminPage.module.css";
+} from '../../hooks/queries';
+import styles from '../../pages/Admin/AdminPage.module.css';
 
 export function QuizBuilderSection() {
     const { data: quizzes = [] } = useQuizzes();
     const { data: allQuestions = [] } = useQuestions();
-    const [selectedQuizId, setSelectedQuizId] = useState("");
+    const [selectedQuizId, setSelectedQuizId] = useState('');
     const { data: quizQuestionsData = [] } =
         useRawQuizQuestions(selectedQuizId);
     const createQQ = useCreateQuizQuestion();
     const updateQQ = useUpdateQuizQuestion();
 
-    const [addQuestionId, setAddQuestionId] = useState("");
+    const [addQuestionId, setAddQuestionId] = useState('');
     const [addMaxPoints, setAddMaxPoints] = useState(10);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editMaxPoints, setEditMaxPoints] = useState(10);
@@ -159,7 +159,7 @@ export function QuizBuilderSection() {
                                 questionId: addQuestionId,
                                 maxPoints: addMaxPoints,
                             });
-                            setAddQuestionId("");
+                            setAddQuestionId('');
                             setAddMaxPoints(10);
                         }}
                     >
@@ -206,7 +206,7 @@ export function QuizBuilderSection() {
                             className={styles.submitButton}
                             disabled={createQQ.isPending || !addQuestionId}
                         >
-                            {createQQ.isPending ? "Adding…" : "Add to Quiz"}
+                            {createQQ.isPending ? 'Adding…' : 'Add to Quiz'}
                         </button>
                     </form>
                 </>

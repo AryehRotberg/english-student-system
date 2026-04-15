@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useQuestions } from "../../hooks/queries";
-import { useCreateQuestion } from "../../hooks/mutations";
-import type { QuestionAdminItem } from "../../types/admin-query-items";
-import { QuestionDetail } from "./QuestionDetail";
-import styles from "../../pages/Admin/AdminPage.module.css";
+import { useState } from 'react';
+import { useQuestions } from '../../hooks/queries';
+import { useCreateQuestion } from '../../hooks/mutations';
+import type { QuestionAdminItem } from '../../types/admin-query-items';
+import { QuestionDetail } from './QuestionDetail';
+import styles from '../../pages/Admin/AdminPage.module.css';
 
 export function QuestionsSection() {
     const { data: questions = [] } = useQuestions();
     const createQuestion = useCreateQuestion();
-    const [questionText, setQuestionText] = useState("");
+    const [questionText, setQuestionText] = useState('');
     const [questionType, setQuestionType] = useState<
-        "multiple_choice" | "open_ended"
-    >("multiple_choice");
-    const [audioUrl, setAudioUrl] = useState("");
+        'multiple_choice' | 'open_ended'
+    >('multiple_choice');
+    const [audioUrl, setAudioUrl] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -24,8 +24,8 @@ export function QuestionsSection() {
             questionType,
             audioUrl: audioUrl.trim() || undefined,
         });
-        setQuestionText("");
-        setAudioUrl("");
+        setQuestionText('');
+        setAudioUrl('');
         setShowForm(false);
     };
 
@@ -38,7 +38,7 @@ export function QuestionsSection() {
                     className={styles.addButton}
                     onClick={() => setShowForm((v) => !v)}
                 >
-                    {showForm ? "Cancel" : "+ Add Question"}
+                    {showForm ? 'Cancel' : '+ Add Question'}
                 </button>
             </div>
 
@@ -65,8 +65,8 @@ export function QuestionsSection() {
                                 onChange={(e) =>
                                     setQuestionType(
                                         e.target.value as
-                                            | "multiple_choice"
-                                            | "open_ended",
+                                            | 'multiple_choice'
+                                            | 'open_ended',
                                     )
                                 }
                             >
@@ -91,8 +91,8 @@ export function QuestionsSection() {
                         disabled={createQuestion.isPending}
                     >
                         {createQuestion.isPending
-                            ? "Saving…"
-                            : "Create Question"}
+                            ? 'Saving…'
+                            : 'Create Question'}
                     </button>
                     {createQuestion.isError && (
                         <p className={styles.error}>
@@ -122,13 +122,13 @@ export function QuestionsSection() {
                                     {q.question}
                                 </span>
                                 <span className={styles.typeBadge}>
-                                    {q.questionType === "multiple_choice"
-                                        ? "MC"
-                                        : "Open"}
+                                    {q.questionType === 'multiple_choice'
+                                        ? 'MC'
+                                        : 'Open'}
                                 </span>
                             </div>
                             <span className={styles.chevron}>
-                                {expandedId === q.id ? "▲" : "▼"}
+                                {expandedId === q.id ? '▲' : '▼'}
                             </span>
                         </button>
                         {expandedId === q.id && <QuestionDetail question={q} />}

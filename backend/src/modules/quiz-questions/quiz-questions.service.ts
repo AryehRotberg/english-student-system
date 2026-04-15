@@ -45,11 +45,11 @@ export class QuizQuestionsService {
     async create(
         createQuizQuestionDto: CreateQuizQuestionDto,
     ): Promise<QuizQuestionResponseDto> {
-        const { quizId, questionId, maxPoints } = createQuizQuestionDto;
+        const { quizId, questionId, maxPoints, orderIndex } = createQuizQuestionDto;
 
         const [createdQuizQuestion] = await this.pgService.query<QuizQuestion>(
             this.pgService.getSql(__dirname, 'create-quiz-question.sql'),
-            [quizId, questionId, maxPoints],
+            [quizId, questionId, maxPoints, orderIndex],
         );
 
         return QuizQuestionResponseDto.fromEntity(createdQuizQuestion);

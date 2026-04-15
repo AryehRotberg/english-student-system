@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useCreateQuiz } from "../../hooks/mutations";
-import { useQuizzes } from "../../hooks/queries";
-import styles from "../../pages/Admin/AdminPage.module.css";
+import { useState } from 'react';
+import { useCreateQuiz } from '../../hooks/mutations';
+import { useQuizzes } from '../../hooks/queries';
+import styles from '../../pages/Admin/AdminPage.module.css';
 
 export function QuizzesSection() {
     const { data: quizzes = [] } = useQuizzes();
     const createQuiz = useCreateQuiz();
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [showForm, setShowForm] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -17,8 +17,8 @@ export function QuizzesSection() {
             title: title.trim(),
             description: description.trim() || undefined,
         });
-        setTitle("");
-        setDescription("");
+        setTitle('');
+        setDescription('');
         setShowForm(false);
     };
 
@@ -31,7 +31,7 @@ export function QuizzesSection() {
                     className={styles.addButton}
                     onClick={() => setShowForm((v) => !v)}
                 >
-                    {showForm ? "Cancel" : "+ Add Quiz"}
+                    {showForm ? 'Cancel' : '+ Add Quiz'}
                 </button>
             </div>
 
@@ -62,7 +62,7 @@ export function QuizzesSection() {
                         className={styles.submitButton}
                         disabled={createQuiz.isPending}
                     >
-                        {createQuiz.isPending ? "Saving…" : "Create Quiz"}
+                        {createQuiz.isPending ? 'Saving…' : 'Create Quiz'}
                     </button>
                     {createQuiz.isError && (
                         <p className={styles.error}>

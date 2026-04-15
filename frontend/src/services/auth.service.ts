@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import type { AuthUser } from "../types/auth";
-import { httpClientService } from "./http-client.service";
+import type { AxiosInstance } from 'axios';
+import type { AuthUser } from '../types/auth';
+import { httpClientService } from './http-client.service';
 
 type LoginResponse = {
     message: string;
@@ -19,7 +19,7 @@ class AuthService {
         password: string;
     }): Promise<LoginResponse> {
         const response = await this.httpClient.post<LoginResponse>(
-            "/auth/login",
+            '/auth/login',
             payload,
         );
         return response.data;
@@ -30,12 +30,12 @@ class AuthService {
         email: string;
         password: string;
     }) {
-        const response = await this.httpClient.post("/auth/register", payload);
+        const response = await this.httpClient.post('/auth/register', payload);
         return response.data;
     }
 
     public async me(): Promise<AuthUser> {
-        const response = await this.httpClient.get<AuthUser>("/auth/user");
+        const response = await this.httpClient.get<AuthUser>('/auth/user');
         return response.data;
     }
 
@@ -48,7 +48,7 @@ class AuthService {
     }
 
     public async logout() {
-        const response = await this.httpClient.post("/auth/logout", {});
+        const response = await this.httpClient.post('/auth/logout', {});
         return response.data;
     }
 }

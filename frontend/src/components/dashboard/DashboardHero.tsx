@@ -1,4 +1,4 @@
-import styles from "../../pages/Dashboard/DashboardPage.module.css";
+import styles from '../../pages/Dashboard/DashboardPage.module.css';
 
 type Props = {
     studentName: string;
@@ -20,8 +20,8 @@ export function DashboardHero({
                     Welcome back, {studentName}
                 </h1>
                 <p className={styles.heroSubtitle}>
-                    Ready to continue your English journey? You&apos;ve got{" "}
-                    {taskCount} task{taskCount === 1 ? "" : "s"} to complete
+                    Ready to continue your English journey? You&apos;ve got{' '}
+                    {taskCount} task{taskCount === 1 ? '' : 's'} to complete
                     today.
                 </p>
                 <button

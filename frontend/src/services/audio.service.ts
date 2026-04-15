@@ -1,19 +1,19 @@
-import axios from "axios";
-import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
 
-export type VocabAudioType = "word" | "meaning" | "example";
+export type VocabAudioType = 'word' | 'meaning' | 'example';
 
 export class AudioNotFoundError extends Error {
     constructor() {
-        super("Audio not available");
-        this.name = "AudioNotFoundError";
+        super('Audio not available');
+        this.name = 'AudioNotFoundError';
     }
 }
 
 function buildVocabPath(word: string, type: VocabAudioType): string {
     const lower = word.toLowerCase();
-    return type === "word" ? `${lower}.mp3` : `${lower}_${type}.mp3`;
+    return type === 'word' ? `${lower}.mp3` : `${lower}_${type}.mp3`;
 }
 
 class AudioService {
@@ -26,14 +26,14 @@ class AudioService {
     private async downloadAudio(bucket: string, path: string): Promise<string> {
         try {
             const response = await this.httpClient.get<ArrayBuffer>(
-                "/audio/download",
+                '/audio/download',
                 {
                     params: { bucket, path },
-                    responseType: "arraybuffer",
+                    responseType: 'arraybuffer',
                 },
             );
 
-            const blob = new Blob([response.data], { type: "audio/mpeg" });
+            const blob = new Blob([response.data], { type: 'audio/mpeg' });
             return URL.createObjectURL(blob);
         } catch (err) {
             if (axios.isAxiosError(err) && err.response?.status === 400) {
@@ -44,11 +44,11 @@ class AudioService {
     }
 
     fetchVocabAudio(word: string, type: VocabAudioType): Promise<string> {
-        return this.downloadAudio("vocabulary", buildVocabPath(word, type));
+        return this.downloadAudio('vocabulary', buildVocabPath(word, type));
     }
 
     fetchQuestionAudio(questionId: string): Promise<string> {
-        return this.downloadAudio("questions", `${questionId}.mp3`);
+        return this.downloadAudio('questions', `${questionId}.mp3`);
     }
 }
 

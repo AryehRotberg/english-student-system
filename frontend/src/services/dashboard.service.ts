@@ -1,6 +1,6 @@
-import type { AxiosInstance } from "axios";
-import { httpClientService } from "./http-client.service";
-import type { DashboardData } from "../types/dashboard";
+import type { AxiosInstance } from 'axios';
+import { httpClientService } from './http-client.service';
+import type { DashboardData } from '../types/dashboard';
 
 class DashboardService {
     private readonly httpClient: AxiosInstance;
@@ -11,7 +11,7 @@ class DashboardService {
 
     public async getOverview(): Promise<DashboardData> {
         const response = await this.httpClient.get<DashboardData>(
-            "/dashboard/overview",
+            '/dashboard/overview',
         );
         return response.data;
     }

@@ -7,7 +7,7 @@ FROM
 INNER JOIN
     public.quiz_questions QQ ON QQ.quiz_id = QA.quiz_id
 INNER JOIN 
-    public.answers A ON A.question_id = QQ.question_id
+    public.question_accepted_answers A ON A.question_id = QQ.question_id
 WHERE
     QA.id = $1 
     AND QQ.question_id = $2

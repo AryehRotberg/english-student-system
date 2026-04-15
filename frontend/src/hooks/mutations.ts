@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { answersService } from "../services/answers.service";
-import { authService } from "../services/auth.service";
-import { questionOptionsService } from "../services/question-options.service";
-import { questionsService } from "../services/questions.service";
-import { quizAttemptsService } from "../services/quiz-attempts.service";
-import { quizQuestionsService } from "../services/quiz-questions.service";
-import { quizzesService } from "../services/quizzes.service";
-import { studentAnswersService } from "../services/student-answers.service";
-import { textsService } from "../services/texts.service";
-import { isUuid } from "../utils/isUuid";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
+import { authService } from '../services/auth.service';
+import { questionChoicesService } from '../services/question-choices.service';
+import { questionsService } from '../services/questions.service';
+import { quizAttemptsService } from '../services/quiz-attempts.service';
+import { quizQuestionsService } from '../services/quiz-questions.service';
+import { quizzesService } from '../services/quizzes.service';
+import { studentAnswersService } from '../services/student-answers.service';
+import { textsService } from '../services/texts.service';
+import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
     const queryClient = useQueryClient();
@@ -23,7 +23,7 @@ export function useSubmitStudentAnswer() {
         }) => {
             if (!isUuid(payload.attemptId)) {
                 throw new Error(
-                    "Quiz attempt ID is missing or invalid. Set a valid UUID before submitting answers.",
+                    'Quiz attempt ID is missing or invalid. Set a valid UUID before submitting answers.',
                 );
             }
 
@@ -37,10 +37,10 @@ export function useSubmitStudentAnswer() {
         },
         onSuccess: async (_data, variables) => {
             await queryClient.invalidateQueries({
-                queryKey: ["quiz-attempts"],
+                queryKey: ['quiz-attempts'],
             });
             await queryClient.invalidateQueries({
-                queryKey: ["student-answers", variables.attemptId],
+                queryKey: ['student-answers', variables.attemptId],
             });
         },
     });
@@ -52,7 +52,7 @@ export function useSubmitQuizAttempt() {
         mutationFn: (attemptId: string) =>
             quizAttemptsService.submitAttempt(attemptId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["quiz-attempts"] });
+            queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] });
         },
     });
 }
@@ -67,7 +67,7 @@ export function useStartQuizAttempt() {
                 startedAt: new Date().toISOString(),
             }),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["quiz-attempts"] });
+            queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] });
         },
     });
 }
@@ -80,7 +80,7 @@ export function useCreateQuiz() {
         mutationFn: (payload: { title: string; description?: string }) =>
             quizzesService.create(payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["quizzes"] }),
+            queryClient.invalidateQueries({ queryKey: ['quizzes'] }),
     });
 }
 
@@ -93,26 +93,26 @@ export function useCreateQuestion() {
             audioUrl?: string;
         }) => questionsService.create(payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["questions"] }),
+            queryClient.invalidateQueries({ queryKey: ['questions'] }),
     });
 }
 
-export function useCreateQuestionOption() {
+export function useCreateQuestionChoice() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (payload: {
             questionId: string;
             optionText: string;
             isCorrect: boolean;
-        }) => questionOptionsService.create(payload),
+        }) => questionChoicesService.create(payload),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
-                queryKey: ["question-options", variables.questionId],
+                queryKey: ['question-choices', variables.questionId],
             }),
     });
 }
 
-export function useUpdateQuestionOption() {
+export function useUpdateQuestionChoice() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({
@@ -124,28 +124,28 @@ export function useUpdateQuestionOption() {
             questionId: string;
             optionText?: string;
             isCorrect?: boolean;
-        }) => questionOptionsService.update(id, { optionText, isCorrect }),
+        }) => questionChoicesService.update(id, { optionText, isCorrect }),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
-                queryKey: ["question-options", variables.questionId],
+                queryKey: ['question-choices', variables.questionId],
             }),
     });
 }
 
-export function useCreateAnswer() {
+export function useCreateQuestionAcceptedAnswer() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (payload: {
             questionId: string;
             answer: string;
             blankIndex: number;
-        }) => answersService.create(payload),
+        }) => questionAcceptedAnswersService.create(payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["answers"] }),
+            queryClient.invalidateQueries({ queryKey: ['question-accepted-answers'] }),
     });
 }
 
-export function useUpdateAnswer() {
+export function useUpdateQuestionAcceptedAnswer() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({
@@ -155,9 +155,9 @@ export function useUpdateAnswer() {
             id: string;
             answer?: string;
             blankIndex?: number;
-        }) => answersService.update(id, payload),
+        }) => questionAcceptedAnswersService.update(id, payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ["answers"] }),
+            queryClient.invalidateQueries({ queryKey: ['question-accepted-answers'] }),
     });
 }
 
@@ -171,7 +171,7 @@ export function useCreateQuizQuestion() {
         }) => quizQuestionsService.create(payload),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
-                queryKey: ["raw-quiz-questions", variables.quizId],
+                queryKey: ['raw-quiz-questions', variables.quizId],
             }),
     });
 }
@@ -190,7 +190,7 @@ export function useUpdateQuizQuestion() {
         }) => quizQuestionsService.update(id, payload),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
-                queryKey: ["raw-quiz-questions", variables.quizId],
+                queryKey: ['raw-quiz-questions', variables.quizId],
             }),
     });
 }
@@ -204,8 +204,8 @@ export function useCreateText() {
             level: string;
         }) => textsService.create(payload),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["reading-library"] });
-            queryClient.invalidateQueries({ queryKey: ["texts"] });
+            queryClient.invalidateQueries({ queryKey: ['reading-library'] });
+            queryClient.invalidateQueries({ queryKey: ['texts'] });
         },
     });
 }
@@ -219,9 +219,9 @@ export function useLogin() {
         mutationFn: async (payload: { email: string; password: string }) =>
             authService.login(payload),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+            await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
             await queryClient.invalidateQueries({
-                queryKey: ["dashboard-overview"],
+                queryKey: ['dashboard-overview'],
             });
         },
     });

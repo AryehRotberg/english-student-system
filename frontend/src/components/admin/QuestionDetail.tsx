@@ -1,48 +1,48 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
-    useAnswers,
-    useQuestionOptionsByQuestion,
-    type AnswerAdminItem,
+    useQuestionAcceptedAnswers,
+    useQuestionChoicesByQuestion,
+    type QuestionAcceptedAnswerAdminItem,
     type QuestionAdminItem,
-    type QuestionOptionAdminItem,
-} from "../../hooks/queries";
+    type QuestionChoiceAdminItem,
+} from '../../hooks/queries';
 import {
-    useCreateAnswer,
-    useCreateQuestionOption,
-    useUpdateAnswer,
-    useUpdateQuestionOption,
-} from "../../hooks/mutations";
-import styles from "../../pages/Admin/AdminPage.module.css";
+    useCreateQuestionAcceptedAnswer,
+    useCreateQuestionChoice,
+    useUpdateQuestionAcceptedAnswer,
+    useUpdateQuestionChoice,
+} from '../../hooks/mutations';
+import styles from '../../pages/Admin/AdminPage.module.css';
 
 type Props = {
     question: QuestionAdminItem;
 };
 
 export function QuestionDetail({ question }: Props) {
-    const isMultipleChoice = question.questionType === "multiple_choice";
-    const { data: options = [] } = useQuestionOptionsByQuestion(
+    const isMultipleChoice = question.questionType === 'multiple_choice';
+    const { data: options = [] } = useQuestionChoicesByQuestion(
         isMultipleChoice ? question.id : undefined,
     );
-    const { data: allAnswers = [] } = useAnswers();
+    const { data: allAnswers = [] } = useQuestionAcceptedAnswers();
     const questionAnswers = allAnswers.filter(
         (a) => a.questionId === question.id,
     );
 
-    const createOption = useCreateQuestionOption();
-    const updateOption = useUpdateQuestionOption();
-    const createAnswer = useCreateAnswer();
-    const updateAnswer = useUpdateAnswer();
+    const createOption = useCreateQuestionChoice();
+    const updateOption = useUpdateQuestionChoice();
+    const createAnswer = useCreateQuestionAcceptedAnswer();
+    const updateAnswer = useUpdateQuestionAcceptedAnswer();
 
-    const [optionText, setOptionText] = useState("");
+    const [optionText, setOptionText] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
-    const [answerText, setAnswerText] = useState("");
+    const [answerText, setAnswerText] = useState('');
     const [blankIndex, setBlankIndex] = useState(1);
 
     const [editingOptionId, setEditingOptionId] = useState<string | null>(null);
-    const [editOptionText, setEditOptionText] = useState("");
+    const [editOptionText, setEditOptionText] = useState('');
     const [editIsCorrect, setEditIsCorrect] = useState(false);
     const [editingAnswerId, setEditingAnswerId] = useState<string | null>(null);
-    const [editAnswerText, setEditAnswerText] = useState("");
+    const [editAnswerText, setEditAnswerText] = useState('');
     const [editBlankIndex, setEditBlankIndex] = useState(1);
 
     if (isMultipleChoice) {
@@ -50,7 +50,7 @@ export function QuestionDetail({ question }: Props) {
             <div className={styles.subSection}>
                 <h4>Answer Options</h4>
                 <ul className={styles.subList}>
-                    {(options as QuestionOptionAdminItem[]).map((opt) => (
+                    {(options as QuestionChoiceAdminItem[]).map((opt) => (
                         <li key={opt.id} className={styles.subItem}>
                             {editingOptionId === opt.id ? (
                                 <div className={styles.inlineEdit}>
@@ -132,7 +132,7 @@ export function QuestionDetail({ question }: Props) {
                             optionText: optionText.trim(),
                             isCorrect,
                         });
-                        setOptionText("");
+                        setOptionText('');
                         setIsCorrect(false);
                     }}
                 >
@@ -166,7 +166,7 @@ export function QuestionDetail({ question }: Props) {
         <div className={styles.subSection}>
             <h4>Correct Answers (open-ended blanks)</h4>
             <ul className={styles.subList}>
-                {(questionAnswers as AnswerAdminItem[]).map((answer) => (
+                {(questionAnswers as QuestionAcceptedAnswerAdminItem[]).map((answer) => (
                     <li key={answer.id} className={styles.subItem}>
                         {editingAnswerId === answer.id ? (
                             <div className={styles.inlineEdit}>
@@ -212,7 +212,7 @@ export function QuestionDetail({ question }: Props) {
                         ) : (
                             <div className={styles.subItemRow}>
                                 <span>
-                                    Blank {answer.blankIndex}:{" "}
+                                    Blank {answer.blankIndex}:{' '}
                                     <strong>{answer.answer}</strong>
                                 </span>
                                 <button
@@ -244,7 +244,7 @@ export function QuestionDetail({ question }: Props) {
                         answer: answerText.trim(),
                         blankIndex,
                     });
-                    setAnswerText("");
+                    setAnswerText('');
                     setBlankIndex((prev) => prev + 1);
                 }}
             >
