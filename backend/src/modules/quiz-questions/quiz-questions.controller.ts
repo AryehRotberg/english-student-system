@@ -10,9 +10,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
-import { CreateQuizQuestionDto } from './dto/create-quiz-question.dto';
-import { GetQuizQuestionsFilterDto } from './dto/get-quiz-questions-filter.dto';
-import { UpdateQuizQuestionDto } from './dto/update-quiz-question.dto';
+import { QuizQuestionCreateDto } from './dto/quiz-question.create.dto';
+import { QuizQuestionQueryDto } from './dto/quiz-question.query.dto';
+import { QuizQuestionUpdateDto } from './dto/quiz-question.update.dto';
 import { QuizQuestionsService } from './quiz-questions.service';
 
 @Controller('quiz-questions')
@@ -25,13 +25,13 @@ export class QuizQuestionsController {
     }
 
     @Get()
-    async findByUserId(@Query() filter: GetQuizQuestionsFilterDto) {
-        return await this.quizQuestionsService.findByQuizId(filter);
+    async findByUserId(@Query() dto: QuizQuestionQueryDto) {
+        return await this.quizQuestionsService.findByQuizId(dto);
     }
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() createQuizQuestionDto: CreateQuizQuestionDto) {
+    async create(@Body() createQuizQuestionDto: QuizQuestionCreateDto) {
         return await this.quizQuestionsService.create(createQuizQuestionDto);
     }
 
@@ -39,7 +39,7 @@ export class QuizQuestionsController {
     @UseGuards(TeacherGuard)
     async update(
         @Param('id', new ParseUUIDPipe()) id: string,
-        @Body() updateQuizQuestionDto: UpdateQuizQuestionDto,
+        @Body() updateQuizQuestionDto: QuizQuestionUpdateDto,
     ) {
         return await this.quizQuestionsService.update(
             id,

@@ -1,28 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import { CreateTextDto } from './dto/create-text.dto';
-import { TextResponseDto } from './dto/text-response.dto';
-import { Text } from './entities/text.entity';
+import { TextCreateDto } from './dto/text.create.dto';
+import { TextResponseDto } from './dto/text.response.dto';
 
 @Injectable()
 export class TextsService {
     constructor(private readonly pgService: PostgresService) {}
 
     async findAll(): Promise<TextResponseDto[]> {
-        const texts = await this.pgService.query<Text>(
-            this.pgService.getSql(__dirname, 'get-all-texts.sql'),
+        return await this.pgService.query<any>(
+            this.pgService.getSql(__dirname, 'text.find-all.sql'),
         );
-        return TextResponseDto.fromEntities(texts);
     }
 
-    async create(createTextDto: CreateTextDto): Promise<TextResponseDto> {
+    async create(createTextDto: TextCreateDto): Promise<TextResponseDto> {
         const { title, content, level } = createTextDto;
 
-        const [result] = await this.pgService.query<Text>(
-            this.pgService.getSql(__dirname, 'create-text.sql'),
+        const [result] = await this.pgService.query<TextResponseDto>(
+            this.pgService.getSql(__dirname, 'text.create.sql'),
             [title, content, level],
         );
-
-        return TextResponseDto.fromEntity(result);
+        return result;
     }
 }

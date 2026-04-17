@@ -5,13 +5,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule as AppConfigModule } from './config/config.module';
-import { AiContentsModule } from './modules/ai-contents/ai-contents.module';
-import { QuestionAcceptedAnswersModule } from './modules/question-accepted-answers/question-accepted-answers.module';
+import { AiDraftsModule } from './modules/ai-drafts/ai-drafts.module';
 import { AssignmentItemsModule } from './modules/assignment-items/assignment-items.module';
 import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { AudioModule } from './modules/audio/audio.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LlmModule } from './modules/llm/llm.module';
+import { QuestionAcceptedAnswersModule } from './modules/question-accepted-answers/question-accepted-answers.module';
 import { QuestionChoicesModule } from './modules/question-choices/question-choices.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { QuizAttemptsModule } from './modules/quiz-attempts/quiz-attempts.module';
@@ -26,6 +26,7 @@ import { VocabularyTopicsModule } from './modules/vocabulary-topics/vocabulary-t
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { WritingSubmissionsModule } from './modules/writing-submissions/writing-submissions.module';
 import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module';
+import { QuizTopicsModule } from './modules/quiz-topics/quiz-topics.module';
 
 @Module({
     imports: [
@@ -60,8 +61,9 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
         SendEmailModule,
         DashboardModule,
         LlmModule,
-        AiContentsModule,
+        AiDraftsModule,
         AudioModule,
+        QuizTopicsModule,
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -1,18 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
-import { audioService } from '../services/audio.service';
 import type { VocabAudioType } from '../services/audio.service';
+import { audioService } from '../services/audio.service';
 import { authService } from '../services/auth.service';
 import { dashboardService } from '../services/dashboard.service';
+import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
 import { questionsService } from '../services/questions.service';
 import { quizAttemptsService } from '../services/quiz-attempts.service';
 import { quizQuestionsService } from '../services/quiz-questions.service';
+import { quizTopicsService } from '../services/quiz-topics.service';
 import { quizzesService } from '../services/quizzes.service';
-import { usersService } from '../services/users.service';
 import type { StudentAnswerApiItem } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
 import { textsService } from '../services/texts.service';
+import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
 import type {
     QuestionAcceptedAnswerAdminItem,
@@ -35,7 +36,7 @@ export type {
     QuestionAdminItem,
     QuestionChoiceAdminItem,
     RawQuizQuestionAdminItem,
-    TextAdminItem,
+    TextAdminItem
 } from '../types/admin-query-items';
 
 export function useDashboardOverview() {
@@ -101,7 +102,7 @@ export function useQuizTopics(quizId?: string) {
     return useQuery<QuizTopic[]>({
         queryKey: ['quiz-topics', quizId],
         enabled: Boolean(quizId),
-        queryFn: () => quizzesService.listTopics(quizId as string),
+        queryFn: () => quizTopicsService.list(quizId as string),
     });
 }
 

@@ -1,30 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import { CreateVocabularyTopicDto } from './dto/create-vocabulary-topic.dto';
-import { VocabularyTopicResponseDto } from './dto/vocabulary-topic-response.dto';
-import { VocabularyTopic } from './entities/vocabulary-topic.entity';
+import { VocabularyTopicCreateDto } from './dto/vocabulary-topic.create.dto';
+import { VocabularyTopicResponseDto } from './dto/vocabulary-topic.response.dto';
 
 @Injectable()
 export class VocabularyTopicsService {
     constructor(private readonly pgService: PostgresService) {}
 
     async findAll(): Promise<VocabularyTopicResponseDto[]> {
-        const topics = await this.pgService.query<VocabularyTopic>(
-            this.pgService.getSql(__dirname, 'get-all-vocabulary-topics.sql'),
+        return await this.pgService.query<VocabularyTopicResponseDto>(
+            this.pgService.getSql(__dirname, 'vocabulary-topic.find-all.sql'),
         );
-        return VocabularyTopicResponseDto.fromEntities(topics);
     }
 
     async create(
-        createVocabularyTopicDto: CreateVocabularyTopicDto,
+        createVocabularyTopicDto: VocabularyTopicCreateDto,
     ): Promise<VocabularyTopicResponseDto> {
         const { topic, description } = createVocabularyTopicDto;
 
-        const [result] = await this.pgService.query<VocabularyTopic>(
-            this.pgService.getSql(__dirname, 'create-vocabulary-topic.sql'),
+        const [result] = await this.pgService.query<VocabularyTopicResponseDto>(
+            this.pgService.getSql(__dirname, 'vocabulary-topic.create.sql'),
             [topic ?? null, description ?? null],
         );
-
-        return VocabularyTopicResponseDto.fromEntity(result);
+        return result;
     }
 }

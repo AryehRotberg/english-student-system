@@ -1,9 +1,0 @@
-INSERT INTO
-    ASSIGNMENTS (USER_ID, TITLE, DESCRIPTION, DUE_DATE)
-VALUES
-    ($1, $2, $3, $4) RETURNING ID,
-    USER_ID AS "userId",
-    TITLE,
-    DESCRIPTION,
-    DUE_DATE AS "dueDate",
-    CREATED_AT AS "createdAt";

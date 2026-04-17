@@ -3,8 +3,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { ConfigModule as AppConfigModule } from './config/config.module';
 
+import { AiDraftsModule } from './modules/ai-drafts/ai-drafts.module';
 import { LlmModule } from './modules/llm/llm.module';
-import { WorkersModule } from './workers/workers.module';
+import { QuizGeneratorWorker } from './modules/ai-drafts/workers/ai-draft.generate-quiz.worker';
 
 @Module({
     imports: [
@@ -20,15 +21,9 @@ import { WorkersModule } from './workers/workers.module';
             },
         }),
 
-        BullModule.registerQueue({
-            name: 'generate-quiz',
-        }),
-        BullModule.registerQueue({
-            name: 'publish-quiz',
-        }),
-
         LlmModule,
-        WorkersModule,
+        AiDraftsModule,
     ],
+    providers: [QuizGeneratorWorker],
 })
 export class WorkerModule {}

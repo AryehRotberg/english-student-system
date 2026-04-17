@@ -1,13 +1,12 @@
 import {
     BadRequestException,
     Injectable,
-    NotFoundException
+    NotFoundException,
 } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import { StudentAnswerResponseDto } from './dto/student-answer-response.dto';
-import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
+import { StudentAnswerResponseDto } from './dto/student-answer.response.dto';
+import { StudentAnswerUpsertDto } from './dto/student-answer.upsert.dto';
 import { CorrectOption, ValidAnswer } from './entities/grading-data';
-import { StudentAnswer } from './entities/student-answer.entity';
 import { StudentAnswersCommon } from './student-answers.common';
 
 @Injectable()
@@ -18,7 +17,7 @@ export class StudentAnswersService {
     ) {}
 
     async upsert(
-        upsertStudentAnswerDto: UpsertStudentAnswerDto,
+        upsertStudentAnswerDto: StudentAnswerUpsertDto,
     ): Promise<StudentAnswerResponseDto[]> {
         const scores = await this.calculateAutomaticPoints(
             upsertStudentAnswerDto,
@@ -37,8 +36,8 @@ export class StudentAnswersService {
             scores,
         );
 
-        const results = await this.pgService.query<StudentAnswer>(
-            this.pgService.getSql(__dirname, 'upsert-student-answer.sql'),
+        return await this.pgService.query<StudentAnswerResponseDto>(
+            this.pgService.getSql(__dirname, 'student-answer.upsert.sql'),
             [
                 attemptId,
                 questionId,
@@ -48,54 +47,44 @@ export class StudentAnswersService {
                 arrays.points,
             ],
         );
-
-        return StudentAnswerResponseDto.fromEntities(results);
     }
 
     async findAll(): Promise<StudentAnswerResponseDto[]> {
-        const answers = await this.pgService.query<StudentAnswer>(
-            this.pgService.getSql(__dirname, 'get-all-student-answers.sql'),
+        return await this.pgService.query<StudentAnswerResponseDto>(
+            this.pgService.getSql(__dirname, 'student-answer.find-all.sql'),
         );
-        return StudentAnswerResponseDto.fromEntities(answers);
     }
 
     async findOne(id: string): Promise<StudentAnswerResponseDto> {
-        const [answer] = await this.pgService.query<StudentAnswer>(
-            this.pgService.getSql(__dirname, 'get-student-answer-by-id.sql'),
+        const [answer] = await this.pgService.query<StudentAnswerResponseDto>(
+            this.pgService.getSql(__dirname, 'student-answer.find-by-id.sql'),
             [id],
         );
-
-        if (!answer) {
-            throw new NotFoundException('Student answer not found');
-        }
-
-        return StudentAnswerResponseDto.fromEntity(answer);
+        return answer;
     }
 
     async findByAttempt(
         attemptId: string,
     ): Promise<StudentAnswerResponseDto[]> {
-        const answers = await this.pgService.query<StudentAnswer>(
+        return await this.pgService.query<StudentAnswerResponseDto>(
             this.pgService.getSql(
                 __dirname,
-                'get-student-answers-by-attempt.sql',
+                'student-answer.find-by-attempt.sql',
             ),
             [attemptId],
         );
-        return StudentAnswerResponseDto.fromEntities(answers);
     }
 
     async remove(id: string): Promise<StudentAnswerResponseDto> {
-        const [result] = await this.pgService.query<StudentAnswer>(
-            this.pgService.getSql(__dirname, 'delete-student-answer.sql'),
+        const [result] = await this.pgService.query<StudentAnswerResponseDto>(
+            this.pgService.getSql(__dirname, 'student-answer.delete.sql'),
             [id],
         );
-
-        return StudentAnswerResponseDto.fromEntity(result);
+        return result;
     }
 
     private async calculateAutomaticPoints(
-        upsertStudentAnswerDto: UpsertStudentAnswerDto,
+        upsertStudentAnswerDto: StudentAnswerUpsertDto,
     ): Promise<number[]> {
         const { attemptId, questionId, selectedOptionId, textAnswers } =
             upsertStudentAnswerDto;
@@ -108,7 +97,10 @@ export class StudentAnswersService {
 
         if (selectedOptionId) {
             const [result] = await this.pgService.query<CorrectOption>(
-                this.pgService.getSql(__dirname, 'get-correct-options.sql'),
+                this.pgService.getSql(
+                    __dirname,
+                    'student-answer.find-correct-options.sql',
+                ),
                 [attemptId, questionId],
             );
 
@@ -125,7 +117,10 @@ export class StudentAnswersService {
 
         if (textAnswers && textAnswers.length > 0) {
             const results = await this.pgService.query<ValidAnswer>(
-                this.pgService.getSql(__dirname, 'get-valid-answers.sql'),
+                this.pgService.getSql(
+                    __dirname,
+                    'student-answer.find-valid-answers.sql',
+                ),
                 [attemptId, questionId],
             );
 

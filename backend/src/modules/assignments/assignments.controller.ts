@@ -1,21 +1,21 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { AssignmentsService } from './assignments.service';
-import { CreateAssignmentDto } from './dto/create-assignment.dto';
-import { GetAssignmentsFilterDto } from './dto/get-assignments-filter.dto';
+import { AssignmentCreateDto } from './dto/assignment.create.dto';
+import { AssignmentQueryDto } from './dto/assignment.query.dto';
 
 @Controller('assignments')
 export class AssignmentsController {
     constructor(private readonly assignmentsService: AssignmentsService) {}
 
     @Get()
-    async findByUserId(@Query() filter: GetAssignmentsFilterDto) {
-        return await this.assignmentsService.findByUserId(filter);
+    async findByUserId(@Query() dto: AssignmentQueryDto) {
+        return await this.assignmentsService.findByUserId(dto);
     }
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() createAssignmentDto: CreateAssignmentDto) {
-        return await this.assignmentsService.create(createAssignmentDto);
+    async create(@Body() dto: AssignmentCreateDto) {
+        return await this.assignmentsService.create(dto);
     }
 }

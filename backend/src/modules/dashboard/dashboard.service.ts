@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
 import { AssignmentItemsService } from '../assignment-items/assignment-items.service';
-import { AssignmentItemResponseDto } from '../assignment-items/dto/assignment-item-response.dto';
+import { AssignmentItemResponseDto } from '../assignment-items/dto/assignment-item.response.dto';
 import { AssignmentsService } from '../assignments/assignments.service';
-import { AssignmentResponseDto } from '../assignments/dto/assignment-response.dto';
-import { UserResponseDto } from '../users/dto/user-response.dto';
+import { AssignmentResponseDto } from '../assignments/dto/assignment.response.dto';
+import { UserResponseDto } from '../users/dto/user.response.dto';
 import { ProgressMetric } from './entities/progress-metric';
 
 const DEFAULT_ASSIGNMENT_DESCRIPTION = 'No assignment description.';
@@ -29,11 +29,17 @@ export class DashboardService {
             this.assignmentsService.findByUserId({ userId }),
             this.assignmentItemsService.findByUserId({ userId }),
             this.pgService.query<any>(
-                this.pgService.getSql(__dirname, 'get-quiz-progress.sql'),
+                this.pgService.getSql(
+                    __dirname,
+                    'dashboard.find-quiz-progress.sql',
+                ),
                 [userId],
             ),
             this.pgService.query<any>(
-                this.pgService.getSql(__dirname, 'get-content-progress.sql'),
+                this.pgService.getSql(
+                    __dirname,
+                    'dashboard.find-content-progress.sql',
+                ),
                 [userId],
             ),
         ]);

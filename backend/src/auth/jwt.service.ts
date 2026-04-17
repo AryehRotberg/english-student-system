@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { UserResponseDto } from '../modules/users/dto/user-response.dto';
+import { UserResponseDto } from '../modules/users/dto/user.response.dto';
 import { User } from '../modules/users/entities/user.entity';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
-import { CreateQuestionDto } from './dto/create-question.dto';
+import { QuestionCreateDto } from './dto/question.create.dto';
 import { QuestionsService } from './questions.service';
 
 @Controller('questions')
@@ -14,7 +14,7 @@ export class QuestionsController {
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() createQuestionDto: CreateQuestionDto) {
+    async create(@Body() createQuestionDto: QuestionCreateDto) {
         return await this.questionsService.create(createQuestionDto);
     }
 }

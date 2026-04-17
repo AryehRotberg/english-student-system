@@ -1,4 +1,0 @@
-SELECT
-	*
-FROM
-	AI_CONTENTS;
