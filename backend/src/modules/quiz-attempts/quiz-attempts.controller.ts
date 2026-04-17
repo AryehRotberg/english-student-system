@@ -9,8 +9,8 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
-import { CreateQuizAttemptDto } from './dto/create-quiz-attempt.dto';
-import { GetQuizAttemptsFilterDto } from './dto/get-quiz-attempts-filter.dto';
+import { QuizAttemptCreateDto } from './dto/quiz-attempt.create.dto';
+import { QuizAttemptQueryDto } from './dto/quiz-attempt.query.dto';
 import { QuizAttemptsService } from './quiz-attempts.service';
 
 @Controller('quiz-attempts')
@@ -18,8 +18,8 @@ export class QuizAttemptsController {
     constructor(private readonly quizAttemptsService: QuizAttemptsService) {}
 
     @Get()
-    async findByUserIdAndQuizId(@Query() filter: GetQuizAttemptsFilterDto) {
-        return this.quizAttemptsService.findByUserIdAndQuizId(filter);
+    async findByUserIdAndQuizId(@Query() dto: QuizAttemptQueryDto) {
+        return this.quizAttemptsService.findByUserIdAndQuizId(dto);
     }
 
     @Get('student/:studentId')
@@ -31,7 +31,7 @@ export class QuizAttemptsController {
     }
 
     @Post()
-    async create(@Body() createQuizAttemptDto: CreateQuizAttemptDto) {
+    async create(@Body() createQuizAttemptDto: QuizAttemptCreateDto) {
         return await this.quizAttemptsService.create(createQuizAttemptDto);
     }
 

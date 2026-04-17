@@ -1,30 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import { CreateQuestionDto } from './dto/create-question.dto';
-import { QuestionResponseDto } from './dto/question-response.dto';
-import { Question } from './entities/question.entity';
+import { QuestionCreateDto } from './dto/question.create.dto';
+import { QuestionResponseDto } from './dto/question.response.dto';
 
 @Injectable()
 export class QuestionsService {
     constructor(private readonly pgService: PostgresService) {}
 
     async findAll(): Promise<QuestionResponseDto[]> {
-        const questions = await this.pgService.query<Question>(
-            this.pgService.getSql(__dirname, 'get-all-questions.sql'),
+        return await this.pgService.query<QuestionResponseDto>(
+            this.pgService.getSql(__dirname, 'question.find-all.sql'),
         );
-        return QuestionResponseDto.fromEntities(questions);
     }
 
     async create(
-        createQuestionDto: CreateQuestionDto,
+        createQuestionDto: QuestionCreateDto,
     ): Promise<QuestionResponseDto> {
         const { question, questionType } = createQuestionDto;
 
-        const [result] = await this.pgService.query<Question>(
-            this.pgService.getSql(__dirname, 'create-question.sql'),
+        const [result] = await this.pgService.query<QuestionResponseDto>(
+            this.pgService.getSql(__dirname, 'question.create.sql'),
             [question, questionType],
         );
-
-        return QuestionResponseDto.fromEntity(result);
+        return result;
     }
 }

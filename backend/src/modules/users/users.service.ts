@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HashingService } from '../../auth/hashing.service';
 import { PostgresService } from '../../config/postgres.client';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserResponseDto } from './dto/user-response.dto';
+import { UserCreateDto } from './dto/user.create.dto';
+import { UserResponseDto } from './dto/user.response.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UsersService {
         private readonly hashingService: HashingService,
     ) {}
 
-    async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    async create(createUserDto: UserCreateDto): Promise<UserResponseDto> {
         const { name, email, password } = createUserDto;
 
         const existingUser = await this.findOneByEmail(email);
@@ -25,7 +25,7 @@ export class UsersService {
         const hashedPassword = await this.hashingService.hash(password);
 
         const result = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'insert-user.sql'),
+            this.pgService.getSql(__dirname, 'user.create.sql'),
             [name, email, hashedPassword, 'student'],
         );
 
@@ -34,7 +34,7 @@ export class UsersService {
 
     async findOneByEmail(email: string): Promise<User | null> {
         const [result] = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'get-user-by-email.sql'),
+            this.pgService.getSql(__dirname, 'user.find-by-email.sql'),
             [email],
         );
         return result || null;
@@ -42,7 +42,7 @@ export class UsersService {
 
     async getAllStudents(): Promise<UserResponseDto[]> {
         const users = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'get-all-users.sql'),
+            this.pgService.getSql(__dirname, 'user.find-all.sql'),
         );
         const students = users.filter((user) => user.role === 'student');
         return UserResponseDto.fromEntities(students);
@@ -50,7 +50,7 @@ export class UsersService {
 
     async remove(id: string): Promise<UserResponseDto> {
         const [result] = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'delete-user.sql'),
+            this.pgService.getSql(__dirname, 'user.delete.sql'),
             [id],
         );
         return UserResponseDto.fromEntity(result);

@@ -2,32 +2,34 @@ import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
 import { Injectable } from '@nestjs/common';
 import Sentry from '../../config/sentry';
 import { SupabaseService } from '../../config/supabase.client';
-import { CreateSpeechDto } from './dto/create-speech-dto';
+import { AudioCreateSpeechDto } from './dto/audio.create-speech.dto';
+
+type AudioModelId = 'eleven_v3' | 'eleven_flash_v2_5';
 
 @Injectable()
 export class AudioService {
     private elevenlabs: ElevenLabsClient;
+    private modelId: AudioModelId = 'eleven_v3';
 
     constructor(private readonly supabaseService: SupabaseService) {
         this.elevenlabs = new ElevenLabsClient();
     }
 
-    async textToSpeech(createSpeechDto: CreateSpeechDto): Promise<Buffer> {
+    async textToSpeech(dto: AudioCreateSpeechDto): Promise<Buffer> {
         const {
             text,
             voiceId = 'BtWabtumIemAotTjP5sk',
             speed = 1.0,
             bucket,
             path,
-        } = createSpeechDto;
+        } = dto;
 
         try {
             const audioStream = await this.elevenlabs.textToSpeech.convert(
                 voiceId,
                 {
                     text: text,
-                    // modelId: 'eleven_flash_v2_5',
-                    modelId: 'eleven_v3',
+                    modelId: this.modelId,
                     voiceSettings: {
                         speed: speed,
                     },

@@ -1,57 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import { CreateQuizAttemptDto } from './dto/create-quiz-attempt.dto';
-import { GetQuizAttemptsFilterDto } from './dto/get-quiz-attempts-filter.dto';
-import { QuizAttemptResponseDto } from './dto/quiz-attempt-response.dto';
-import { QuizAttempt } from './entities/quiz-attempt.entity';
+import { QuizAttemptCreateDto } from './dto/quiz-attempt.create.dto';
+import { QuizAttemptQueryDto } from './dto/quiz-attempt.query.dto';
+import { QuizAttemptResponseDto } from './dto/quiz-attempt.response.dto';
 
 @Injectable()
 export class QuizAttemptsService {
     constructor(private readonly pgService: PostgresService) {}
 
-    async findByUserIdAndQuizId(filter: GetQuizAttemptsFilterDto) {
-        const { userId, quizId } = filter;
+    async findByUserIdAndQuizId(dto: QuizAttemptQueryDto) {
+        const { userId, quizId } = dto;
 
-        const attempts = await this.pgService.query<QuizAttempt>(
+        return await this.pgService.query<QuizAttemptResponseDto>(
             this.pgService.getSql(
                 __dirname,
-                'get-quiz-attempts-by-user-id-and-quiz-id.sql',
+                'quiz-attempt.find-by-user-and-quiz.sql',
             ),
             [userId, quizId],
         );
-
-        return QuizAttemptResponseDto.fromEntities(attempts);
     }
 
     async findByUserId(userId: string): Promise<QuizAttemptResponseDto[]> {
-        const attempts = await this.pgService.query<QuizAttempt>(
+        return await this.pgService.query<QuizAttemptResponseDto>(
             this.pgService.getSql(
                 __dirname,
-                'get-quiz-attempts-by-user-id.sql',
+                'quiz-attempt.find-by-user-id.sql',
             ),
             [userId],
         );
-
-        return QuizAttemptResponseDto.fromEntities(attempts);
     }
 
     async submitAttempt(attemptId: string): Promise<QuizAttemptResponseDto> {
-        const [updatedAttempt] = await this.pgService.query<QuizAttempt>(
-            this.pgService.getSql(__dirname, 'submit-quiz-attempt.sql'),
-            [attemptId],
-        );
-
-        return QuizAttemptResponseDto.fromEntity(updatedAttempt);
+        const [updatedAttempt] =
+            await this.pgService.query<QuizAttemptResponseDto>(
+                this.pgService.getSql(__dirname, 'quiz-attempt.submit.sql'),
+                [attemptId],
+            );
+        return updatedAttempt;
     }
 
     async create(
-        createQuizAttemptDto: CreateQuizAttemptDto,
+        createQuizAttemptDto: QuizAttemptCreateDto,
     ): Promise<QuizAttemptResponseDto> {
         const { quizId, userId, points, startedAt, completedAt } =
             createQuizAttemptDto;
 
-        const [result] = await this.pgService.query<QuizAttempt>(
-            this.pgService.getSql(__dirname, 'create-quiz-attempt.sql'),
+        const [result] = await this.pgService.query<QuizAttemptResponseDto>(
+            this.pgService.getSql(__dirname, 'quiz-attempt.create.sql'),
             [
                 quizId,
                 userId,
@@ -60,7 +55,6 @@ export class QuizAttemptsService {
                 completedAt ?? null,
             ],
         );
-
-        return QuizAttemptResponseDto.fromEntity(result);
+        return result;
     }
 }

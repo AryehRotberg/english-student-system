@@ -34,7 +34,7 @@ english-student-system/
 - `src/config/redis.client.ts` provides shared Redis cache access and cache invalidation helpers.
 - `src/modules/llm/` contains LLM integration and quiz generation pipelines.
 - `src/modules/texttospeech/` contains ElevenLabs TTS integration.
-- `src/modules/ai-contents/` stores LLM-generated quiz payloads and exposes teacher-facing management endpoints.
+- `src/modules/ai-drafts/` stores LLM-generated quiz payloads and exposes teacher-facing management endpoints.
 - `src/*/sql/*.sql` stores raw SQL files retrieved at runtime via `this.pgService.getSql()` from a pre-warmed in-memory cache.
 - `src/workers/processors/quiz/` contains BullMQ job processors for `generate-quiz` and `publish-quiz` queues.
 - `test/` contains e2e test setup.
@@ -67,7 +67,7 @@ english-student-system/
 - Full-width admin panel with sidebar navigation (icon + label) and mobile bottom nav bar
 - Quizzes, questions, quiz builder, texts, and student progress tabs
 - Student progress section: student card grid → attempt list → per-question result cards
-- AI-assisted quiz generation workflow (queued job → saved to `ai_contents` table)
+- AI-assisted quiz generation workflow (queued job → saved to `AI_DRAFTS` table)
 - AI content publish workflow (queued job)
 - Content management sections for all quiz-related entities
 
@@ -95,7 +95,7 @@ The backend is modularized by learning domain and content type:
 - send-email
 - dashboard
 - llm
-- ai-contents
+- ai-drafts
 - texttospeech
 
 ## Data Model Overview
@@ -176,7 +176,7 @@ erDiagram
 
 ```mermaid
 erDiagram
-    AI_CONTENTS {
+    AI_DRAFTS {
         uuid id PK
         text content
         string contentType
@@ -184,7 +184,7 @@ erDiagram
     }
 ```
 
-Generated quiz payloads are stored in `ai_contents` as serialized JSON with `contentType = 'quiz'`. A separate publish step (queued job) moves them into the live quiz tables.
+Generated quiz payloads are stored in `AI_DRAFTS` as serialized JSON with `contentType = 'quiz'`. A separate publish step (queued job) moves them into the live quiz tables.
 
 ## Example End-to-End Flows
 
@@ -209,12 +209,12 @@ Teacher write operations are protected by `TeacherGuard`.
 
 ### How AI quiz generation works
 
-1. Trigger generation with `POST /ai-contents/generate-quiz` using `topic`, `targetLevel` (required, e.g. `"Intermediate CEFR B1"`), `multipleChoiceCount`, `openEndedCount`, and optionally `additionalInstructions`.
+1. Trigger generation with `POST /ai-drafts/generate-quiz` using `topic`, `targetLevel` (required, e.g. `"Intermediate CEFR B1"`), `multipleChoiceCount`, `openEndedCount`, and optionally `additionalInstructions`.
 2. The API enqueues a BullMQ job in the `generate-quiz` queue (3 attempts, 5 s backoff).
 3. The `QuizGeneratorWorker` runs the LLM quiz pipeline via `LlmService.runPipeline(quizPipeline, ...)`.
 4. The pipeline builds a prompt, validates output shape/rules, and normalizes quiz questions.
-5. The generated payload is serialized and saved to the `ai_contents` table via `AiContentsService.create()`.
-6. A teacher can then trigger `POST /ai-contents/:id/publish` to enqueue a `publish-quiz` job that moves the content into live quiz tables (worker implementation in progress).
+5. The generated payload is serialized and saved to the `AI_DRAFTS` table via `AiContentsService.create()`.
+6. A teacher can then trigger `POST /ai-drafts/:id/publish` to enqueue a `publish-quiz` job that moves the content into live quiz tables (worker implementation in progress).
 
 ### How text-to-speech works
 
@@ -245,7 +245,7 @@ Domain route groups:
 - `vocabulary/*`, `vocabulary-topics/*`, `vocabulary-topic-words/*`
 - `send-email/*`
 - `dashboard/*`
-- `ai-contents/*` - AI-generated content management and quiz generation jobs
+- `ai-drafts/*` - AI-generated content management and quiz generation jobs
 - `texttospeech/*` - Text-to-speech conversion
 
 ### API examples
@@ -303,7 +303,7 @@ Content-Type: application/json
 Generate a quiz with AI (teacher only):
 
 ```http
-POST /ai-contents/generate-quiz
+POST /ai-drafts/generate-quiz
 Content-Type: application/json
 
 {

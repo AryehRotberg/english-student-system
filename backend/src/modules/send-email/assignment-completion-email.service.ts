@@ -4,8 +4,8 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
-import { UserResponseDto } from '../users/dto/user-response.dto';
-import { AssignmentCompletionEmailDto } from './dto/assignment-completion-email.dto';
+import { UserResponseDto } from '../users/dto/user.response.dto';
+import { SendEmailAssignmentCompletionDto } from './dto/send-email.assignment-completion.dto';
 import { AssignmentCompletionSummary } from './entities/assignment-completion-summary';
 import { SendEmailService } from './send-email.service';
 import { escapeHtml } from './send-email.utils';
@@ -20,12 +20,12 @@ export class AssignmentCompletionEmailService {
         private readonly pgService: PostgresService,
     ) {}
 
-    async send(user: UserResponseDto, dto: AssignmentCompletionEmailDto) {
+    async send(user: UserResponseDto, dto: SendEmailAssignmentCompletionDto) {
         const [summary] =
             await this.pgService.query<AssignmentCompletionSummary>(
                 this.pgService.getSql(
                     __dirname,
-                    'get-assignment-completion-summary.sql',
+                    'send-email.find-assignment-completion.sql',
                 ),
                 [dto.attemptId],
             );

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import Sentry from '../../config/sentry';
-import { UserResponseDto } from '../../modules/users/dto/user-response.dto';
+import { UserResponseDto } from '../../modules/users/dto/user.response.dto';
 import { UsersService } from '../../modules/users/users.service';
 import { JwtService } from '../jwt.service';
 

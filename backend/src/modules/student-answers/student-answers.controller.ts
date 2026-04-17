@@ -7,7 +7,7 @@ import {
     ParseUUIDPipe,
     Post
 } from '@nestjs/common';
-import { UpsertStudentAnswerDto } from './dto/upsert-student-answer.dto';
+import { StudentAnswerUpsertDto } from './dto/student-answer.upsert.dto';
 import { StudentAnswersService } from './student-answers.service';
 
 @Controller('student-answers')
@@ -17,7 +17,7 @@ export class StudentAnswersController {
     ) {}
 
     @Post()
-    async upsert(@Body() upsertStudentAnswerDto: UpsertStudentAnswerDto) {
+    async upsert(@Body() upsertStudentAnswerDto: StudentAnswerUpsertDto) {
         return await this.studentAnswersService.upsert(upsertStudentAnswerDto);
     }
 

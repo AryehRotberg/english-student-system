@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import type { Response } from 'express';
-import { CreateUserDto } from '../modules/users/dto/create-user.dto';
-import { UserResponseDto } from '../modules/users/dto/user-response.dto';
+import { UserCreateDto } from '../modules/users/dto/user.create.dto';
+import { UserResponseDto } from '../modules/users/dto/user.response.dto';
 import { UsersService } from '../modules/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { HashingService } from './hashing.service';
@@ -38,7 +38,7 @@ export class AuthService {
         return UserResponseDto.fromEntity(user);
     }
 
-    async register(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    async register(createUserDto: UserCreateDto): Promise<UserResponseDto> {
         return this.usersService.create(createUserDto);
     }
 

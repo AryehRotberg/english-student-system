@@ -10,9 +10,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
-import { CreateQuestionChoiceDto } from './dto/create-question-choice.dto';
-import { GetQuestionChoicesFilterDto } from './dto/get-question-choices-filter.dto';
-import { UpdateQuestionChoiceDto } from './dto/update-question-choice.dto';
+import { QuestionChoiceCreateDto } from './dto/question-choice.create.dto';
+import { QuestionChoiceQueryDto } from './dto/question-choice.query.dto';
+import { QuestionChoiceUpdateDto } from './dto/question-choice.update.dto';
 import { QuestionChoicesService } from './question-choices.service';
 
 @Controller('question-choices')
@@ -22,13 +22,13 @@ export class QuestionChoicesController {
     ) {}
 
     @Get()
-    async findByQuestionId(@Query() filter: GetQuestionChoicesFilterDto) {
-        return await this.questionChoicesService.findByQuestionId(filter);
+    async findByQuestionId(@Query() dto: QuestionChoiceQueryDto) {
+        return await this.questionChoicesService.findByQuestionId(dto);
     }
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() createQuestionChoiceDto: CreateQuestionChoiceDto) {
+    async create(@Body() createQuestionChoiceDto: QuestionChoiceCreateDto) {
         return await this.questionChoicesService.create(
             createQuestionChoiceDto,
         );
@@ -38,7 +38,7 @@ export class QuestionChoicesController {
     @UseGuards(TeacherGuard)
     async update(
         @Param('id', new ParseUUIDPipe()) id: string,
-        @Body() updateQuestionChoiceDto: UpdateQuestionChoiceDto,
+        @Body() updateQuestionChoiceDto: QuestionChoiceUpdateDto,
     ) {
         return await this.questionChoicesService.update(
             id,

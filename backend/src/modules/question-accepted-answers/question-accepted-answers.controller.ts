@@ -10,18 +10,20 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
+import { QuestionAcceptedAnswerCreateDto } from './dto/question-accepted-answer.create.dto';
+import { QuestionAcceptedAnswerUpdateDto } from './dto/question-accepted-answer.update.dto';
 import { QuestionAcceptedAnswersService } from './question-accepted-answers.service';
-import { CreateQuestionAcceptedAnswerDto } from './dto/create-question-accepted-answer.dto';
-import { UpdateQuestionAcceptedAnswerDto } from './dto/update-question-accepted-answer.dto';
 
 @Controller('question-accepted-answers')
 export class QuestionAcceptedAnswersController {
-    constructor(private readonly questionAcceptedAnswersService: QuestionAcceptedAnswersService) {}
+    constructor(
+        private readonly questionAcceptedAnswersService: QuestionAcceptedAnswersService,
+    ) {}
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() createQuestionAcceptedAnswerDto: CreateQuestionAcceptedAnswerDto) {
-        return await this.questionAcceptedAnswersService.create(createQuestionAcceptedAnswerDto);
+    async create(@Body() dto: QuestionAcceptedAnswerCreateDto) {
+        return await this.questionAcceptedAnswersService.create(dto);
     }
 
     @Get()
@@ -38,9 +40,9 @@ export class QuestionAcceptedAnswersController {
     @UseGuards(TeacherGuard)
     async update(
         @Param('id', new ParseUUIDPipe()) id: string,
-        @Body() updateQuestionAcceptedAnswerDto: UpdateQuestionAcceptedAnswerDto,
+        @Body() dto: QuestionAcceptedAnswerUpdateDto,
     ) {
-        return await this.questionAcceptedAnswersService.update(id, updateQuestionAcceptedAnswerDto);
+        return await this.questionAcceptedAnswersService.update(id, dto);
     }
 
     @Delete(':id')

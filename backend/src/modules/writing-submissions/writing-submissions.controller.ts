@@ -10,9 +10,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
-import { CreateWritingSubmissionDto } from './dto/create-writing-submission.dto';
-import { GetWritingSubmissionsFilterDto } from './dto/get-writing-submissions-filter.dto';
-import { UpdateWritingSubmissionDto } from './dto/update-writing-submission.dto';
+import { WritingSubmissionCreateDto } from './dto/writing-submission.create.dto';
+import { WritingSubmissionFilterDto } from './dto/writing-submission.query.dto';
+import { WritingSubmissionUpdateDto } from './dto/writing-submission.update.dto';
 import { WritingSubmissionsService } from './writing-submissions.service';
 
 @Controller('writing-submissions')
@@ -22,13 +22,13 @@ export class WritingSubmissionsController {
     ) {}
 
     @Get()
-    async findAll(@Query() filter: GetWritingSubmissionsFilterDto) {
+    async findAll(@Query() filter: WritingSubmissionFilterDto) {
         return await this.writingSubmissionsService.findAll(filter);
     }
 
     @Post()
     async create(
-        @Body() createWritingSubmissionDto: CreateWritingSubmissionDto,
+        @Body() createWritingSubmissionDto: WritingSubmissionCreateDto,
     ) {
         return await this.writingSubmissionsService.create(
             createWritingSubmissionDto,
@@ -39,7 +39,7 @@ export class WritingSubmissionsController {
     @UseGuards(TeacherGuard)
     async update(
         @Param('id', new ParseUUIDPipe()) id: string,
-        @Body() updateWritingSubmissionDto: UpdateWritingSubmissionDto,
+        @Body() updateWritingSubmissionDto: WritingSubmissionUpdateDto,
     ) {
         return await this.writingSubmissionsService.update(
             id,

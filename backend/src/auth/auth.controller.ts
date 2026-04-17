@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
-import { CreateUserDto } from '../modules/users/dto/create-user.dto';
-import { UserResponseDto } from '../modules/users/dto/user-response.dto';
+import { UserCreateDto } from '../modules/users/dto/user.create.dto';
+import { UserResponseDto } from '../modules/users/dto/user.response.dto';
 import { AuthGuard } from './guards/auth.guard';
 import { AuthService } from './auth.service';
 import { User } from './decorators/user.decorator';
@@ -31,7 +31,7 @@ export class AuthController {
     }
 
     @Post('register')
-    async register(@Body() createUserDto: CreateUserDto) {
+    async register(@Body() createUserDto: UserCreateDto) {
         const user = await this.authService.register(createUserDto);
 
         return {

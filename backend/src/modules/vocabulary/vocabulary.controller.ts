@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
-import { CreateVocabularyDto } from './dto/create-vocabulary.dto';
+import { VocabularyCreateDto } from './dto/vocabulary.create.dto';
 import { VocabularyService } from './vocabulary.service';
 
 @Controller('vocabulary')
@@ -14,7 +14,7 @@ export class VocabularyController {
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() createVocabularyDto: CreateVocabularyDto) {
+    async create(@Body() createVocabularyDto: VocabularyCreateDto) {
         return await this.vocabularyService.create(createVocabularyDto);
     }
 }

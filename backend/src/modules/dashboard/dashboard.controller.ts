@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../../auth/guards/auth.guard';
 import { User } from '../../auth/decorators/user.decorator';
-import { UserResponseDto } from '../users/dto/user-response.dto';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { UserResponseDto } from '../users/dto/user.response.dto';
 import { DashboardService } from './dashboard.service';
 
 @Controller('dashboard')

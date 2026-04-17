@@ -10,8 +10,8 @@ import {
 import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { SupabaseService } from '../../config/supabase.client';
 import { AudioService } from './audio.service';
-import { CreateSpeechDto } from './dto/create-speech-dto';
-import { DownloadAudioDto } from './dto/download-audio-dto';
+import { AudioCreateSpeechDto } from './dto/audio.create-speech.dto';
+import { AudioDownloadDto } from './dto/audio.download.dto';
 
 @Controller('audio')
 export class AudioController {
@@ -22,12 +22,8 @@ export class AudioController {
 
     @Post('tts')
     @UseGuards(TeacherGuard)
-    async convertTextToSpeech(
-        @Body() createSpeechDto: CreateSpeechDto,
-        @Res() res,
-    ) {
-        const audioBuffer =
-            await this.audioService.textToSpeech(createSpeechDto);
+    async convertTextToSpeech(@Body() dto: AudioCreateSpeechDto, @Res() res) {
+        const audioBuffer = await this.audioService.textToSpeech(dto);
         res.set({
             'Content-Type': 'audio/mpeg',
             'Content-Length': audioBuffer.length,
@@ -37,11 +33,8 @@ export class AudioController {
 
     @Get('download')
     @UseGuards(AuthGuard)
-    async downloadAudio(
-        @Res() res,
-        @Query() downloadAudioDto: DownloadAudioDto,
-    ) {
-        const { bucket, path } = downloadAudioDto;
+    async downloadAudio(@Res() res, @Query() dto: AudioDownloadDto) {
+        const { bucket, path } = dto;
 
         const audioBuffer = await this.supabaseService.loadFromBucket(
             bucket,
