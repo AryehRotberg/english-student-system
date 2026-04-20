@@ -54,6 +54,11 @@ export const OpenEndedQuestionSchema = z.object({
 
 export const QuizSchema = z.object({
     title: z.string(),
+    description: z
+        .string()
+        .describe(
+            'A concise 1-2 sentence description of what the quiz covers and who it is for.',
+        ),
     multiple_choice_questions: z.array(MultipleChoiceQuestionSchema),
     open_ended_questions: z.array(OpenEndedQuestionSchema),
 });

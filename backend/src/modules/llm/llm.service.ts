@@ -3,9 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { traceable } from 'langsmith/traceable';
 import { LlmPipeline } from './llm.types';
 
+type LlmModel = 'claude-haiku-4-5-20251001' | 'claude-sonnet-4-6';
+
 @Injectable()
 export class LlmService {
-    LLM_MODEL = 'claude-haiku-4-5-20251001';
+    LLM_MODEL: LlmModel = 'claude-sonnet-4-6';
 
     private readonly model = new ChatAnthropic({
         model: this.LLM_MODEL,

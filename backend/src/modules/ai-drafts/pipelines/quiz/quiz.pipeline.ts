@@ -41,20 +41,22 @@ export const quizPipeline = {
     },
 
     transform: (output: any) => {
-        const sortByDifficulty = (a: any, b: any) =>
-            a.difficulty_score - b.difficulty_score;
-
         const mergedQuestions = [
-            ...output.multiple_choice_questions
-                .map((q: any) => ({ ...q, question_type: 'multiple_choice' }))
-                .sort(sortByDifficulty),
-            ...output.open_ended_questions
-                .map((q: any) => ({ ...q, question_type: 'open_ended' }))
-                .sort(sortByDifficulty),
+            ...output.multiple_choice_questions.map((q: any) => ({
+                ...q,
+                question_type: 'multiple_choice',
+            })),
+            ...output.open_ended_questions.map((q: any) => ({
+                ...q,
+                question_type: 'open_ended',
+            })),
         ];
+
+        mergedQuestions.sort((a, b) => a.difficulty_score - b.difficulty_score);
 
         return normalizeQuiz({
             title: output.title,
+            description: output.description,
             questions: mergedQuestions,
         });
     },

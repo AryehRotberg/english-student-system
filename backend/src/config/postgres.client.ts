@@ -80,6 +80,7 @@ export class PostgresService implements OnModuleInit {
             Logger.log('Database connected successfully');
         } catch (err) {
             Logger.error('Failed to connect to database on startup', err);
+            Sentry.captureException(err);
             throw err;
         }
     }

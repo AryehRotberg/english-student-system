@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
 import { AssignmentItemCreateDto } from './dto/assignment-item.create.dto';
-import { AssignmentItemResponseDto } from './dto/assignment-item.response.dto';
 import { AssignmentItemQueryDto } from './dto/assignment-item.query.dto';
+import { AssignmentItemResponseDto } from './dto/assignment-item.response.dto';
 
 @Injectable()
 export class AssignmentItemsService {
     constructor(private readonly pgService: PostgresService) {}
 
     async findByUserId(
-        filter: AssignmentItemQueryDto,
+        query: AssignmentItemQueryDto,
     ): Promise<AssignmentItemResponseDto[]> {
-        const { userId } = filter;
+        const { userId } = query;
 
         return await this.pgService.query<AssignmentItemResponseDto>(
             this.pgService.getSql(
