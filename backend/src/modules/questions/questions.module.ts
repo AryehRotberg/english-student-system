@@ -7,5 +7,6 @@ import { QuestionsService } from './questions.service';
     imports: [AuthModule],
     controllers: [QuestionsController],
     providers: [QuestionsService],
+    exports: [QuestionsService],
 })
 export class QuestionsModule {}
