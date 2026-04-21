@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { isAxiosError } from 'axios';
 import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { authService } from '../services/auth.service';
 import { questionChoicesService } from '../services/question-choices.service';
@@ -8,6 +9,7 @@ import { quizQuestionsService } from '../services/quiz-questions.service';
 import { quizzesService } from '../services/quizzes.service';
 import { studentAnswersService } from '../services/student-answers.service';
 import { textsService } from '../services/texts.service';
+import { usersService } from '../services/users.service';
 import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
@@ -212,17 +214,75 @@ export function useCreateText() {
 
 // ─── Auth mutations ───────────────────────────────────────────────────────────
 
+export function useRegister() {
+    return useMutation({
+        mutationFn: async (payload: {
+            name: string;
+            email: string;
+            password: string;
+            teacherId: string;
+        }) => {
+            try {
+                return await authService.register(payload);
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    const message =
+                        (error.response?.data as { message?: string })
+                            ?.message ?? error.message;
+                    throw new Error(message);
+                }
+                throw error;
+            }
+        },
+    });
+}
+
 export function useLogin() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (payload: { email: string; password: string }) =>
-            authService.login(payload),
+        mutationFn: async (payload: { email: string; password: string }) => {
+            try {
+                return await authService.login(payload);
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    const message =
+                        (error.response?.data as { message?: string })
+                            ?.message ?? error.message;
+                    throw new Error(message);
+                }
+                throw error;
+            }
+        },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
             await queryClient.invalidateQueries({
                 queryKey: ['dashboard-overview'],
             });
+        },
+    });
+}
+
+// ─── User mutations ───────────────────────────────────────────────────────────
+
+export function useApproveStudent() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => usersService.approve(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pending-students'] });
+            queryClient.invalidateQueries({ queryKey: ['all-students'] });
+        },
+    });
+}
+
+export function useRemoveStudent() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => usersService.remove(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pending-students'] });
+            queryClient.invalidateQueries({ queryKey: ['all-students'] });
         },
     });
 }

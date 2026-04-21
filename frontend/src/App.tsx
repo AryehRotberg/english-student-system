@@ -11,6 +11,7 @@ import { PracticePage } from './pages/Practice/PracticePage';
 import { QuizPage } from './pages/Quiz/QuizPage';
 import { QuizListPage } from './pages/QuizList/QuizListPage';
 import { ReadingPage } from './pages/Reading/ReadingPage';
+import { RegisterPage } from './pages/Register/RegisterPage';
 import { VocabPage } from './pages/Vocab/VocabPage';
 
 function ProtectedPage({ children }: { children: React.ReactNode }) {
@@ -63,6 +64,16 @@ function App() {
                         <LoginRoute isTeacher={isTeacher} />
                     ) : (
                         <LoginPage />
+                    )
+                }
+            />
+            <Route
+                path="/register"
+                element={
+                    isAuthenticated ? (
+                        <LoginRoute isTeacher={isTeacher} />
+                    ) : (
+                        <RegisterPage />
                     )
                 }
             />

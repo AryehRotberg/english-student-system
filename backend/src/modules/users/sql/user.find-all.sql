@@ -4,8 +4,10 @@ SELECT
 	U.EMAIL,
 	U.PASSWORD,
 	U.ROLE,
+	T.ID AS "teacherId",
 	T.NAME AS "teacherName",
 	T.EMAIL AS "teacherEmail",
+	U.IS_APPROVED AS "isApproved",
 	U.CREATED_AT AS "createdAt"
 FROM
 	USERS U

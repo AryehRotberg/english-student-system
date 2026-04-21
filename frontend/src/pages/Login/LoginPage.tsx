@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLogin } from '../../hooks/mutations';
 import styles from './LoginPage.module.css';
 
@@ -68,6 +68,10 @@ export function LoginPage() {
                         {(loginMutation.error as Error).message}
                     </p>
                 ) : null}
+
+                <Link className={styles.navLink} to="/register">
+                    Don't have an account? Register
+                </Link>
             </form>
         </div>
     );

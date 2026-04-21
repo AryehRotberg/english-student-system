@@ -171,7 +171,21 @@ export function useVocabularyTopicWords(topicId?: string) {
 export function useAllStudents() {
     return useQuery<AuthUser[]>({
         queryKey: ['all-students'],
-        queryFn: () => usersService.listAllStudents(),
+        queryFn: () => usersService.listStudents(),
+    });
+}
+
+export function usePendingStudents() {
+    return useQuery<AuthUser[]>({
+        queryKey: ['pending-students'],
+        queryFn: () => usersService.listStudents(false),
+    });
+}
+
+export function useTeachers() {
+    return useQuery<AuthUser[]>({
+        queryKey: ['teachers'],
+        queryFn: () => usersService.listTeachers(),
     });
 }
 

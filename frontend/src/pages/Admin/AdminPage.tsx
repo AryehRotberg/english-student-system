@@ -3,6 +3,7 @@ import { AdminMobileNav } from '../../components/admin/AdminMobileNav';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { adminTabs } from '../../components/admin/admin-tabs';
 import type { AdminTab } from '../../components/admin/admin-tabs';
+import { PendingStudentsSection } from '../../components/admin/PendingStudentsSection';
 import { QuestionsSection } from '../../components/admin/QuestionsSection';
 import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
 import { QuizzesSection } from '../../components/admin/QuizzesSection';
@@ -13,7 +14,7 @@ import styles from './AdminPage.module.css';
 
 export function AdminPage() {
     const { data: user } = useAuthUser();
-    const [activeTab, setActiveTab] = useState<AdminTab>('quizzes');
+    const [activeTab, setActiveTab] = useState<AdminTab>('pending-students');
 
     if (user?.role !== 'teacher') {
         return (
@@ -41,6 +42,9 @@ export function AdminPage() {
                     </p>
                 </header>
                 <div className={styles.mainContent}>
+                    {activeTab === 'pending-students' && (
+                        <PendingStudentsSection />
+                    )}
                     {activeTab === 'quizzes' && <QuizzesSection />}
                     {activeTab === 'questions' && <QuestionsSection />}
                     {activeTab === 'quiz-builder' && <QuizBuilderSection />}

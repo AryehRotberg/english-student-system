@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { HashingService } from '../../auth/hashing.service';
 import { JwtService } from '../../auth/jwt.service';
+import { SendEmailService } from '../send-email/send-email.service';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -12,6 +13,7 @@ import { UsersService } from './users.service';
         JwtService,
         AuthGuard,
         TeacherGuard,
+        SendEmailService,
     ],
     exports: [UsersService],
     controllers: [UsersController],

@@ -9,9 +9,24 @@ class UsersService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listAllStudents(): Promise<AuthUser[]> {
+    public async listStudents(approved = true): Promise<AuthUser[]> {
+        const response = await this.httpClient.get<AuthUser[]>(
+            '/users/students',
+            { params: { approved: String(approved) } },
+        );
+        return response.data;
+    }
+
+    public async listTeachers(): Promise<AuthUser[]> {
         const response =
-            await this.httpClient.get<AuthUser[]>('/users/students');
+            await this.httpClient.get<AuthUser[]>('/users/teachers');
+        return response.data;
+    }
+
+    public async approve(id: string): Promise<AuthUser> {
+        const response = await this.httpClient.patch<AuthUser>(
+            `/users/${id}/approve`,
+        );
         return response.data;
     }
 

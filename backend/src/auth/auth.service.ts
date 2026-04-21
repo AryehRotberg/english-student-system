@@ -32,6 +32,10 @@ export class AuthService {
 
         await this.verifyPassword(user.password, password);
 
+        if (!user.isApproved) {
+            throw new BadRequestException('Your account is pending approval');
+        }
+
         const token = this.jwtService.generateToken(user);
         res.cookie('access_token', token, this.getCookieOptions());
 
