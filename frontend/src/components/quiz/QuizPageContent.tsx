@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { QuizActiveView } from '../../components/quiz/QuizActiveView';
 import { QuizAttemptsViewer } from '../../components/quiz/QuizAttemptsViewer';
 import { QuizRetakeScreen } from '../../components/quiz/QuizRetakeScreen';
@@ -45,21 +45,6 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
         attemptId ?? undefined,
     );
 
-    const startAttemptAndNotify = useCallback(async () => {
-        if (!user?.id) return;
-        const attempt = await startAttemptMutation.mutateAsync({
-            quizId,
-            userId: user.id,
-        });
-        await sendEmailService.sendCustomEmail({
-            name: user.name,
-            email: user.teacherEmail!,
-            subject: `${user.name} has started quiz "${quizTitle}"`,
-            title: `Quiz Attempt Started`,
-            body: `${user.name} has started a quiz attempt for quiz "${quizTitle}" on ${new Date(attempt.startedAt).toLocaleString()}.`,
-        });
-    }, [quizId, quizTitle, user, startAttemptMutation]);
-
     useEffect(() => {
         if (
             !isAttemptLoading &&
@@ -68,9 +53,16 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
             !hasAutoStarted.current
         ) {
             hasAutoStarted.current = true;
-            void startAttemptAndNotify();
+            void startAttemptMutation.mutateAsync({ quizId, quizTitle });
         }
-    }, [isAttemptLoading, attempts.length, user?.id, startAttemptAndNotify]);
+    }, [
+        isAttemptLoading,
+        attempts.length,
+        user?.id,
+        startAttemptMutation,
+        quizId,
+        quizTitle,
+    ]);
 
     const completedAttempts = attempts.filter(
         (attempt) => attempt.completedAt !== null,
@@ -84,7 +76,7 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     const handleStartOrRetake = async () => {
         setIsCompleted(false);
         setViewAttemptId(null);
-        await startAttemptAndNotify();
+        await startAttemptMutation.mutateAsync({ quizId, quizTitle });
     };
 
     const handleQuestionSubmitted = async (isLastQuestion: boolean) => {

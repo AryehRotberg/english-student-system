@@ -938,3 +938,61 @@
         white-space: nowrap;
     }
 }
+
+/* ─── Pending Students Section ──────────────────────────── */
+
+.pendingCardActions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.approveBtn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: #d1fae5;
+    color: #065f46;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+.approveBtn:hover:not(:disabled) {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.approveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.rejectBtn {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.825rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+.rejectBtn:hover:not(:disabled) {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.rejectBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

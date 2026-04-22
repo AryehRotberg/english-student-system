@@ -11,9 +11,13 @@ export class UserResponseDto {
     @ApiProperty()
     readonly role: string;
     @ApiProperty()
+    readonly teacherId?: string | null;
+    @ApiProperty()
     readonly teacherName?: string | null;
     @ApiProperty()
     readonly teacherEmail?: string | null;
+    @ApiProperty()
+    readonly isApproved: boolean;
     @ApiProperty()
     readonly createdAt: Date;
 
@@ -27,8 +31,10 @@ export class UserResponseDto {
             name: user.name,
             email: user.email,
             role: user.role,
+            teacherId: user.teacherId,
             teacherName: user.teacherName,
             teacherEmail: user.teacherEmail,
+            isApproved: user.isApproved,
             createdAt: user.createdAt,
         });
     }

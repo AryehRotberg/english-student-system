@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { HashingService } from '../../auth/hashing.service';
 import { PostgresService } from '../../config/postgres.client';
+import { SendEmailService } from '../send-email/send-email.service';
 import { UserCreateDto } from './dto/user.create.dto';
 import { UserResponseDto } from './dto/user.response.dto';
 import { User } from './entities/user.entity';
@@ -10,10 +11,11 @@ export class UsersService {
     constructor(
         private readonly pgService: PostgresService,
         private readonly hashingService: HashingService,
+        private readonly sendEmailService: SendEmailService,
     ) {}
 
     async create(createUserDto: UserCreateDto): Promise<UserResponseDto> {
-        const { name, email, password } = createUserDto;
+        const { name, email, password, teacherId } = createUserDto;
 
         const existingUser = await this.findOneByEmail(email);
         if (existingUser) {
@@ -26,7 +28,7 @@ export class UsersService {
 
         const result = await this.pgService.query<User>(
             this.pgService.getSql(__dirname, 'user.create.sql'),
-            [name, email, hashedPassword, 'student'],
+            [name, email, hashedPassword, 'student', teacherId, false],
         );
 
         return UserResponseDto.fromEntity(result[0]);
@@ -40,12 +42,44 @@ export class UsersService {
         return result || null;
     }
 
-    async getAllStudents(): Promise<UserResponseDto[]> {
+    async findStudentsByTeacherId(
+        teacherId: string,
+        approved = true,
+    ): Promise<UserResponseDto[]> {
         const users = await this.pgService.query<User>(
             this.pgService.getSql(__dirname, 'user.find-all.sql'),
         );
-        const students = users.filter((user) => user.role === 'student');
+        const students = users.filter(
+            (user) =>
+                user.role === 'student' &&
+                user.teacherId === teacherId &&
+                user.isApproved === approved,
+        );
         return UserResponseDto.fromEntities(students);
+    }
+
+    async findAllTeachers(): Promise<UserResponseDto[]> {
+        const users = await this.pgService.query<User>(
+            this.pgService.getSql(__dirname, 'user.find-all.sql'),
+        );
+        const teachers = users.filter((user) => user.role === 'teacher');
+        return UserResponseDto.fromEntities(teachers);
+    }
+
+    async approve(id: string): Promise<UserResponseDto> {
+        const [result] = await this.pgService.query<User>(
+            this.pgService.getSql(__dirname, 'user.approve.sql'),
+            [id],
+        );
+        const dto = UserResponseDto.fromEntity(result);
+        await this.sendEmailService.sendFromDto({
+            name: dto.name,
+            email: dto.email,
+            subject: 'Your account has been approved — welcome!',
+            title: `Welcome, ${dto.name}!`,
+            body: `Great news — your registration has been approved by your teacher. You can now sign in and start learning.`,
+        });
+        return dto;
     }
 
     async remove(id: string): Promise<UserResponseDto> {

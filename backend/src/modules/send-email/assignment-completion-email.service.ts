@@ -9,9 +9,9 @@ import { SendEmailAssignmentCompletionDto } from './dto/send-email.assignment-co
 import { AssignmentCompletionSummary } from './entities/assignment-completion-summary';
 import { SendEmailService } from './send-email.service';
 import { escapeHtml } from './send-email.utils';
-import { assignmentSummaryCard } from './templates/assignment-summary-card.template';
+import { assignmentSummaryCard } from './templates/cards/assignment-summary-card.template';
 import { defaultTemplate } from './templates/default-template.template';
-import { metricsCard } from './templates/metrics-card.template';
+import { metricsCard } from './templates/cards/metrics-card.template';
 
 @Injectable()
 export class AssignmentCompletionEmailService {

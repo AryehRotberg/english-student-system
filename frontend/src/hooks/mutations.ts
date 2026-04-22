@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
+import { isAxiosError } from 'axios';
 import { authService } from '../services/auth.service';
+import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
 import { questionsService } from '../services/questions.service';
 import { quizAttemptsService } from '../services/quiz-attempts.service';
@@ -8,6 +9,7 @@ import { quizQuestionsService } from '../services/quiz-questions.service';
 import { quizzesService } from '../services/quizzes.service';
 import { studentAnswersService } from '../services/student-answers.service';
 import { textsService } from '../services/texts.service';
+import { usersService } from '../services/users.service';
 import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
@@ -60,11 +62,9 @@ export function useSubmitQuizAttempt() {
 export function useStartQuizAttempt() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: { quizId: string; userId: string }) =>
+        mutationFn: (payload: { quizId: string; quizTitle: string }) =>
             quizAttemptsService.create({
                 ...payload,
-                points: 0,
-                startedAt: new Date().toISOString(),
             }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] });
@@ -141,7 +141,9 @@ export function useCreateQuestionAcceptedAnswer() {
             blankIndex: number;
         }) => questionAcceptedAnswersService.create(payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['question-accepted-answers'] }),
+            queryClient.invalidateQueries({
+                queryKey: ['question-accepted-answers'],
+            }),
     });
 }
 
@@ -157,7 +159,9 @@ export function useUpdateQuestionAcceptedAnswer() {
             blankIndex?: number;
         }) => questionAcceptedAnswersService.update(id, payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['question-accepted-answers'] }),
+            queryClient.invalidateQueries({
+                queryKey: ['question-accepted-answers'],
+            }),
     });
 }
 
@@ -212,17 +216,75 @@ export function useCreateText() {
 
 // ─── Auth mutations ───────────────────────────────────────────────────────────
 
+export function useRegister() {
+    return useMutation({
+        mutationFn: async (payload: {
+            name: string;
+            email: string;
+            password: string;
+            teacherId: string;
+        }) => {
+            try {
+                return await authService.register(payload);
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    const message =
+                        (error.response?.data as { message?: string })
+                            ?.message ?? error.message;
+                    throw new Error(message);
+                }
+                throw error;
+            }
+        },
+    });
+}
+
 export function useLogin() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (payload: { email: string; password: string }) =>
-            authService.login(payload),
+        mutationFn: async (payload: { email: string; password: string }) => {
+            try {
+                return await authService.login(payload);
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    const message =
+                        (error.response?.data as { message?: string })
+                            ?.message ?? error.message;
+                    throw new Error(message);
+                }
+                throw error;
+            }
+        },
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
             await queryClient.invalidateQueries({
                 queryKey: ['dashboard-overview'],
             });
+        },
+    });
+}
+
+// ─── User mutations ───────────────────────────────────────────────────────────
+
+export function useApproveStudent() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => usersService.approve(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pending-students'] });
+            queryClient.invalidateQueries({ queryKey: ['all-students'] });
+        },
+    });
+}
+
+export function useRemoveStudent() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => usersService.remove(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['pending-students'] });
+            queryClient.invalidateQueries({ queryKey: ['all-students'] });
         },
     });
 }
