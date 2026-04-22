@@ -9,22 +9,26 @@ interface Props {
 
 export function AdminMobileNav({ tabs, activeTab, onTabChange }: Props) {
     return (
-        <nav className={styles.mobileBottomNav} role="tablist">
+        <nav
+            className={styles.mobileTabStrip}
+            role="tablist"
+            aria-label="Admin sections"
+        >
             {tabs.map((tab) => (
                 <button
                     key={tab.id}
                     type="button"
                     role="tab"
                     aria-selected={activeTab === tab.id}
+                    aria-label={tab.label}
                     className={
                         activeTab === tab.id
-                            ? `${styles.mobileNavItem} ${styles.mobileNavItemActive}`
-                            : styles.mobileNavItem
+                            ? `${styles.mobileTabItem} ${styles.mobileTabItemActive}`
+                            : styles.mobileTabItem
                     }
                     onClick={() => onTabChange(tab.id)}
                 >
-                    <span className={styles.mobileNavIcon}>{tab.icon}</span>
-                    <span className={styles.mobileNavLabel}>{tab.label}</span>
+                    {tab.icon}
                 </button>
             ))}
         </nav>

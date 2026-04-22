@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { adminTabs } from '../../admin/admin-tabs';
 import { useAuthUser } from '../../../hooks/queries';
 import { authService } from '../../../services/auth.service';
 import styles from './Navbar.module.css';
@@ -19,10 +20,14 @@ type NavbarProps = {
 
 export function Navbar({ sticky = true }: NavbarProps) {
     const navigate = useNavigate();
+    const location = useLocation();
     const queryClient = useQueryClient();
     const { data: user } = useAuthUser();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const displayName = user?.name?.trim() || 'Student';
+
+    const currentAdminTab =
+        new URLSearchParams(location.search).get('tab') ?? 'pending-students';
     const initials = displayName
         .split(/\s+/)
         .filter(Boolean)
@@ -188,19 +193,25 @@ export function Navbar({ sticky = true }: NavbarProps) {
                                 </NavLink>
                             ))}
 
-                        {user?.role === 'teacher' && (
-                            <NavLink
-                                to="/admin"
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? `${styles.mobileLink} ${styles.mobileActive}`
-                                        : styles.mobileLink
-                                }
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                Admin
-                            </NavLink>
-                        )}
+                        {user?.role === 'teacher' &&
+                            adminTabs.map((tab) => (
+                                <NavLink
+                                    key={`mobile-admin-${tab.id}`}
+                                    to={`/admin?tab=${tab.id}`}
+                                    className={
+                                        location.pathname === '/admin' &&
+                                        currentAdminTab === tab.id
+                                            ? `${styles.mobileAdminLink} ${styles.mobileActive}`
+                                            : styles.mobileAdminLink
+                                    }
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <span className={styles.mobileAdminIcon}>
+                                        {tab.icon}
+                                    </span>
+                                    {tab.label}
+                                </NavLink>
+                            ))}
                     </nav>
 
                     <button

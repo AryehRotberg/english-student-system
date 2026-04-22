@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { AdminMobileNav } from '../../components/admin/AdminMobileNav';
-import { AdminSidebar } from '../../components/admin/AdminSidebar';
-import { adminTabs } from '../../components/admin/admin-tabs';
+import { useSearchParams } from 'react-router-dom';
 import type { AdminTab } from '../../components/admin/admin-tabs';
+import { adminTabs } from '../../components/admin/admin-tabs';
+import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { PendingStudentsSection } from '../../components/admin/PendingStudentsSection';
 import { QuestionsSection } from '../../components/admin/QuestionsSection';
 import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
@@ -14,7 +13,10 @@ import styles from './AdminPage.module.css';
 
 export function AdminPage() {
     const { data: user } = useAuthUser();
-    const [activeTab, setActiveTab] = useState<AdminTab>('pending-students');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab =
+        (searchParams.get('tab') as AdminTab) ?? 'pending-students';
+    const setActiveTab = (tab: AdminTab) => setSearchParams({ tab });
 
     if (user?.role !== 'teacher') {
         return (
@@ -54,12 +56,6 @@ export function AdminPage() {
                     )}
                 </div>
             </main>
-
-            <AdminMobileNav
-                tabs={adminTabs}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-            />
         </div>
     );
 }
