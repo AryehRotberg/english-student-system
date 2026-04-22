@@ -340,6 +340,29 @@
         text-decoration: none;
     }
 
+    .mobileAdminLink {
+        align-items: center;
+        border-radius: 8px;
+        color: #334155;
+        display: flex;
+        font-size: 0.93rem;
+        font-weight: 600;
+        gap: 0.65rem;
+        padding: 0.65rem 0.7rem;
+        text-decoration: none;
+    }
+
+    .mobileAdminIcon {
+        align-items: center;
+        display: flex;
+        flex-shrink: 0;
+    }
+
+    .mobileAdminIcon svg {
+        height: 20px;
+        width: 20px;
+    }
+
     .mobileActive {
         background: #e0ecff;
         color: #1c74e9;
