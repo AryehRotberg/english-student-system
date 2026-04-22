@@ -10,8 +10,7 @@ export function QuizPage() {
         return null;
     }
 
-    const quiz = quizzes.find((q) => q.id === quizId);
-    const quizTitle = quiz?.title ?? '';
+    const quizTitle = quizzes.find((q) => q.id === quizId)?.title ?? '';
 
     return (
         <QuizPageContent key={quizId} quizId={quizId} quizTitle={quizTitle} />

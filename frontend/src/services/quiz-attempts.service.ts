@@ -30,10 +30,7 @@ class QuizAttemptsService {
 
     public async create(payload: {
         quizId: string;
-        userId: string;
-        points?: number;
-        startedAt?: string;
-        completedAt?: string;
+        quizTitle: string;
     }): Promise<QuizAttemptApiItem> {
         const response = await this.httpClient.post<QuizAttemptApiItem>(
             '/quiz-attempts',

@@ -1,31 +1,12 @@
-import { Type } from 'class-transformer';
-import { IsDate, IsNumber, IsOptional, IsUUID } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsUUID } from 'class-validator';
 
 export class QuizAttemptCreateDto {
-	@IsUUID()
-	@ApiProperty()
-	quizId: string;
+    @IsUUID()
+    @ApiProperty()
+    quizId: string;
 
-	@IsUUID()
-	@ApiProperty()
-	userId: string;
-
-	@IsOptional()
-	@Type(() => Number)
-	@IsNumber()
-	@ApiPropertyOptional()
-	points?: number;
-
-	@IsOptional()
-	@Type(() => Date)
-	@IsDate()
-	@ApiPropertyOptional()
-	startedAt?: Date;
-
-	@IsOptional()
-	@Type(() => Date)
-	@IsDate()
-	@ApiPropertyOptional()
-	completedAt?: Date | null;
+    @IsString()
+    @ApiProperty()
+    quizTitle: string;
 }

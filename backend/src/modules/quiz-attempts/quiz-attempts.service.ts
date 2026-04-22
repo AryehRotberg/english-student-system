@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresService } from '../../config/postgres.client';
+import { SendEmailService } from '../send-email/send-email.service';
+import { UserResponseDto } from '../users/dto/user.response.dto';
 import { QuizAttemptCreateDto } from './dto/quiz-attempt.create.dto';
 import { QuizAttemptQueryDto } from './dto/quiz-attempt.query.dto';
 import { QuizAttemptResponseDto } from './dto/quiz-attempt.response.dto';
 
 @Injectable()
 export class QuizAttemptsService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(
+        private readonly pgService: PostgresService,
+        private readonly sendEmailService: SendEmailService,
+    ) {}
 
     async findByUserIdAndQuizId(dto: QuizAttemptQueryDto) {
         const { userId, quizId } = dto;
@@ -40,21 +45,26 @@ export class QuizAttemptsService {
     }
 
     async create(
-        createQuizAttemptDto: QuizAttemptCreateDto,
+        dto: QuizAttemptCreateDto,
+        user: UserResponseDto,
     ): Promise<QuizAttemptResponseDto> {
-        const { quizId, userId, points, startedAt, completedAt } =
-            createQuizAttemptDto;
+        const { quizId, quizTitle } = dto;
 
         const [result] = await this.pgService.query<QuizAttemptResponseDto>(
             this.pgService.getSql(__dirname, 'quiz-attempt.create.sql'),
-            [
-                quizId,
-                userId,
-                points ?? 0,
-                startedAt ?? new Date(),
-                completedAt ?? null,
-            ],
+            [quizId, user.id, 0, new Date(), null],
         );
+
+        await this.sendEmailService.sendFromDto({
+            name: user.name,
+            email: user.teacherEmail!,
+            subject: `${user.name} has started quiz "${quizTitle}"`,
+            title: `Quiz Attempt Started`,
+            body: `${user.name} has started a quiz attempt for quiz "${quizTitle}" on ${new Date(
+                new Date(),
+            ).toLocaleString()}.`,
+        });
+
         return result;
     }
 }

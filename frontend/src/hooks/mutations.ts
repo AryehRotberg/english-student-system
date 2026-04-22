@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
-import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { authService } from '../services/auth.service';
+import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
 import { questionsService } from '../services/questions.service';
 import { quizAttemptsService } from '../services/quiz-attempts.service';
@@ -62,11 +62,9 @@ export function useSubmitQuizAttempt() {
 export function useStartQuizAttempt() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: { quizId: string; userId: string }) =>
+        mutationFn: (payload: { quizId: string; quizTitle: string }) =>
             quizAttemptsService.create({
                 ...payload,
-                points: 0,
-                startedAt: new Date().toISOString(),
             }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] });
@@ -143,7 +141,9 @@ export function useCreateQuestionAcceptedAnswer() {
             blankIndex: number;
         }) => questionAcceptedAnswersService.create(payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['question-accepted-answers'] }),
+            queryClient.invalidateQueries({
+                queryKey: ['question-accepted-answers'],
+            }),
     });
 }
 
@@ -159,7 +159,9 @@ export function useUpdateQuestionAcceptedAnswer() {
             blankIndex?: number;
         }) => questionAcceptedAnswersService.update(id, payload),
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['question-accepted-answers'] }),
+            queryClient.invalidateQueries({
+                queryKey: ['question-accepted-answers'],
+            }),
     });
 }
 
