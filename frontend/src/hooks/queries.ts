@@ -8,7 +8,7 @@ import { questionChoicesService } from '../services/question-choices.service';
 import { questionsService } from '../services/questions.service';
 import { quizAttemptsService } from '../services/quiz-attempts.service';
 import { quizQuestionsService } from '../services/quiz-questions.service';
-import { quizTopicsService } from '../services/quiz-topics.service';
+import { quizStudyGuidesService } from '../services/quiz-study-guides.service';
 import { quizzesService } from '../services/quizzes.service';
 import type { StudentAnswerApiItem } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
@@ -25,7 +25,7 @@ import type {
 import type { QuizAttemptApiItem } from '../types/api-items/quiz-attempt';
 import type { AuthUser } from '../types/auth';
 import type { DashboardData } from '../types/dashboard';
-import type { QuizQuestion, QuizSummary, QuizTopic } from '../types/quiz';
+import type { QuizQuestion, QuizStudyGuide, QuizSummary } from '../types/quiz';
 import type { ReadingItem } from '../types/reading';
 import type {
     VocabularyTopicPreview,
@@ -98,11 +98,11 @@ export function useQuizzes() {
     });
 }
 
-export function useQuizTopics(quizId?: string) {
-    return useQuery<QuizTopic[]>({
-        queryKey: ['quiz-topics', quizId],
+export function useQuizStudyGuides(quizId?: string) {
+    return useQuery<QuizStudyGuide[]>({
+        queryKey: ['quiz-study-guides', quizId],
         enabled: Boolean(quizId),
-        queryFn: () => quizTopicsService.list(quizId as string),
+        queryFn: () => quizStudyGuidesService.list(quizId as string),
     });
 }
 

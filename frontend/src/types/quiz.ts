@@ -10,7 +10,7 @@ export type QuizSummary = {
     description: string;
 };
 
-export type QuizTopic = {
+export type QuizStudyGuide = {
     id: string;
     topic: string;
     explanation: string;

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class QuizTopicResponseDto {
+export class QuizStudyGuideResponseDto {
     @ApiProperty()
     readonly id: string;
     @ApiProperty()

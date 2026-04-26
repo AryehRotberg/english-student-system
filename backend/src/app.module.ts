@@ -16,6 +16,7 @@ import { QuestionChoicesModule } from './modules/question-choices/question-choic
 import { QuestionsModule } from './modules/questions/questions.module';
 import { QuizAttemptsModule } from './modules/quiz-attempts/quiz-attempts.module';
 import { QuizQuestionsModule } from './modules/quiz-questions/quiz-questions.module';
+import { QuizStudyGuidesModule } from './modules/quiz-study-guides/quiz-study-guides.module';
 import { QuizzesModule } from './modules/quizzes/quizzes.module';
 import { SendEmailModule } from './modules/send-email/send-email.module';
 import { StudentAnswersModule } from './modules/student-answers/student-answers.module';
@@ -26,7 +27,6 @@ import { VocabularyTopicsModule } from './modules/vocabulary-topics/vocabulary-t
 import { VocabularyModule } from './modules/vocabulary/vocabulary.module';
 import { WritingSubmissionsModule } from './modules/writing-submissions/writing-submissions.module';
 import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module';
-import { QuizTopicsModule } from './modules/quiz-topics/quiz-topics.module';
 
 @Module({
     imports: [
@@ -63,7 +63,7 @@ import { QuizTopicsModule } from './modules/quiz-topics/quiz-topics.module';
         LlmModule,
         AiDraftsModule,
         AudioModule,
-        QuizTopicsModule,
+        QuizStudyGuidesModule,
     ],
     controllers: [AppController],
     providers: [AppService],
