@@ -14,7 +14,7 @@ export class QuizCreateDto {
 
 export class QuizAiDraftCreateDto {
     title: string;
-    description?: string;
+    description: string;
     questions: Array<{
         question: string;
         question_type: 'multiple_choice' | 'open_ended';

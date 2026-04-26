@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import styles from '../../pages/Quiz/QuizPage.module.css';
-import type { QuizTopic } from '../../types/quiz';
+import type { QuizStudyGuide } from '../../types/quiz';
 
 const SANITIZE_SCHEMA = {
     ...defaultSchema,
@@ -23,38 +23,41 @@ const SANITIZE_SCHEMA = {
     },
 };
 
-type QuizTopicsSectionProps = {
-    topics: QuizTopic[];
+type QuizStudyGuidesSectionProps = {
+    studyGuides: QuizStudyGuide[];
 };
 
-export function QuizTopicsSection({ topics }: QuizTopicsSectionProps) {
-    const [selectedTopic, setSelectedTopic] = useState<QuizTopic | null>(null);
+export function QuizStudyGuidesSection({
+    studyGuides,
+}: QuizStudyGuidesSectionProps) {
+    const [selectedStudyGuide, setSelectedStudyGuide] =
+        useState<QuizStudyGuide | null>(null);
 
-    if (topics.length === 0) return null;
+    if (studyGuides.length === 0) return null;
 
     return (
         <>
             <section className={styles.topicSection}>
-                <h3>Topics for this quiz</h3>
+                <h3>Study Guides for this quiz</h3>
                 <div className={styles.topicGrid}>
-                    {topics.map((topic) => (
+                    {studyGuides.map((studyGuide) => (
                         <button
                             className={styles.topicCard}
-                            key={topic.id}
-                            onClick={() => setSelectedTopic(topic)}
+                            key={studyGuide.id}
+                            onClick={() => setSelectedStudyGuide(studyGuide)}
                             type="button"
                         >
-                            <span>{topic.topic}</span>
+                            <span>{studyGuide.topic}</span>
                             <small>Open explanation</small>
                         </button>
                     ))}
                 </div>
             </section>
 
-            {selectedTopic ? (
+            {selectedStudyGuide ? (
                 <div
                     className={styles.topicModalOverlay}
-                    onClick={() => setSelectedTopic(null)}
+                    onClick={() => setSelectedStudyGuide(null)}
                     role="presentation"
                 >
                     <section
@@ -63,11 +66,11 @@ export function QuizTopicsSection({ topics }: QuizTopicsSectionProps) {
                         onClick={(event) => event.stopPropagation()}
                     >
                         <div className={styles.topicModalHeader}>
-                            <h3>{selectedTopic.topic}</h3>
+                            <h3>{selectedStudyGuide.topic}</h3>
                             <button
                                 aria-label="Close explanation"
                                 className={styles.closeTopicButton}
-                                onClick={() => setSelectedTopic(null)}
+                                onClick={() => setSelectedStudyGuide(null)}
                                 type="button"
                             >
                                 Close
@@ -81,7 +84,7 @@ export function QuizTopicsSection({ topics }: QuizTopicsSectionProps) {
                                 ]}
                                 remarkPlugins={[remarkGfm]}
                             >
-                                {selectedTopic.explanation}
+                                {selectedStudyGuide.explanation}
                             </ReactMarkdown>
                         </div>
                     </section>

@@ -3,7 +3,6 @@ import { QuizActiveView } from '../../components/quiz/QuizActiveView';
 import { QuizAttemptsViewer } from '../../components/quiz/QuizAttemptsViewer';
 import { QuizRetakeScreen } from '../../components/quiz/QuizRetakeScreen';
 import { QuizSetupScreen } from '../../components/quiz/QuizSetupScreen';
-import { QuizTopicsSection } from '../../components/quiz/QuizTopicsSection';
 import {
     useStartQuizAttempt,
     useSubmitQuizAttempt,
@@ -12,11 +11,12 @@ import {
     useAuthUser,
     useQuizAttempts,
     useQuizQuestions,
-    useQuizTopics,
+    useQuizStudyGuides,
     useStudentAnswersByAttempt,
 } from '../../hooks/queries';
 import styles from '../../pages/Quiz/QuizPage.module.css';
 import { sendEmailService } from '../../services/send-email.service';
+import { QuizStudyGuidesSection } from './QuizStudyGuidesSection';
 
 type QuizPageContentProps = {
     quizId: string;
@@ -31,7 +31,7 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
 
     const { data: user } = useAuthUser();
     const { data: questions } = useQuizQuestions(quizId);
-    const { data: topics = [] } = useQuizTopics(quizId);
+    const { data: studyGuides = [] } = useQuizStudyGuides(quizId);
 
     const { data: attempts = [], isLoading: isAttemptLoading } =
         useQuizAttempts(quizId, user?.id);
@@ -120,7 +120,7 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
 
     return (
         <div className={styles.stack}>
-            <QuizTopicsSection topics={topics} />
+            <QuizStudyGuidesSection studyGuides={studyGuides} />
 
             {isViewingResults ? (
                 <QuizAttemptsViewer
