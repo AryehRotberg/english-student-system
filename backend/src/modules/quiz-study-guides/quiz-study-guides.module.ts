@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { QuizStudyGuidesController } from './quiz-study-guides.controller';
-import { QuizStudyGuidesService } from './quiz-study-guides.service';
+import { StudyGuide } from './entities/study-guide.entity';
 
 @Module({
+    imports: [TypeOrmModule.forFeature([StudyGuide])],
     controllers: [QuizStudyGuidesController],
-    providers: [QuizStudyGuidesService],
+    providers: [],
+
 })
 export class QuizStudyGuidesModule {}

@@ -1,12 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService) {}
+    constructor() {}
 
     @Get('/health')
     async healthCheck() {
-        return this.appService.healthCheck();
+        return {
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            env: process.env.NODE_ENV || 'development',
+        };
     }
 }

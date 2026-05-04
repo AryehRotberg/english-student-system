@@ -5,7 +5,7 @@ import {
     Get,
     Param,
     ParseUUIDPipe,
-    Post
+    Post,
 } from '@nestjs/common';
 import { StudentAnswerUpsertDto } from './dto/student-answer.upsert.dto';
 import { StudentAnswersService } from './student-answers.service';
@@ -19,11 +19,6 @@ export class StudentAnswersController {
     @Post()
     async upsert(@Body() upsertStudentAnswerDto: StudentAnswerUpsertDto) {
         return await this.studentAnswersService.upsert(upsertStudentAnswerDto);
-    }
-
-    @Get()
-    async findAll() {
-        return await this.studentAnswersService.findAll();
     }
 
     @Get(':id')

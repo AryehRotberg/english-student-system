@@ -1,36 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { GroupedValidAnswer, ValidAnswer } from './entities/grading-data';
 
-export interface BulkUpsertArrays {
-    blankIndices: (number | null)[];
-    optionIds: (string | null)[];
-    texts: (string | null)[];
-    points: number[];
-}
-
 @Injectable()
 export class StudentAnswersCommon {
-    prepareBulkUpsertArrays(
-        selectedOptionId: string | undefined,
-        textAnswers: string[] | undefined,
-        scores: number[],
-    ): BulkUpsertArrays {
-        const textsList = textAnswers ?? [];
-
-        return {
-            blankIndices: selectedOptionId
-                ? [null]
-                : textsList.map((_, i) => i + 1),
-            optionIds: selectedOptionId
-                ? [selectedOptionId]
-                : textsList.map(() => null),
-            texts: selectedOptionId ? [null] : textsList,
-            points: selectedOptionId
-                ? [scores[0] || 0]
-                : textsList.map((_, i) => scores[i] ?? 0),
-        };
-    }
-
     normalizeAnswer(answer: string): string {
         return answer
             .trim()

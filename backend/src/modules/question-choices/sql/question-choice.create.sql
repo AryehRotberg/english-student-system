@@ -1,8 +1,0 @@
-INSERT INTO
-    QUESTION_CHOICES (QUESTION_ID, OPTION_TEXT, IS_CORRECT)
-VALUES
-    ($1, $2, $3) RETURNING ID,
-    QUESTION_ID AS "questionId",
-    OPTION_TEXT AS "optionText",
-    IS_CORRECT AS "isCorrect",
-    CREATED_AT AS "createdAt";

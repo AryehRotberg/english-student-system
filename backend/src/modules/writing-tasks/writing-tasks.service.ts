@@ -1,25 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { WritingTaskCreateDto } from './dto/writing-task.create.dto';
-import { WritingTaskResponseDto } from './dto/writing-task.response.dto';
+import { WritingTask } from './entities/writing-task.entity';
 
 @Injectable()
 export class WritingTasksService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(
+        @InjectRepository(WritingTask)
+        private readonly writingTaskRepo: Repository<WritingTask>,
+    ) {}
 
-    async findAll(): Promise<WritingTaskResponseDto[]> {
-        return await this.pgService.query<WritingTaskResponseDto>(
-            this.pgService.getSql(__dirname, 'writing-task.find-all.sql'),
-        );
+    findAll(): Promise<WritingTask[]> {
+        return this.writingTaskRepo.find({
+            order: { createdAt: 'DESC' },
+        });
     }
 
-    async create(dto: WritingTaskCreateDto): Promise<WritingTaskResponseDto> {
-        const { title, instructions, minWords } = dto;
-
-        const [result] = await this.pgService.query<WritingTaskResponseDto>(
-            this.pgService.getSql(__dirname, 'writing-task.create.sql'),
-            [title, instructions, minWords],
-        );
-        return result;
+    async create(dto: WritingTaskCreateDto): Promise<WritingTask> {
+        const entity = this.writingTaskRepo.create({
+            title: dto.title,
+            instructions: dto.instructions,
+            minWords: dto.minWords ?? null,
+        });
+        return this.writingTaskRepo.save(entity);
     }
 }

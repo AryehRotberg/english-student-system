@@ -16,24 +16,22 @@ import { QuestionAcceptedAnswersService } from './question-accepted-answers.serv
 
 @Controller('question-accepted-answers')
 export class QuestionAcceptedAnswersController {
-    constructor(
-        private readonly questionAcceptedAnswersService: QuestionAcceptedAnswersService,
-    ) {}
+    constructor(private readonly service: QuestionAcceptedAnswersService) {}
 
     @Post()
     @UseGuards(TeacherGuard)
     async create(@Body() dto: QuestionAcceptedAnswerCreateDto) {
-        return await this.questionAcceptedAnswersService.create(dto);
+        return await this.service.create(dto);
     }
 
     @Get()
     async findAll() {
-        return await this.questionAcceptedAnswersService.findAll();
+        return await this.service.findAll();
     }
 
     @Get(':id')
     async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-        return await this.questionAcceptedAnswersService.findOne(id);
+        return await this.service.findOne(id);
     }
 
     @Patch(':id')
@@ -42,12 +40,12 @@ export class QuestionAcceptedAnswersController {
         @Param('id', new ParseUUIDPipe()) id: string,
         @Body() dto: QuestionAcceptedAnswerUpdateDto,
     ) {
-        return await this.questionAcceptedAnswersService.update(id, dto);
+        return await this.service.update(id, dto);
     }
 
     @Delete(':id')
     @UseGuards(TeacherGuard)
     async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-        return await this.questionAcceptedAnswersService.remove(id);
+        return await this.service.remove(id);
     }
 }

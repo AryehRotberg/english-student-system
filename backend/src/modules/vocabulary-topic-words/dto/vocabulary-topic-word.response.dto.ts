@@ -32,24 +32,22 @@ export class VocabularyTopicWordResponseDto {
     @ApiProperty()
     readonly createdAt: Date;
 
-    private constructor(props: VocabularyTopicWordResponseDto) {
-        Object.assign(this, props);
+    private constructor(props: VocabularyTopicWord) {
+        this.id = props.id;
+        this.vocabularyId = props.vocabularyId;
+        this.topicId = props.topicId;
+        this.word = props.word;
+        this.meaning = props.meaning;
+        this.example = props.example;
+        this.translation = props.translation;
+        this.topic = props.topic;
+        this.createdAt = props.createdAt;
     }
 
     static fromEntity(
         topicWord: VocabularyTopicWord,
     ): VocabularyTopicWordResponseDto {
-        return new VocabularyTopicWordResponseDto({
-            id: topicWord.id,
-            vocabularyId: topicWord.vocabularyId,
-            topicId: topicWord.topicId,
-            word: topicWord.word,
-            meaning: topicWord.meaning,
-            example: topicWord.example,
-            translation: topicWord.translation,
-            topic: topicWord.topic,
-            createdAt: topicWord.createdAt,
-        });
+        return new VocabularyTopicWordResponseDto(topicWord);
     }
 
     static fromEntities(

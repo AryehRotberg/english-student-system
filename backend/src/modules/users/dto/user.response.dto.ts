@@ -21,22 +21,20 @@ export class UserResponseDto {
     @ApiProperty()
     readonly createdAt: Date;
 
-    private constructor(props: UserResponseDto) {
-        Object.assign(this, props);
+    private constructor(props: User) {
+        this.id = props.id;
+        this.name = props.name;
+        this.email = props.email;
+        this.role = props.role;
+        this.teacherId = props.teacherId;
+        this.teacherName = props.teacherName;
+        this.teacherEmail = props.teacherEmail;
+        this.isApproved = props.isApproved;
+        this.createdAt = props.createdAt;
     }
 
     static fromEntity(user: User): UserResponseDto {
-        return new UserResponseDto({
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            teacherId: user.teacherId,
-            teacherName: user.teacherName,
-            teacherEmail: user.teacherEmail,
-            isApproved: user.isApproved,
-            createdAt: user.createdAt,
-        });
+        return new UserResponseDto(user);
     }
 
     static fromEntities(users: User[]): UserResponseDto[] {

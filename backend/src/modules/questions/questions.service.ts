@@ -1,27 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { QuestionCreateDto } from './dto/question.create.dto';
-import { QuestionResponseDto } from './dto/question.response.dto';
+import { Question } from './entities/question.entity';
 
 @Injectable()
 export class QuestionsService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(
+        @InjectRepository(Question)
+        private readonly questionRepo: Repository<Question>,
+    ) {}
 
-    async findAll(): Promise<QuestionResponseDto[]> {
-        return await this.pgService.query<QuestionResponseDto>(
-            this.pgService.getSql(__dirname, 'question.find-all.sql'),
-        );
+    findAll(): Promise<Question[]> {
+        return this.questionRepo.find({ order: { createdAt: 'DESC' } });
     }
 
-    async create(
-        createQuestionDto: QuestionCreateDto,
-    ): Promise<QuestionResponseDto> {
-        const { question, questionType } = createQuestionDto;
-
-        const [result] = await this.pgService.query<QuestionResponseDto>(
-            this.pgService.getSql(__dirname, 'question.create.sql'),
-            [question, questionType],
-        );
-        return result;
+    async create(dto: QuestionCreateDto): Promise<Question> {
+        const entity = this.questionRepo.create({
+            question: dto.question,
+            questionType: dto.questionType,
+        });
+        return this.questionRepo.save(entity);
     }
 }

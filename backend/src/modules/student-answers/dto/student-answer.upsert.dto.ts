@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
     IsArray,
-    IsOptional,
     IsString,
-    IsUUID
+    IsUUID,
+    ValidateIf
 } from 'class-validator';
 
 export class StudentAnswerUpsertDto {
@@ -15,18 +15,16 @@ export class StudentAnswerUpsertDto {
     @ApiProperty()
     questionId: string;
 
-    @IsOptional()
+    @ValidateIf((o) => !o.textAnswers || o.textAnswers.length === 0)
     @IsUUID()
     @ApiPropertyOptional()
     selectedOptionId?: string;
 
-    @ApiProperty({
-        example: ['were', 'sleeping'],
-        required: false,
-        description: 'Array of strings for fill-in-the-blanks',
-    })
-    @IsOptional()
+    @ValidateIf((o) => !o.selectedOptionId)
     @IsArray()
     @IsString({ each: true })
+    @ApiPropertyOptional({
+        description: 'Array of strings for fill-in-the-blanks',
+    })
     textAnswers?: string[];
 }

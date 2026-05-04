@@ -34,6 +34,7 @@
         "@nestjs/mapped-types": "*",
         "@nestjs/platform-express": "^11.0.1",
         "@nestjs/swagger": "^11.2.6",
+        "@nestjs/typeorm": "^11.0.1",
         "@sentry/nestjs": "^10.43.0",
         "@sentry/node": "^10.43.0",
         "@supabase/supabase-js": "^2.101.1",
@@ -56,6 +57,7 @@
         "react-router-dom": "^7.13.1",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
+        "typeorm": "^0.3.28",
         "zod-to-json-schema": "^3.25.1"
     },
     "devDependencies": {

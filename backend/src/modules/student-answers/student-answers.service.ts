@@ -3,157 +3,122 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
-import { StudentAnswerResponseDto } from './dto/student-answer.response.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import { StudentAnswerUpsertDto } from './dto/student-answer.upsert.dto';
 import { CorrectOption, ValidAnswer } from './entities/grading-data';
+import { StudentAnswer } from './entities/student-answer.entity';
+import { StudentAnswerRepository } from './repositories/student-answer.repository';
 import { StudentAnswersCommon } from './student-answers.common';
 
 @Injectable()
 export class StudentAnswersService {
     constructor(
-        private readonly pgService: PostgresService,
-        private readonly studentAnswersCommon: StudentAnswersCommon,
+        @InjectRepository(StudentAnswer)
+        private readonly answerRepo: StudentAnswerRepository,
+        private readonly common: StudentAnswersCommon,
     ) {}
 
-    async upsert(
-        upsertStudentAnswerDto: StudentAnswerUpsertDto,
-    ): Promise<StudentAnswerResponseDto[]> {
-        const scores = await this.calculateAutomaticPoints(
-            upsertStudentAnswerDto,
-        );
-
-        const {
-            attemptId,
-            questionId,
-            selectedOptionId,
-            textAnswers = [],
-        } = upsertStudentAnswerDto;
-
-        const arrays = this.studentAnswersCommon.prepareBulkUpsertArrays(
-            selectedOptionId,
-            textAnswers,
-            scores,
-        );
-
-        return await this.pgService.query<StudentAnswerResponseDto>(
-            this.pgService.getSql(__dirname, 'student-answer.upsert.sql'),
-            [
-                attemptId,
-                questionId,
-                arrays.blankIndices,
-                arrays.optionIds,
-                arrays.texts,
-                arrays.points,
-            ],
-        );
-    }
-
-    async findAll(): Promise<StudentAnswerResponseDto[]> {
-        return await this.pgService.query<StudentAnswerResponseDto>(
-            this.pgService.getSql(__dirname, 'student-answer.find-all.sql'),
-        );
-    }
-
-    async findOne(id: string): Promise<StudentAnswerResponseDto> {
-        const [answer] = await this.pgService.query<StudentAnswerResponseDto>(
-            this.pgService.getSql(__dirname, 'student-answer.find-by-id.sql'),
-            [id],
-        );
-        return answer;
-    }
-
-    async findByAttempt(
-        attemptId: string,
-    ): Promise<StudentAnswerResponseDto[]> {
-        return await this.pgService.query<StudentAnswerResponseDto>(
-            this.pgService.getSql(
-                __dirname,
-                'student-answer.find-by-attempt.sql',
-            ),
-            [attemptId],
-        );
-    }
-
-    async remove(id: string): Promise<StudentAnswerResponseDto> {
-        const [result] = await this.pgService.query<StudentAnswerResponseDto>(
-            this.pgService.getSql(__dirname, 'student-answer.delete.sql'),
-            [id],
-        );
-        return result;
-    }
-
-    private async calculateAutomaticPoints(
-        upsertStudentAnswerDto: StudentAnswerUpsertDto,
-    ): Promise<number[]> {
-        const { attemptId, questionId, selectedOptionId, textAnswers } =
-            upsertStudentAnswerDto;
-
-        if (selectedOptionId && textAnswers) {
+    async upsert(dto: StudentAnswerUpsertDto): Promise<StudentAnswer[]> {
+        if (
+            dto.selectedOptionId &&
+            dto.textAnswers &&
+            dto.textAnswers.length > 0
+        ) {
             throw new BadRequestException(
                 'Cannot provide both selected option and text answers',
             );
         }
 
-        if (selectedOptionId) {
-            const [result] = await this.pgService.query<CorrectOption>(
-                this.pgService.getSql(
-                    __dirname,
-                    'student-answer.find-correct-options.sql',
-                ),
-                [attemptId, questionId],
-            );
+        const payload = await this.buildGradingPayload(dto);
 
-            if (!result) {
-                throw new NotFoundException(
-                    'Correct option not found for the given question and attempt',
-                );
-            }
+        const results = await this.answerRepo.upsertAnswers(
+            dto.attemptId,
+            dto.questionId,
+            payload,
+        );
 
-            return result.correctOptionId === selectedOptionId
-                ? [Number(result.maxPoints)]
-                : [0];
+        return results;
+    }
+
+    findOne(id: string): Promise<StudentAnswer | null> {
+        return this.answerRepo.findOneBy({ id });
+    }
+
+    findByAttempt(attemptId: string): Promise<StudentAnswer[]> {
+        return this.answerRepo.find({ where: { attemptId } });
+    }
+
+    async remove(id: string): Promise<StudentAnswer> {
+        const entity = await this.answerRepo.findOneBy({ id });
+        await this.answerRepo.delete(id);
+        return entity!;
+    }
+
+    private async buildGradingPayload(
+        dto: StudentAnswerUpsertDto,
+    ): Promise<Array<any>> {
+        if (dto.selectedOptionId) {
+            const truth = (await this.answerRepo.findCorrectOption(
+                dto.attemptId,
+                dto.questionId,
+            )) as CorrectOption;
+
+            if (!truth)
+                throw new NotFoundException('Correct option mapping not found');
+
+            const points =
+                truth.correctOptionId === dto.selectedOptionId
+                    ? Number(truth.maxPoints)
+                    : 0;
+
+            return [
+                {
+                    blankIndex: 1,
+                    selectedOptionId: dto.selectedOptionId,
+                    textAnswer: null,
+                    points: points,
+                },
+            ];
         }
 
-        if (textAnswers && textAnswers.length > 0) {
-            const results = await this.pgService.query<ValidAnswer>(
-                this.pgService.getSql(
-                    __dirname,
-                    'student-answer.find-valid-answers.sql',
-                ),
-                [attemptId, questionId],
+        if (dto.textAnswers && dto.textAnswers.length > 0) {
+            const truths = (await this.answerRepo.findValidTextAnswers(
+                dto.attemptId,
+                dto.questionId,
+            )) as ValidAnswer[];
+
+            if (!truths || truths.length === 0)
+                throw new NotFoundException('Valid answers mapping not found');
+
+            const groupedTruths = this.common.groupResultsByBlankIndex(truths);
+            const distributedPoints = this.common.distributePoints(
+                Number(truths[0].questionMaxPoints),
+                groupedTruths.length,
             );
 
-            if (!results || results.length === 0) {
-                throw new NotFoundException(
-                    'Valid answers not found for the given question and attempt',
-                );
-            }
+            return dto.textAnswers
+                .map((submittedAnswer, i) => {
+                    const truthGroup = groupedTruths[i];
+                    if (!truthGroup) return null;
 
-            const groupedResults =
-                this.studentAnswersCommon.groupResultsByBlankIndex(results);
-            const maxPointsPerBlank =
-                this.studentAnswersCommon.distributePoints(
-                    Number(results[0].questionMaxPoints),
-                    groupedResults.length,
-                );
+                    const normalizedInput =
+                        this.common.normalizeAnswer(submittedAnswer);
+                    const isCorrect = truthGroup.validAnswers.some(
+                        (variant) =>
+                            this.common.normalizeAnswer(variant) ===
+                            normalizedInput,
+                    );
 
-            return textAnswers.map((submittedAnswer, i) => {
-                const truth = groupedResults[i];
-                if (!truth) return 0;
-
-                const normalizedInput =
-                    this.studentAnswersCommon.normalizeAnswer(submittedAnswer);
-                const isCorrect = truth.validAnswers.some(
-                    (variant) =>
-                        this.studentAnswersCommon.normalizeAnswer(variant) ===
-                        normalizedInput,
-                );
-
-                return isCorrect ? maxPointsPerBlank[i] : 0;
-            });
+                    return {
+                        blankIndex: i + 1,
+                        selectedOptionId: null,
+                        textAnswer: submittedAnswer,
+                        points: isCorrect ? distributedPoints[i] : 0,
+                    };
+                })
+                .filter(Boolean);
         }
 
-        return [];
+        throw new BadRequestException('Invalid payload shape');
     }
 }
