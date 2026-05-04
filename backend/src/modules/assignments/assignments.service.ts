@@ -1,37 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
 import { AssignmentCreateDto } from './dto/assignment.create.dto';
 import { AssignmentQueryDto } from './dto/assignment.query.dto';
-import { AssignmentResponseDto } from './dto/assignment.response.dto';
+import { Assignment } from './entities/assignment.entity';
+import { AssignmentRepository } from './repositories/assignment.repository';
 
 @Injectable()
 export class AssignmentsService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(private readonly assignmentRepo: AssignmentRepository) {}
 
-    async findByUserId(
-        dto: AssignmentQueryDto,
-    ): Promise<AssignmentResponseDto[]> {
-        const { userId } = dto;
-
-        return await this.pgService.query<AssignmentResponseDto>(
-            this.pgService.getSql(__dirname, 'assignment.find-by-user-id.sql'),
-            [userId],
-        );
+    findByUserId(dto: AssignmentQueryDto): Promise<Assignment[]> {
+        return this.assignmentRepo.find({
+            where: { userId: dto.userId },
+            order: { createdAt: 'DESC' },
+        });
     }
 
-    async create(dto: AssignmentCreateDto): Promise<AssignmentResponseDto> {
-        const { userId, title, description, dueDate, items } = dto;
+    findActiveByUserId(userId: string): Promise<Assignment[]> {
+        return this.assignmentRepo.find({
+            where: { userId, isCompleted: false },
+            order: { createdAt: 'DESC' },
+        });
+    }
 
-        const [result] = await this.pgService.query<AssignmentResponseDto>(
-            this.pgService.getSql(__dirname, 'assignment.create.sql'),
-            [
-                userId,
-                title,
-                description,
-                dueDate,
-                items ? JSON.stringify(items) : null,
-            ],
-        );
-        return result;
+    async create(dto: AssignmentCreateDto): Promise<Assignment> {
+        return this.assignmentRepo.create(dto);
     }
 }

@@ -13,23 +13,26 @@ import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { UserResponseDto } from '../users/dto/user.response.dto';
 import { QuizAttemptCreateDto } from './dto/quiz-attempt.create.dto';
 import { QuizAttemptQueryDto } from './dto/quiz-attempt.query.dto';
+import { QuizAttempt } from './entities/quiz-attempt.entity';
 import { QuizAttemptsService } from './quiz-attempts.service';
 
 @Controller('quiz-attempts')
 export class QuizAttemptsController {
-    constructor(private readonly quizAttemptsService: QuizAttemptsService) {}
+    constructor(private readonly service: QuizAttemptsService) {}
 
     @Get()
-    async findByUserIdAndQuizId(@Query() dto: QuizAttemptQueryDto) {
-        return this.quizAttemptsService.findByUserIdAndQuizId(dto);
+    async findByUserIdAndQuizId(
+        @Query() dto: QuizAttemptQueryDto,
+    ): Promise<QuizAttempt[]> {
+        return await this.service.findByUserIdAndQuizId(dto);
     }
 
-    @Get('student/:studentId')
+    @Get('user/:userId')
     @UseGuards(TeacherGuard)
-    async findByStudentId(
-        @Param('studentId', new ParseUUIDPipe()) studentId: string,
-    ) {
-        return await this.quizAttemptsService.findByUserId(studentId);
+    async findByUserId(
+        @Param('userId', new ParseUUIDPipe()) userId: string,
+    ): Promise<QuizAttempt[]> {
+        return await this.service.findByUserId(userId);
     }
 
     @Post()
@@ -37,14 +40,14 @@ export class QuizAttemptsController {
     async create(
         @Body() dto: QuizAttemptCreateDto,
         @User() user: UserResponseDto,
-    ) {
-        return await this.quizAttemptsService.create(dto, user);
+    ): Promise<QuizAttempt> {
+        return await this.service.create(dto, user);
     }
 
     @Post(':attemptId/submit')
     async submitAttempt(
         @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
-    ) {
-        return await this.quizAttemptsService.submitAttempt(attemptId);
+    ): Promise<QuizAttempt> {
+        return await this.service.submitAttempt(attemptId);
     }
 }

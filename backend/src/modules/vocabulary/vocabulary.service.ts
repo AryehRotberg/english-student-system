@@ -1,32 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { VocabularyCreateDto } from './dto/vocabulary.create.dto';
-import { VocabularyResponseDto } from './dto/vocabulary.response.dto';
+import { Vocabulary } from './entities/vocabulary.entity';
 
 @Injectable()
 export class VocabularyService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(
+        @InjectRepository(Vocabulary)
+        private readonly vocabularyRepo: Repository<Vocabulary>,
+    ) {}
 
-    async findAll(): Promise<VocabularyResponseDto[]> {
-        return await this.pgService.query<VocabularyResponseDto>(
-            this.pgService.getSql(__dirname, 'vocabulary.find-all.sql'),
-        );
+    findAll(): Promise<Vocabulary[]> {
+        return this.vocabularyRepo.find({ order: { createdAt: 'DESC' } });
     }
 
-    async create(
-        createVocabularyDto: VocabularyCreateDto,
-    ): Promise<VocabularyResponseDto> {
-        const { word, meaning, example, translation } = createVocabularyDto;
-
-        const [result] = await this.pgService.query<VocabularyResponseDto>(
-            this.pgService.getSql(__dirname, 'vocabulary.create.sql'),
-            [
-                word ?? null,
-                meaning ?? null,
-                example ?? null,
-                translation ?? null,
-            ],
-        );
-        return result;
+    async create(dto: VocabularyCreateDto): Promise<Vocabulary> {
+        const entity = this.vocabularyRepo.create({
+            word: dto.word ?? null,
+            meaning: dto.meaning ?? null,
+            example: dto.example ?? null,
+            translation: dto.translation ?? null,
+        });
+        return this.vocabularyRepo.save(entity);
     }
 }

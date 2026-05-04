@@ -1,50 +1,53 @@
-import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { QuestionChoiceCreateDto } from './dto/question-choice.create.dto';
 import { QuestionChoiceQueryDto } from './dto/question-choice.query.dto';
 import { QuestionChoiceResponseDto } from './dto/question-choice.response.dto';
 import { QuestionChoiceUpdateDto } from './dto/question-choice.update.dto';
+import { QuestionChoice } from './entities/question-choice.entity';
 
 @Injectable()
 export class QuestionChoicesService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(
+        @InjectRepository(QuestionChoice)
+        private readonly choiceRepo: Repository<QuestionChoice>,
+    ) {}
 
-    async findByQuestionId(
+    findByQuestionId(
         dto: QuestionChoiceQueryDto,
     ): Promise<QuestionChoiceResponseDto[]> {
-        const { questionId } = dto;
-
-        return await this.pgService.query<QuestionChoiceResponseDto>(
-            this.pgService.getSql(
-                __dirname,
-                'question-choice.find-by-question-id.sql',
-            ),
-            [questionId],
-        );
+        return this.choiceRepo.find({ where: { questionId: dto.questionId } });
     }
 
     async create(
-        createQuestionChoiceDto: QuestionChoiceCreateDto,
+        dto: QuestionChoiceCreateDto,
     ): Promise<QuestionChoiceResponseDto> {
-        const { questionId, optionText, isCorrect } = createQuestionChoiceDto;
-
-        const [result] = await this.pgService.query<QuestionChoiceResponseDto>(
-            this.pgService.getSql(__dirname, 'question-choice.create.sql'),
-            [questionId, optionText, isCorrect],
-        );
-        return result;
+        const entity = this.choiceRepo.create({
+            questionId: dto.questionId,
+            optionText: dto.optionText,
+            isCorrect: dto.isCorrect,
+        });
+        return this.choiceRepo.save(entity);
     }
 
     async update(
         id: string,
-        updateQuestionChoiceDto: QuestionChoiceUpdateDto,
+        dto: QuestionChoiceUpdateDto,
     ): Promise<QuestionChoiceResponseDto> {
-        const { questionId, optionText, isCorrect } = updateQuestionChoiceDto;
+        await this.choiceRepo.update(id, {
+            ...(dto.questionId !== undefined && { questionId: dto.questionId }),
+            ...(dto.optionText !== undefined && { optionText: dto.optionText }),
+            ...(dto.isCorrect !== undefined && { isCorrect: dto.isCorrect }),
+        });
+        const updated = await this.choiceRepo.findOneBy({ id });
 
-        const [result] = await this.pgService.query<QuestionChoiceResponseDto>(
-            this.pgService.getSql(__dirname, 'question-choice.update.sql'),
-            [id, questionId ?? null, optionText ?? null, isCorrect ?? null],
-        );
-        return result;
+        if (!updated) {
+            throw new NotFoundException(
+                'Question choice not found after update',
+            );
+        }
+
+        return updated;
     }
 }

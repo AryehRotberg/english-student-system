@@ -1,44 +1,25 @@
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { Injectable } from '@nestjs/common';
 import { UserResponseDto } from '../users/dto/user.response.dto';
 import { SendEmailAssignmentCompletionDto } from './dto/send-email.assignment-completion.dto';
-import { AssignmentCompletionSummary } from './entities/assignment-completion-summary';
+import { SendEmailRepository } from './repositories/send-email.repository';
 import { SendEmailService } from './send-email.service';
 import { escapeHtml } from './send-email.utils';
 import { assignmentSummaryCard } from './templates/cards/assignment-summary-card.template';
-import { defaultTemplate } from './templates/default-template.template';
 import { metricsCard } from './templates/cards/metrics-card.template';
+import { defaultTemplate } from './templates/default-template.template';
 
 @Injectable()
 export class AssignmentCompletionEmailService {
     constructor(
         private readonly sendEmailService: SendEmailService,
-        private readonly pgService: PostgresService,
+        private readonly sendEmailRepo: SendEmailRepository,
     ) {}
 
     async send(user: UserResponseDto, dto: SendEmailAssignmentCompletionDto) {
-        const [summary] =
-            await this.pgService.query<AssignmentCompletionSummary>(
-                this.pgService.getSql(
-                    __dirname,
-                    'send-email.find-assignment-completion.sql',
-                ),
-                [dto.attemptId],
+        const summary =
+            await this.sendEmailRepo.findAssignmentCompletionByQuizAttemptId(
+                Number(dto.attemptId),
             );
-
-        if (!summary) {
-            throw new NotFoundException('Quiz attempt not found');
-        }
-
-        if (!summary.completedAt) {
-            throw new BadRequestException(
-                'Quiz attempt must be completed before sending email',
-            );
-        }
 
         const earnedPoints = Number(summary.points ?? 0);
         const totalPoints = Number(summary.totalPoints ?? 0);

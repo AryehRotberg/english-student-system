@@ -1,5 +1,4 @@
-export function normalizeQuiz(quiz: any) {
-    const totalPoints = 100;
+export function normalizeQuiz(quiz: any, totalPoints: number = 100) {
     const n = quiz.questions.length;
 
     if (n > totalPoints) {

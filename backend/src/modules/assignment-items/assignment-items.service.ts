@@ -1,36 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
 import { AssignmentItemCreateDto } from './dto/assignment-item.create.dto';
 import { AssignmentItemQueryDto } from './dto/assignment-item.query.dto';
 import { AssignmentItemResponseDto } from './dto/assignment-item.response.dto';
+import { AssignmentItem } from './entities/assignment-item.entity';
+import { AssignmentItemRepository } from './repositories/assignment-item.repository';
 
 @Injectable()
 export class AssignmentItemsService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(private readonly itemRepo: AssignmentItemRepository) {}
 
     async findByUserId(
-        query: AssignmentItemQueryDto,
+        dto: AssignmentItemQueryDto,
     ): Promise<AssignmentItemResponseDto[]> {
-        const { userId } = query;
-
-        return await this.pgService.query<AssignmentItemResponseDto>(
-            this.pgService.getSql(
-                __dirname,
-                'assignment-item.find-by-user.sql',
-            ),
-            [userId],
-        );
+        const { userId } = dto;
+        return this.itemRepo.findByUserId(userId);
     }
 
-    async create(
-        dto: AssignmentItemCreateDto,
-    ): Promise<AssignmentItemResponseDto> {
-        const { assignmentId, contentType, contentId } = dto;
+    async findActiveByUserId(
+        userId: string,
+    ): Promise<AssignmentItemResponseDto[]> {
+        return this.itemRepo.findActiveByUserId(userId);
+    }
 
-        const [result] = await this.pgService.query<AssignmentItemResponseDto>(
-            this.pgService.getSql(__dirname, 'assignment-item.create.sql'),
-            [assignmentId, contentType, contentId],
-        );
-        return result;
+    async create(dto: AssignmentItemCreateDto): Promise<AssignmentItem> {
+        const entity = this.itemRepo.create({
+            assignmentId: dto.assignmentId,
+            contentType: dto.contentType,
+            contentId: dto.contentId,
+        });
+        return this.itemRepo.save(entity);
     }
 }

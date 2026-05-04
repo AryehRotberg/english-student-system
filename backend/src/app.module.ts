@@ -1,8 +1,13 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { ConfigModule as NestConfigModule } from '@nestjs/config';
+import {
+    ConfigService,
+    ConfigModule as NestConfigModule,
+} from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule as AppConfigModule } from './config/config.module';
 import { AiDraftsModule } from './modules/ai-drafts/ai-drafts.module';
@@ -41,6 +46,47 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
                 tls: {},
             },
         }),
+        TypeOrmModule.forRootAsync({
+            imports: [NestConfigModule],
+            inject: [ConfigService],
+            useFactory: (config: ConfigService) => {
+                const certPaths = [
+                    path.join(process.cwd(), 'certs', 'prod-ca-2021.crt'),
+                    path.join(
+                        process.cwd(),
+                        'dist',
+                        'certs',
+                        'prod-ca-2021.crt',
+                    ),
+                    path.join(
+                        __dirname,
+                        '..',
+                        '..',
+                        'certs',
+                        'prod-ca-2021.crt',
+                    ),
+                ];
+                const validPath = certPaths.find((p) => fs.existsSync(p));
+                const caCert = validPath
+                    ? fs.readFileSync(validPath, 'utf8')
+                    : undefined;
+
+                return {
+                    type: 'postgres',
+                    host: config.get('POSTGRES_HOST'),
+                    port: config.get<number>('POSTGRES_PORT'),
+                    username: config.get('POSTGRES_USER'),
+                    password: config.get('POSTGRES_PASSWORD'),
+                    database: config.get('POSTGRES_DATABASE'),
+                    autoLoadEntities: true,
+                    synchronize: false,
+                    ssl: {
+                        rejectUnauthorized: !!caCert,
+                        ...(caCert ? { ca: caCert } : {}),
+                    },
+                };
+            },
+        }),
         AssignmentsModule,
         AuthModule,
         AssignmentItemsModule,
@@ -66,6 +112,6 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
         QuizStudyGuidesModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [],
 })
 export class AppModule {}

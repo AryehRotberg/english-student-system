@@ -1,41 +1,37 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { QuestionAcceptedAnswersService } from '../question-accepted-answers/question-accepted-answers.service';
 import { QuestionChoicesService } from '../question-choices/question-choices.service';
 import { QuestionsService } from '../questions/questions.service';
 import { QuizQuestionsService } from '../quiz-questions/quiz-questions.service';
 import { QuizAiDraftCreateDto, QuizCreateDto } from './dto/quiz.create.dto';
-import { QuizResponseDto } from './dto/quiz.response.dto';
+import { Quiz } from './entities/quiz.entity';
 
 @Injectable()
 export class QuizzesService {
     constructor(
-        private readonly pgService: PostgresService,
+        @InjectRepository(Quiz)
+        private readonly quizRepo: Repository<Quiz>,
         private readonly questionsService: QuestionsService,
         private readonly quizQuestionsService: QuizQuestionsService,
         private readonly questionAcceptedAnswersService: QuestionAcceptedAnswersService,
         private readonly questionChoicesService: QuestionChoicesService,
     ) {}
 
-    async findAll(): Promise<QuizResponseDto[]> {
-        return await this.pgService.query<QuizResponseDto>(
-            this.pgService.getSql(__dirname, 'quiz.find-all.sql'),
-        );
+    findAll(): Promise<Quiz[]> {
+        return this.quizRepo.find();
     }
 
-    async create(dto: QuizCreateDto): Promise<QuizResponseDto> {
-        const { title, description } = dto;
-
-        const [result] = await this.pgService.query<QuizResponseDto>(
-            this.pgService.getSql(__dirname, 'quiz.create.sql'),
-            [title, description],
-        );
-        return result;
+    async create(dto: QuizCreateDto): Promise<Quiz> {
+        const entity = this.quizRepo.create({
+            title: dto.title,
+            description: dto.description ?? null,
+        });
+        return this.quizRepo.save(entity);
     }
 
-    async createFromAiDraft(
-        metadata: QuizAiDraftCreateDto,
-    ): Promise<QuizResponseDto> {
+    async createFromAiDraft(metadata: QuizAiDraftCreateDto): Promise<Quiz> {
         const quiz = await this.create({
             title: metadata.title,
             description: metadata.description,

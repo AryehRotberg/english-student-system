@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { HashingService } from '../../auth/hashing.service';
-import { PostgresService } from '../../config/postgres.client';
 import { SendEmailService } from '../send-email/send-email.service';
 import { UserCreateDto } from './dto/user.create.dto';
 import { UserResponseDto } from './dto/user.response.dto';
@@ -9,7 +10,8 @@ import { User } from './entities/user.entity';
 @Injectable()
 export class UsersService {
     constructor(
-        private readonly pgService: PostgresService,
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>,
         private readonly hashingService: HashingService,
         private readonly sendEmailService: SendEmailService,
     ) {}
@@ -26,52 +28,56 @@ export class UsersService {
 
         const hashedPassword = await this.hashingService.hash(password);
 
-        const result = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'user.create.sql'),
-            [name, email, hashedPassword, 'student', teacherId, false],
-        );
-
-        return UserResponseDto.fromEntity(result[0]);
+        const entity = this.userRepo.create({
+            name,
+            email,
+            password: hashedPassword,
+            role: 'student',
+            isApproved: false,
+            teacherId: teacherId ?? null,
+        });
+        const saved = await this.userRepo.save(entity);
+        return UserResponseDto.fromEntity(saved);
     }
 
     async findOneByEmail(email: string): Promise<User | null> {
-        const [result] = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'user.find-by-email.sql'),
-            [email],
-        );
-        return result || null;
+        return this.userRepo.findOne({
+            where: { email },
+            relations: ['teacher'],
+        });
     }
 
     async findStudentsByTeacherId(
         teacherId: string,
         approved = true,
     ): Promise<UserResponseDto[]> {
-        const users = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'user.find-all.sql'),
-        );
-        const students = users.filter(
-            (user) =>
-                user.role === 'student' &&
-                user.teacherId === teacherId &&
-                user.isApproved === approved,
-        );
+        const students = await this.userRepo.find({
+            where: {
+                role: 'student',
+                teacher: { id: teacherId },
+                isApproved: approved,
+            },
+            relations: ['teacher'],
+            order: { name: 'ASC' },
+        });
         return UserResponseDto.fromEntities(students);
     }
 
     async findAllTeachers(): Promise<UserResponseDto[]> {
-        const users = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'user.find-all.sql'),
-        );
-        const teachers = users.filter((user) => user.role === 'teacher');
+        const teachers = await this.userRepo.find({
+            where: { role: 'teacher' },
+            order: { name: 'ASC' },
+        });
         return UserResponseDto.fromEntities(teachers);
     }
 
     async approve(id: string): Promise<UserResponseDto> {
-        const [result] = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'user.approve.sql'),
-            [id],
-        );
-        const dto = UserResponseDto.fromEntity(result);
+        await this.userRepo.update(id, { isApproved: true });
+        const entity = await this.userRepo.findOne({
+            where: { id },
+            relations: ['teacher'],
+        });
+        const dto = UserResponseDto.fromEntity(entity!);
         await this.sendEmailService.sendFromDto({
             name: dto.name,
             email: dto.email,
@@ -83,10 +89,8 @@ export class UsersService {
     }
 
     async remove(id: string): Promise<UserResponseDto> {
-        const [result] = await this.pgService.query<User>(
-            this.pgService.getSql(__dirname, 'user.delete.sql'),
-            [id],
-        );
-        return UserResponseDto.fromEntity(result);
+        const entity = await this.userRepo.findOneBy({ id });
+        await this.userRepo.delete(id);
+        return UserResponseDto.fromEntity(entity!);
     }
 }

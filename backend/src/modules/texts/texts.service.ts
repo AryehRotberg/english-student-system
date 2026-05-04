@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { TextCreateDto } from './dto/text.create.dto';
-import { TextResponseDto } from './dto/text.response.dto';
+import { Text } from './entities/text.entity';
 
 @Injectable()
 export class TextsService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(
+        @InjectRepository(Text)
+        private readonly textRepo: Repository<Text>,
+    ) {}
 
-    async findAll(): Promise<TextResponseDto[]> {
-        return await this.pgService.query<any>(
-            this.pgService.getSql(__dirname, 'text.find-all.sql'),
-        );
+    findAll(): Promise<Text[]> {
+        return this.textRepo.find({ order: { createdAt: 'DESC' } });
     }
 
-    async create(createTextDto: TextCreateDto): Promise<TextResponseDto> {
-        const { title, content, level } = createTextDto;
-
-        const [result] = await this.pgService.query<TextResponseDto>(
-            this.pgService.getSql(__dirname, 'text.create.sql'),
-            [title, content, level],
-        );
-        return result;
+    async create(dto: TextCreateDto): Promise<Text> {
+        const entity = this.textRepo.create({
+            title: dto.title,
+            content: dto.content,
+            level: dto.level,
+        });
+        return this.textRepo.save(entity);
     }
 }

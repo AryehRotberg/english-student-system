@@ -1,7 +1,0 @@
-SELECT
-    ID,
-    TITLE,
-    DESCRIPTION,
-    CREATED_AT AS "createdAt"
-FROM
-    QUIZZES;

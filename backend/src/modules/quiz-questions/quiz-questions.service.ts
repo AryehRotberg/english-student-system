@@ -1,66 +1,68 @@
 import { Injectable } from '@nestjs/common';
-import { PostgresService } from '../../config/postgres.client';
 import { QuizQuestionCreateDto } from './dto/quiz-question.create.dto';
 import { QuizQuestionQueryDto } from './dto/quiz-question.query.dto';
 import { QuizQuestionResponseDto } from './dto/quiz-question.response.dto';
 import { QuizQuestionUpdateDto } from './dto/quiz-question.update.dto';
+import { QuizQuestion } from './entities/quiz-question.entity';
+import { QuizQuestionRepository } from './repositories/quiz-question.repository';
 
 @Injectable()
 export class QuizQuestionsService {
-    constructor(private readonly pgService: PostgresService) {}
+    constructor(private readonly quizQuestionRepo: QuizQuestionRepository) {}
 
     async getFullQuiz(quizId: string) {
-        const questionsRaw = await this.pgService.query<any>(
-            this.pgService.getSql(__dirname, 'quiz-question.find-full.sql'),
-            [quizId],
-        );
-
-        return questionsRaw.map((q, index) => ({
-            ...q,
-            maxPoints: Number(q.maxPoints ?? 0),
-            questionNumber: index + 1,
-            totalQuestions: questionsRaw.length,
-            blankCount: Number(q.blankCount ?? 0),
-            questionType:
-                q.questionType ??
-                (q.options.length > 0 ? 'multiple_choice' : 'open_ended'),
-        }));
+        return this.quizQuestionRepo.getFullQuiz(quizId);
     }
 
-    async findByQuizId(dto: QuizQuestionQueryDto) {
-        const { quizId } = dto;
-
-        return await this.pgService.query<QuizQuestionResponseDto>(
-            this.pgService.getSql(
-                __dirname,
-                'quiz-question.find-by-quiz-id.sql',
-            ),
-            [quizId],
-        );
+    async findByQuizId(
+        dto: QuizQuestionQueryDto,
+    ): Promise<QuizQuestionResponseDto[]> {
+        const entities = await this.quizQuestionRepo.find({
+            where: { quizId: dto.quizId },
+            relations: ['question'],
+        });
+        return entities.map(this.toResponseDto);
     }
 
     async create(dto: QuizQuestionCreateDto): Promise<QuizQuestionResponseDto> {
-        const { quizId, questionId, maxPoints, orderIndex } = dto;
-
-        const [createdQuizQuestion] =
-            await this.pgService.query<QuizQuestionResponseDto>(
-                this.pgService.getSql(__dirname, 'quiz-question.create.sql'),
-                [quizId, questionId, maxPoints, orderIndex],
-            );
-        return createdQuizQuestion;
+        const entity = this.quizQuestionRepo.create({
+            quizId: dto.quizId,
+            questionId: dto.questionId,
+            maxPoints: dto.maxPoints,
+            orderIndex: dto.orderIndex ?? null,
+        });
+        const saved = await this.quizQuestionRepo.save(entity);
+        const full = await this.quizQuestionRepo.findOne({
+            where: { id: saved.id },
+            relations: ['question'],
+        });
+        return this.toResponseDto(full!);
     }
 
     async update(
         id: string,
         dto: QuizQuestionUpdateDto,
     ): Promise<QuizQuestionResponseDto> {
-        const { quizId, questionId, maxPoints } = dto;
+        await this.quizQuestionRepo.update(id, {
+            ...(dto.quizId !== undefined && { quizId: dto.quizId }),
+            ...(dto.questionId !== undefined && { questionId: dto.questionId }),
+            ...(dto.maxPoints !== undefined && { maxPoints: dto.maxPoints }),
+        });
+        const full = await this.quizQuestionRepo.findOne({
+            where: { id },
+            relations: ['question'],
+        });
+        return this.toResponseDto(full!);
+    }
 
-        const [updatedQuizQuestion] =
-            await this.pgService.query<QuizQuestionResponseDto>(
-                this.pgService.getSql(__dirname, 'quiz-question.update.sql'),
-                [id, quizId ?? null, questionId ?? null, maxPoints ?? null],
-            );
-        return updatedQuizQuestion;
+    private toResponseDto(entity: QuizQuestion): QuizQuestionResponseDto {
+        return {
+            id: entity.id,
+            quizId: entity.quizId,
+            questionId: entity.questionId,
+            question: entity.question?.question ?? '',
+            questionType: entity.question?.questionType ?? '',
+            maxPoints: Number(entity.maxPoints),
+        };
     }
 }

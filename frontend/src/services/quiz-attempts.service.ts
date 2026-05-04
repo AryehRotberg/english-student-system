@@ -19,11 +19,11 @@ class QuizAttemptsService {
         return response.data;
     }
 
-    public async listByStudentId(
-        studentId: string,
+    public async listByUserId(
+        userId: string,
     ): Promise<QuizAttemptApiItem[]> {
         const response = await this.httpClient.get(
-            `/quiz-attempts/student/${studentId}`,
+            `/quiz-attempts/user/${userId}`,
         );
         return response.data;
     }

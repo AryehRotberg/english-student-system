@@ -189,11 +189,11 @@ export function useTeachers() {
     });
 }
 
-export function useStudentQuizAttempts(studentId?: string) {
+export function useStudentQuizAttempts(userId?: string) {
     return useQuery<QuizAttemptApiItem[]>({
-        queryKey: ['student-quiz-attempts', studentId],
-        enabled: Boolean(studentId),
-        queryFn: () => quizAttemptsService.listByStudentId(studentId as string),
+        queryKey: ['student-quiz-attempts', userId],
+        enabled: Boolean(userId),
+        queryFn: () => quizAttemptsService.listByUserId(userId as string),
     });
 }
 

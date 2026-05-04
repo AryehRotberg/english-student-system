@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
-import { DashboardService } from './dashboard.service';
-import { DashboardController } from './dashboard.controller';
 import { AuthModule } from '../../auth/auth.module';
 import { AssignmentItemsModule } from '../assignment-items/assignment-items.module';
 import { AssignmentsModule } from '../assignments/assignments.module';
+import { DashboardController } from './dashboard.controller';
+import { DashboardMapper } from './dashboard.mapper';
+import { DashboardService } from './dashboard.service';
+import { DashboardRepository } from './repositories/dashboard.repository';
 
 @Module({
     imports: [AuthModule, AssignmentItemsModule, AssignmentsModule],
     controllers: [DashboardController],
-    providers: [DashboardService],
+    providers: [DashboardService, DashboardMapper, DashboardRepository],
 })
 export class DashboardModule {}

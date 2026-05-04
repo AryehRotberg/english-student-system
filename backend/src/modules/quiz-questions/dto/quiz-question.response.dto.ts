@@ -12,7 +12,5 @@ export class QuizQuestionResponseDto {
     @ApiProperty()
     readonly questionType: string;
     @ApiProperty()
-    readonly audioUrl: string | null;
-    @ApiProperty()
     readonly maxPoints: number;
 }
