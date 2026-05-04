@@ -3,7 +3,6 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { StudentAnswerUpsertDto } from './dto/student-answer.upsert.dto';
 import { CorrectOption, ValidAnswer } from './entities/grading-data';
 import { StudentAnswer } from './entities/student-answer.entity';
@@ -13,7 +12,6 @@ import { StudentAnswersCommon } from './student-answers.common';
 @Injectable()
 export class StudentAnswersService {
     constructor(
-        @InjectRepository(StudentAnswer)
         private readonly answerRepo: StudentAnswerRepository,
         private readonly common: StudentAnswersCommon,
     ) {}
