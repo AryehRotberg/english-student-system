@@ -19,8 +19,14 @@ export function StudentProgressSection() {
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
         null,
     );
+    const [filterQuery, setFilterQuery] = useState('');
 
     const selectedStudent = students.find((s) => s.id === selectedStudentId);
+    const filteredStudents = filterQuery.trim()
+        ? students.filter((s) =>
+              s.name?.toLowerCase().includes(filterQuery.toLowerCase()),
+          )
+        : students;
 
     if (isLoading) {
         return (
@@ -48,27 +54,60 @@ export function StudentProgressSection() {
     }
 
     return (
-        <div className={styles.studentGrid}>
-            {students.map((student) => (
-                <div key={student.id} className={styles.studentCard}>
-                    <div className={styles.studentAvatar}>
-                        {getInitials(student.name || '?')}
-                    </div>
-                    <div className={styles.studentCardBody}>
-                        <p className={styles.studentCardName}>{student.name}</p>
-                        <p className={styles.studentCardEmail}>
-                            {student.email}
-                        </p>
-                    </div>
-                    <button
-                        type="button"
-                        className={styles.studentCardBtn}
-                        onClick={() => setSelectedStudentId(student.id)}
+        <div>
+            <div className={styles.studentGridHeader}>
+                <div className={styles.filterWrap}>
+                    <svg
+                        className={styles.filterIcon}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        width="18"
+                        height="18"
                     >
-                        View Progress
-                    </button>
+                        <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                        />
+                    </svg>
+                    <input
+                        className={styles.filterInput}
+                        type="search"
+                        placeholder="Filter by name…"
+                        value={filterQuery}
+                        onChange={(e) => setFilterQuery(e.target.value)}
+                        aria-label="Filter students by name"
+                    />
                 </div>
-            ))}
+            </div>
+            <div className={styles.studentGrid}>
+                {filteredStudents.map((student) => (
+                    <div key={student.id} className={styles.studentCard}>
+                        <div className={styles.studentAvatar}>
+                            {getInitials(student.name || '?')}
+                        </div>
+                        <div className={styles.studentCardBody}>
+                            <p className={styles.studentCardName}>
+                                {student.name}
+                            </p>
+                            <p className={styles.studentCardEmail}>
+                                {student.email}
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            className={styles.studentCardBtn}
+                            onClick={() => setSelectedStudentId(student.id)}
+                        >
+                            View Progress
+                        </button>
+                    </div>
+                ))}
+            </div>
+            {filteredStudents.length === 0 && (
+                <p className={styles.empty}>No students match your search.</p>
+            )}
         </div>
     );
 }

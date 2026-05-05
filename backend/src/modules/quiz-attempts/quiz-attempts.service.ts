@@ -22,7 +22,7 @@ export class QuizAttemptsService {
 
     async findByUserId(userId: string): Promise<QuizAttempt[]> {
         return await this.attemptRepo.find({
-            where: { userId: userId, completedAt: Not(IsNull()) },
+            where: { userId: userId },
             order: { startedAt: 'DESC' },
         });
     }
