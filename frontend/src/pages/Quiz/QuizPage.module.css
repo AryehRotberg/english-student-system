@@ -404,3 +404,48 @@
     border-radius: 0 8px 8px 0;
     color: #78350f;
 }
+
+.topicModalButtons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+    .topicModalHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .topicModalButtons {
+        width: 100%;
+    }
+    
+    .topicModalButtons button {
+        flex: 1;
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+    
+    .topicMarkdown table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+.studyGuideStandalone {
+    background: #ffffff;
+    border: 1px solid #d9dbe3;
+    border-radius: 14px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+@media (max-width: 600px) {
+    .studyGuideStandalone {
+        padding: 1.5rem 1rem;
+    }
+}
