@@ -69,7 +69,7 @@ export function QuizStudyGuidesSection({
                     >
                         <div className={styles.topicModalHeader}>
                             <h3>{selectedStudyGuide.topic}</h3>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <div className={styles.topicModalButtons}>
                                 <button
                                     aria-label="Open in new page"
                                     className={styles.closeTopicButton}

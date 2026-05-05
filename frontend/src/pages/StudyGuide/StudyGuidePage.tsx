@@ -40,13 +40,7 @@ export function StudyGuidePage() {
     if (!guide) return <div>Study guide not found.</div>;
 
     return (
-        <div style={{ 
-            background: '#ffffff', 
-            border: '1px solid #d9dbe3', 
-            borderRadius: '14px', 
-            padding: '2.5rem 2rem',
-            width: '100%'
-        }}>
+        <div className={styles.studyGuideStandalone}>
             <h1 style={{ color: '#111827', marginTop: 0 }}>{guide.topic}</h1>
             <div className={styles.topicMarkdown} style={{ marginTop: '2rem' }}>
                 <ReactMarkdown
