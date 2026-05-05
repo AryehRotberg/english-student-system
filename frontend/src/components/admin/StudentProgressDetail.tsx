@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import {
     useQuizQuestions,
+    useQuizzes,
     useStudentAnswersByAttempt,
     useStudentQuizAttempts,
 } from '../../hooks/queries';
 import styles from '../../pages/Admin/AdminPage.module.css';
 import type { AuthUser } from '../../types/auth';
+import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
 
 type Props = {
     student: AuthUser;
@@ -18,6 +20,9 @@ export function StudentProgressDetail({ student, onBack }: Props) {
     const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(
         null,
     );
+
+    const { data: quizzes = [] } = useQuizzes();
+    const quizTitleMap = new Map(quizzes.map((q) => [q.id, q.title]));
 
     const selectedAttempt = attempts.find((a) => a.id === selectedAttemptId);
     const selectedAttemptQuizId = (selectedAttempt as any)?.quizId;
@@ -36,6 +41,7 @@ export function StudentProgressDetail({ student, onBack }: Props) {
     }
 
     if (selectedAttempt && selectedAttemptQuizId && questions.length > 0) {
+        const quizTitle = quizTitleMap.get(selectedAttemptQuizId) ?? 'Quiz';
         const totalPossible = questions.reduce(
             (sum, q) => sum + Number(q.maxPoints),
             0,
@@ -45,15 +51,6 @@ export function StudentProgressDetail({ student, onBack }: Props) {
             totalPossible > 0
                 ? Math.round((finalScore / totalPossible) * 100)
                 : 0;
-
-        const pointsByQuestionId = new Map<string, number>();
-        for (const answer of answers) {
-            const current = pointsByQuestionId.get(answer.questionId) ?? 0;
-            pointsByQuestionId.set(
-                answer.questionId,
-                current + Number(answer.points ?? 0),
-            );
-        }
 
         return (
             <div className={styles.section}>
@@ -77,56 +74,14 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                     Back to attempts
                 </button>
 
-                <div className={styles.attemptResultHeader}>
-                    <div
-                        className={styles.attemptGradeBadge}
-                        data-pass={gradePercent >= 60}
-                    >
-                        {gradePercent}%
-                    </div>
-                    <div>
-                        <p className={styles.attemptResultTitle}>
-                            Quiz Results
-                        </p>
-                        <p className={styles.attemptResultSub}>
-                            Score: <strong>{finalScore.toFixed(2)}</strong> /{' '}
-                            {totalPossible.toFixed(2)} points
-                        </p>
-                    </div>
-                </div>
-
-                <div className={styles.questionResultGrid}>
-                    {questions.map((question) => {
-                        const points =
-                            pointsByQuestionId.get(question.questionId) ?? 0;
-                        const isCorrect = points >= question.maxPoints;
-
-                        return (
-                            <div
-                                className={`${styles.questionResultCard} ${isCorrect ? styles.questionResultCorrect : styles.questionResultWrong}`}
-                                key={question.id}
-                            >
-                                <div className={styles.questionResultTop}>
-                                    <span className={styles.questionResultNum}>
-                                        Q{question.questionNumber}
-                                    </span>
-                                    <span
-                                        className={
-                                            isCorrect
-                                                ? styles.correctBadge
-                                                : styles.wrongBadge
-                                        }
-                                    >
-                                        {isCorrect ? 'Correct' : 'Wrong'}
-                                    </span>
-                                </div>
-                                <p className={styles.questionResultPrompt}>
-                                    {question.prompt}
-                                </p>
-                            </div>
-                        );
-                    })}
-                </div>
+                <QuizResultsDisplay
+                    questions={questions}
+                    answers={answers}
+                    title={quizTitle}
+                    finalScore={finalScore}
+                    totalPossible={totalPossible}
+                    gradePercent={gradePercent}
+                />
             </div>
         );
     }
@@ -179,6 +134,8 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                             ? new Date(attempt.completedAt)
                             : null;
                         const score = Number(attempt.points ?? 0);
+                        const quizTitle =
+                            quizTitleMap.get(attempt.quizId) ?? 'Quiz';
 
                         return (
                             <div
@@ -210,10 +167,15 @@ export function StudentProgressDetail({ student, onBack }: Props) {
                                 </div>
                                 <div className={styles.attemptCardBody}>
                                     <p className={styles.attemptCardDate}>
-                                        {completedAt
-                                            ? completedAt.toLocaleString()
-                                            : 'Completed attempt'}
+                                        {quizTitle}
                                     </p>
+                                    <span
+                                        className={`${styles.attemptStatusBadge} ${completedAt ? styles.attemptStatusCompleted : styles.attemptStatusInProgress}`}
+                                    >
+                                        {completedAt
+                                            ? `Completed at ${completedAt.toLocaleString()}`
+                                            : 'In progress'}
+                                    </span>
                                     <p className={styles.attemptCardScore}>
                                         Score:{' '}
                                         <strong>{score.toFixed(2)}</strong>
