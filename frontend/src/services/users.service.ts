@@ -9,7 +9,7 @@ class UsersService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listStudents(approved = true): Promise<AuthUser[]> {
+    public async findStudentsByTeacherId(approved = true): Promise<AuthUser[]> {
         const response = await this.httpClient.get<AuthUser[]>(
             '/users/students',
             { params: { approved: String(approved) } },
@@ -17,7 +17,7 @@ class UsersService {
         return response.data;
     }
 
-    public async listTeachers(): Promise<AuthUser[]> {
+    public async findAllTeachers(): Promise<AuthUser[]> {
         const response =
             await this.httpClient.get<AuthUser[]>('/users/teachers');
         return response.data;

@@ -8,7 +8,7 @@ class WritingSubmissionsService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list(filters?: { userId?: string; taskId?: string }) {
+    public async findAll(filters?: { userId?: string; taskId?: string }) {
         const params = new URLSearchParams();
 
         if (filters?.userId) params.set('userId', filters.userId);

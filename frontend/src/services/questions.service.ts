@@ -9,13 +9,13 @@ class QuestionsService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list() {
+    public async findAll() {
         const response = await this.httpClient.get('/questions');
         return response.data;
     }
 
     public async listAdmin(): Promise<QuestionAdminItem[]> {
-        const data = await this.list();
+        const data = await this.findAll();
         return Array.isArray(data) ? (data as QuestionAdminItem[]) : [];
     }
 

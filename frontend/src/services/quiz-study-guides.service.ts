@@ -9,7 +9,7 @@ class QuizStudyGuidesService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list(quizId: string): Promise<QuizStudyGuide[]> {
+    public async findByQuizId(quizId: string): Promise<QuizStudyGuide[]> {
         const response = await this.httpClient.get<QuizStudyGuide[]>(
             `/quiz-study-guides/${quizId}`,
         );

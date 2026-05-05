@@ -10,7 +10,7 @@ class QuizQuestionsService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listForQuiz(quizId?: string): Promise<QuizQuestion[]> {
+    public async getFullQuiz(quizId?: string): Promise<QuizQuestion[]> {
         if (!quizId) {
             return [];
         }
@@ -28,7 +28,7 @@ class QuizQuestionsService {
         return data as QuizQuestion[];
     }
 
-    public async listRawAdminByQuiz(
+    public async findByUserId(
         quizId?: string,
     ): Promise<RawQuizQuestionAdminItem[]> {
         if (!quizId) {

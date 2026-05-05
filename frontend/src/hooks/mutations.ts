@@ -39,9 +39,6 @@ export function useSubmitStudentAnswer() {
         },
         onSuccess: async (_data, variables) => {
             await queryClient.invalidateQueries({
-                queryKey: ['quiz-attempts'],
-            });
-            await queryClient.invalidateQueries({
                 queryKey: ['student-answers', variables.attemptId],
             });
         },

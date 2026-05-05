@@ -37,7 +37,7 @@ class VocabularyService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listTopics(): Promise<VocabularyTopicApiItem[]> {
+    public async findAll(): Promise<VocabularyTopicApiItem[]> {
         const response =
             await this.httpClient.get<VocabularyTopicApiItem[]>(
                 '/vocabulary-topics',
@@ -45,7 +45,7 @@ class VocabularyService {
         return Array.isArray(response.data) ? response.data : [];
     }
 
-    public async listTopicWords(
+    public async findByTopicId(
         topicId: string,
     ): Promise<VocabularyTopicWordApiItem[]> {
         const response = await this.httpClient.get<
@@ -55,12 +55,12 @@ class VocabularyService {
     }
 
     public async listTopicsPreview(): Promise<VocabularyTopicPreview[]> {
-        const topics = await this.listTopics();
+        const topics = await this.findAll();
         return topics.map((topic) => this.toTopicPreview(topic));
     }
 
     public async listWordsForTopic(topicId: string): Promise<VocabularyWord[]> {
-        const words = await this.listTopicWords(topicId);
+        const words = await this.findByTopicId(topicId);
 
         return words
             .filter((word) => Boolean(word.word?.trim()))

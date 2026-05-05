@@ -34,14 +34,10 @@ class AuthService {
         return response.data;
     }
 
-    public async me(): Promise<AuthUser> {
-        const response = await this.httpClient.get<AuthUser>('/auth/user');
-        return response.data;
-    }
-
-    public async getUserOrNull(): Promise<AuthUser | null> {
+    public async getUser(): Promise<AuthUser | null> {
         try {
-            return await this.me();
+            const response = await this.httpClient.get<AuthUser>('/auth/user');
+            return response.data;
         } catch {
             return null;
         }

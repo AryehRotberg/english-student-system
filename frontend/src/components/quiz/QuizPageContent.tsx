@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { QuizActiveView } from '../../components/quiz/QuizActiveView';
 import { QuizAttemptsViewer } from '../../components/quiz/QuizAttemptsViewer';
 import { QuizRetakeScreen } from '../../components/quiz/QuizRetakeScreen';
@@ -15,7 +15,6 @@ import {
     useStudentAnswersByAttempt,
 } from '../../hooks/queries';
 import styles from '../../pages/Quiz/QuizPage.module.css';
-import { sendEmailService } from '../../services/send-email.service';
 import { QuizStudyGuidesSection } from './QuizStudyGuidesSection';
 
 type QuizPageContentProps = {
@@ -26,8 +25,6 @@ type QuizPageContentProps = {
 export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     const [isCompleted, setIsCompleted] = useState(false);
     const [viewAttemptId, setViewAttemptId] = useState<string | null>(null);
-
-    const hasAutoStarted = useRef(false);
 
     const { data: user } = useAuthUser();
     const { data: questions } = useQuizQuestions(quizId);
@@ -44,25 +41,6 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     const { data: activeAttemptAnswers = [] } = useStudentAnswersByAttempt(
         attemptId ?? undefined,
     );
-
-    useEffect(() => {
-        if (
-            !isAttemptLoading &&
-            attempts.length === 0 &&
-            user?.id &&
-            !hasAutoStarted.current
-        ) {
-            hasAutoStarted.current = true;
-            void startAttemptMutation.mutateAsync({ quizId, quizTitle });
-        }
-    }, [
-        isAttemptLoading,
-        attempts.length,
-        user?.id,
-        startAttemptMutation,
-        quizId,
-        quizTitle,
-    ]);
 
     const completedAttempts = attempts.filter(
         (attempt) => attempt.completedAt !== null,
@@ -88,8 +66,6 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
 
         setIsCompleted(true);
         setViewAttemptId(attemptId);
-
-        await sendEmailService.sendCompletionEmail(attemptId);
     };
 
     const handleViewAttempt = (id: string) => {
@@ -104,7 +80,12 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
 
     if (!attemptId && !isViewingResults) {
         if (attempts.length === 0) {
-            return <QuizSetupScreen />;
+            return (
+                <QuizSetupScreen
+                    onStart={() => void handleStartOrRetake()}
+                    isPending={startAttemptMutation.isPending}
+                />
+            );
         }
 
         return (
@@ -120,15 +101,16 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
 
     return (
         <div className={styles.stack}>
-            <QuizStudyGuidesSection studyGuides={studyGuides} />
+            <QuizStudyGuidesSection quizId={quizId} studyGuides={studyGuides} />
 
             {isViewingResults ? (
                 <QuizAttemptsViewer
                     questions={questions}
                     completedAttempts={completedAttempts}
                     isCompleted={isCompleted}
-                    initialAttemptId={viewAttemptId}
+                    viewAttemptId={viewAttemptId}
                     onBack={handleBackToCurrentQuiz}
+                    onViewAttempt={handleViewAttempt}
                 />
             ) : (
                 <QuizActiveView

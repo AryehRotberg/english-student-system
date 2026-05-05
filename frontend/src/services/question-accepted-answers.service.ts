@@ -9,13 +9,13 @@ class QuestionAcceptedAnswersService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list() {
+    public async findAll() {
         const response = await this.httpClient.get('/question-accepted-answers');
         return response.data;
     }
 
     public async listAdmin(): Promise<QuestionAcceptedAnswerAdminItem[]> {
-        const data = await this.list();
+        const data = await this.findAll();
         return Array.isArray(data) ? (data as QuestionAcceptedAnswerAdminItem[]) : [];
     }
 

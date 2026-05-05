@@ -9,21 +9,21 @@ class QuestionChoicesService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listByQuestion(questionId: string) {
+    public async findByQuestionId(questionId: string) {
         const response = await this.httpClient.get(
             `/question-choices?questionId=${questionId}`,
         );
         return response.data;
     }
 
-    public async listAdminByQuestion(
+    public async findByQuestionIdAdmin(
         questionId?: string,
     ): Promise<QuestionChoiceAdminItem[]> {
         if (!questionId) {
             return [];
         }
 
-        const data = await this.listByQuestion(questionId);
+        const data = await this.findByQuestionId(questionId);
         return Array.isArray(data) ? (data as QuestionChoiceAdminItem[]) : [];
     }
 

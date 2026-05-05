@@ -9,7 +9,7 @@ class QuizAttemptsService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listByUserAndQuiz(
+    public async findByUserIdAndQuizId(
         userId: string,
         quizId: string,
     ): Promise<QuizAttemptApiItem[]> {
@@ -19,7 +19,7 @@ class QuizAttemptsService {
         return response.data;
     }
 
-    public async listByUserId(
+    public async findByUserId(
         userId: string,
     ): Promise<QuizAttemptApiItem[]> {
         const response = await this.httpClient.get(

@@ -8,7 +8,7 @@ class WritingTasksService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list() {
+    public async findAll() {
         const response = await this.httpClient.get('/writing-tasks');
         return response.data;
     }

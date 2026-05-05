@@ -5,7 +5,6 @@ export function PracticePage() {
     return (
         <div className={styles.stack}>
             <PracticeCenter />
-            <PracticeCenter />
         </div>
     );
 }
