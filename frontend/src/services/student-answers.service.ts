@@ -20,7 +20,7 @@ class StudentAnswersService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async listByAttempt(
+    public async findByAttempt(
         attemptId?: string,
     ): Promise<StudentAnswerApiItem[]> {
         const response = await this.httpClient.get<StudentAnswerApiItem[]>(

@@ -24,10 +24,12 @@ const SANITIZE_SCHEMA = {
 };
 
 type QuizStudyGuidesSectionProps = {
+    quizId: string;
     studyGuides: QuizStudyGuide[];
 };
 
 export function QuizStudyGuidesSection({
+    quizId,
     studyGuides,
 }: QuizStudyGuidesSectionProps) {
     const [selectedStudyGuide, setSelectedStudyGuide] =
@@ -67,14 +69,29 @@ export function QuizStudyGuidesSection({
                     >
                         <div className={styles.topicModalHeader}>
                             <h3>{selectedStudyGuide.topic}</h3>
-                            <button
-                                aria-label="Close explanation"
-                                className={styles.closeTopicButton}
-                                onClick={() => setSelectedStudyGuide(null)}
-                                type="button"
-                            >
-                                Close
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button
+                                    aria-label="Open in new page"
+                                    className={styles.closeTopicButton}
+                                    onClick={() =>
+                                        window.open(
+                                            `/quiz/${quizId}/guide/${selectedStudyGuide.id}`,
+                                            '_blank',
+                                        )
+                                    }
+                                    type="button"
+                                >
+                                    Open in New Page
+                                </button>
+                                <button
+                                    aria-label="Close explanation"
+                                    className={styles.closeTopicButton}
+                                    onClick={() => setSelectedStudyGuide(null)}
+                                    type="button"
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
 
                         <div className={styles.topicMarkdown}>

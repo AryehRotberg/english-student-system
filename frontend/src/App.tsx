@@ -3,7 +3,6 @@ import './App.css';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Navbar } from './components/layout/Navbar/Navbar';
 import { useAuth } from './contexts/AuthContext';
-import { useAuthUser } from './hooks/queries';
 import { AdminPage } from './pages/Admin/AdminPage';
 import { DashboardPage } from './pages/Dashboard/DashboardPage';
 import { LoginPage } from './pages/Login/LoginPage';
@@ -13,9 +12,10 @@ import { QuizListPage } from './pages/QuizList/QuizListPage';
 import { ReadingPage } from './pages/Reading/ReadingPage';
 import { RegisterPage } from './pages/Register/RegisterPage';
 import { VocabPage } from './pages/Vocab/VocabPage';
+import { StudyGuidePage } from './pages/StudyGuide/StudyGuidePage';
 
 function ProtectedPage({ children }: { children: React.ReactNode }) {
-    const { data: user } = useAuthUser();
+    const { user } = useAuth();
     if (user?.role === 'teacher') {
         return <Navigate to="/admin" replace />;
     }
@@ -51,8 +51,7 @@ function LoginRoute({ isTeacher }: { isTeacher: boolean }) {
 }
 
 function App() {
-    const { isAuthenticated } = useAuth();
-    const { data: user } = useAuthUser();
+    const { isAuthenticated, user } = useAuth();
     const isTeacher = user?.role === 'teacher';
 
     return (
@@ -122,6 +121,14 @@ function App() {
                 element={
                     <ProtectedPage>
                         <QuizPage />
+                    </ProtectedPage>
+                }
+            />
+            <Route
+                path="/quiz/:quizId/guide/:guideId"
+                element={
+                    <ProtectedPage>
+                        <StudyGuidePage />
                     </ProtectedPage>
                 }
             />

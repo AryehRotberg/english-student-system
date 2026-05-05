@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useStudentAnswersByAttempt } from '../../hooks/queries';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 import type { QuizQuestion } from '../../types/quiz';
@@ -8,7 +8,8 @@ type QuizAttemptsViewerProps = {
     questions: QuizQuestion[];
     completedAttempts: QuizAttemptApiItem[];
     isCompleted: boolean;
-    initialAttemptId: string;
+    viewAttemptId: string;
+    onViewAttempt: (attemptId: string) => void;
     onBack: () => void;
 };
 
@@ -16,11 +17,10 @@ export function QuizAttemptsViewer({
     questions,
     completedAttempts,
     isCompleted,
-    initialAttemptId,
+    viewAttemptId,
+    onViewAttempt,
     onBack,
 }: QuizAttemptsViewerProps) {
-    const [viewAttemptId, setViewAttemptId] = useState(initialAttemptId);
-
     const selectedAttempt =
         completedAttempts.find((a) => a.id === viewAttemptId) ?? null;
 
@@ -58,7 +58,7 @@ export function QuizAttemptsViewer({
             totalPossible={totalPossible}
             completedAttempts={completedAttempts}
             onBackToCurrentQuiz={onBack}
-            onViewAttempt={setViewAttemptId}
+            onViewAttempt={onViewAttempt}
         />
     );
 }

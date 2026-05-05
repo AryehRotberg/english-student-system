@@ -24,13 +24,13 @@ class TextsService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list() {
+    public async findAll() {
         const response = await this.httpClient.get('/texts');
         return response.data;
     }
 
     public async getReadingLibrary(): Promise<ReadingItem[]> {
-        const data = (await this.list()) as TextApiItem[];
+        const data = (await this.findAll()) as TextApiItem[];
 
         if (!Array.isArray(data)) {
             return [];
@@ -48,7 +48,7 @@ class TextsService {
     }
 
     public async listAdmin(): Promise<TextAdminItem[]> {
-        const data = await this.list();
+        const data = await this.findAll();
         return Array.isArray(data) ? (data as TextAdminItem[]) : [];
     }
 

@@ -56,7 +56,7 @@ export function useReadingLibrary() {
 export function useAuthUser() {
     return useQuery<AuthUser | null>({
         queryKey: ['auth-user'],
-        queryFn: () => authService.getUserOrNull(),
+        queryFn: () => authService.getUser(),
         retry: false,
         staleTime: 0,
         refetchOnMount: 'always',
@@ -70,7 +70,7 @@ export function useQuizAttempts(quizId?: string, userId?: string) {
         queryKey: ['quiz-attempts', quizId, userId],
         enabled: Boolean(userId) && Boolean(quizId),
         queryFn: async () => {
-            const attempts = await quizAttemptsService.listByUserAndQuiz(
+            const attempts = await quizAttemptsService.findByUserIdAndQuizId(
                 userId!,
                 quizId!,
             );
@@ -87,14 +87,14 @@ export function useQuizQuestions(quizId?: string) {
     return useQuery<QuizQuestion[]>({
         queryKey: ['quiz-questions', quizId],
         enabled: Boolean(quizId),
-        queryFn: () => quizQuestionsService.listForQuiz(quizId),
+        queryFn: () => quizQuestionsService.getFullQuiz(quizId),
     });
 }
 
 export function useQuizzes() {
     return useQuery<QuizSummary[]>({
         queryKey: ['quizzes'],
-        queryFn: () => quizzesService.list(),
+        queryFn: () => quizzesService.findAll(),
     });
 }
 
@@ -102,7 +102,7 @@ export function useQuizStudyGuides(quizId?: string) {
     return useQuery<QuizStudyGuide[]>({
         queryKey: ['quiz-study-guides', quizId],
         enabled: Boolean(quizId),
-        queryFn: () => quizStudyGuidesService.list(quizId as string),
+        queryFn: () => quizStudyGuidesService.findByQuizId(quizId as string),
     });
 }
 
@@ -110,7 +110,7 @@ export function useStudentAnswersByAttempt(attemptId?: string) {
     return useQuery<StudentAnswerApiItem[]>({
         queryKey: ['student-answers', attemptId],
         enabled: Boolean(attemptId),
-        queryFn: () => studentAnswersService.listByAttempt(attemptId),
+        queryFn: () => studentAnswersService.findByAttempt(attemptId),
     });
 }
 
@@ -127,7 +127,7 @@ export function useQuestionChoicesByQuestion(questionId?: string) {
     return useQuery<QuestionChoiceAdminItem[]>({
         queryKey: ['question-choices', questionId],
         enabled: Boolean(questionId),
-        queryFn: () => questionChoicesService.listAdminByQuestion(questionId),
+        queryFn: () => questionChoicesService.findByQuestionIdAdmin(questionId),
     });
 }
 
@@ -142,7 +142,7 @@ export function useRawQuizQuestions(quizId?: string) {
     return useQuery<RawQuizQuestionAdminItem[]>({
         queryKey: ['raw-quiz-questions', quizId],
         enabled: Boolean(quizId),
-        queryFn: () => quizQuestionsService.listRawAdminByQuiz(quizId),
+        queryFn: () => quizQuestionsService.findByUserId(quizId),
     });
 }
 
@@ -171,21 +171,21 @@ export function useVocabularyTopicWords(topicId?: string) {
 export function useAllStudents() {
     return useQuery<AuthUser[]>({
         queryKey: ['all-students'],
-        queryFn: () => usersService.listStudents(),
+        queryFn: () => usersService.findStudentsByTeacherId(),
     });
 }
 
 export function usePendingStudents() {
     return useQuery<AuthUser[]>({
         queryKey: ['pending-students'],
-        queryFn: () => usersService.listStudents(false),
+        queryFn: () => usersService.findStudentsByTeacherId(false),
     });
 }
 
 export function useTeachers() {
     return useQuery<AuthUser[]>({
         queryKey: ['teachers'],
-        queryFn: () => usersService.listTeachers(),
+        queryFn: () => usersService.findAllTeachers(),
     });
 }
 
@@ -193,7 +193,7 @@ export function useStudentQuizAttempts(userId?: string) {
     return useQuery<QuizAttemptApiItem[]>({
         queryKey: ['student-quiz-attempts', userId],
         enabled: Boolean(userId),
-        queryFn: () => quizAttemptsService.listByUserId(userId as string),
+        queryFn: () => quizAttemptsService.findByUserId(userId as string),
     });
 }
 

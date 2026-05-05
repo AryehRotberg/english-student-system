@@ -9,7 +9,7 @@ class QuizzesService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async list(): Promise<QuizSummary[]> {
+    public async findAll(): Promise<QuizSummary[]> {
         const response = await this.httpClient.get<QuizSummary[]>('/quizzes');
         return response.data;
     }
