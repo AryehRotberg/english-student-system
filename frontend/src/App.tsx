@@ -10,6 +10,7 @@ import { PracticePage } from './pages/Practice/PracticePage';
 import { QuizPage } from './pages/Quiz/QuizPage';
 import { QuizListPage } from './pages/QuizList/QuizListPage';
 import { ReadingPage } from './pages/Reading/ReadingPage';
+import { ReadingTextPage } from './pages/Reading/ReadingTextPage';
 import { RegisterPage } from './pages/Register/RegisterPage';
 import { VocabPage } from './pages/Vocab/VocabPage';
 import { StudyGuidePage } from './pages/StudyGuide/StudyGuidePage';
@@ -89,6 +90,14 @@ function App() {
                 element={
                     <ProtectedPage>
                         <ReadingPage />
+                    </ProtectedPage>
+                }
+            />
+            <Route
+                path="/reading/:textId"
+                element={
+                    <ProtectedPage>
+                        <ReadingTextPage />
                     </ProtectedPage>
                 }
             />

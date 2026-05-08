@@ -1,5 +1,5 @@
-import { useQuestionAudio } from '../../hooks/queries';
-import { AudioNotFoundError } from '../../services/audio.service';
+import { useState } from 'react';
+import { AudioNotFoundError, audioService } from '../../services/audio.service';
 import styles from './QuestionAudioButton.module.css';
 
 type QuestionAudioButtonProps = {
@@ -7,33 +7,38 @@ type QuestionAudioButtonProps = {
 };
 
 export function QuestionAudioButton({ questionId }: QuestionAudioButtonProps) {
-    const {
-        data: url,
-        isLoading,
-        isError,
-        error,
-    } = useQuestionAudio(questionId);
+    const [url, setUrl] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [notFound, setNotFound] = useState(false);
 
-    const handlePlay = () => {
+    const handlePlay = async () => {
         if (url) {
             new Audio(url).play().catch(() => undefined);
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const fetched = await audioService.fetchQuestionAudio(questionId);
+            setUrl(fetched);
+            new Audio(fetched).play().catch(() => undefined);
+        } catch (err) {
+            if (err instanceof AudioNotFoundError) {
+                setNotFound(true);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    if (isError && error instanceof AudioNotFoundError) {
-        return null;
-    }
-
-    if (isError) {
-        return null;
-    }
+    if (notFound) return null;
 
     return (
         <button
             type="button"
             className={`${styles.speakerButton}${isLoading ? ` ${styles.speakerButtonLoading}` : ''}`}
-            onClick={handlePlay}
-            disabled={isLoading || !url}
+            onClick={() => void handlePlay()}
+            disabled={isLoading}
             aria-label="Play question audio"
         >
             <svg

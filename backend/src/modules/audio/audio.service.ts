@@ -32,6 +32,8 @@ export class AudioService {
                     modelId: this.modelId,
                     voiceSettings: {
                         speed: speed,
+                        stability: 0.32,
+                        similarityBoost: 0.87,
                     },
                     outputFormat: 'mp3_44100_128',
                 },

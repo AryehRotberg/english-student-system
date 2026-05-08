@@ -41,18 +41,20 @@ export class SupabaseService {
         return data;
     }
 
-    async loadFromBucket(bucket: string, path: string): Promise<Buffer> {
+    async createSignedUrl(
+        bucket: string,
+        path: string,
+        expiresIn = 3600,
+    ): Promise<string> {
         const { data, error } = await this.supabase.storage
             .from(bucket)
-            .download(path);
-        if (error) {
-            console.error('Supabase download error:', error);
-            Sentry.captureException(error);
+            .createSignedUrl(path, expiresIn);
+        if (error || !data?.signedUrl) {
+            console.error('Supabase signed URL error:', error);
             throw new BadRequestException(
-                'Failed to download audio from storage. Please check the bucket name and path.',
+                'Audio file not found or could not generate signed URL.',
             );
         }
-
-        return Buffer.from(await data.arrayBuffer());
+        return data.signedUrl;
     }
 }

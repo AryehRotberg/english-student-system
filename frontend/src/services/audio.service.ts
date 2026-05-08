@@ -23,18 +23,13 @@ class AudioService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    private async downloadAudio(bucket: string, path: string): Promise<string> {
+    async downloadAudio(bucket: string, path: string): Promise<string> {
         try {
-            const response = await this.httpClient.get<ArrayBuffer>(
-                '/audio/download',
-                {
-                    params: { bucket, path },
-                    responseType: 'arraybuffer',
-                },
+            const response = await this.httpClient.get<{ url: string }>(
+                '/audio/signed-url',
+                { params: { bucket, path } },
             );
-
-            const blob = new Blob([response.data], { type: 'audio/mpeg' });
-            return URL.createObjectURL(blob);
+            return response.data.url;
         } catch (err) {
             if (axios.isAxiosError(err) && err.response?.status === 400) {
                 throw new AudioNotFoundError();

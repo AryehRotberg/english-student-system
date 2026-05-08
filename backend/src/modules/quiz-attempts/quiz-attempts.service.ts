@@ -46,7 +46,7 @@ export class QuizAttemptsService {
         });
         const result = await this.attemptRepo.save(entity);
 
-        await this.sendEmailService.sendFromDto({
+        void this.sendEmailService.sendFromDto({
             name: user.name,
             email: user.teacherEmail!,
             subject: `${user.name} has started quiz "${quizTitle}"`,
