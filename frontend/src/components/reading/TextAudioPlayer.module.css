@@ -1,0 +1,144 @@
+.player {
+    background: #1e2230;
+    border-radius: 14px;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.25rem;
+}
+
+.sliderRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(
+        to right,
+        #e91e8c 0%,
+        #e91e8c var(--p, 0%),
+        rgba(255, 255, 255, 0.25) var(--p, 0%),
+        rgba(255, 255, 255, 0.25) 100%
+    );
+    border-radius: 3px;
+    cursor: pointer;
+    height: 5px;
+    outline: none;
+    width: 100%;
+}
+
+.slider:disabled {
+    cursor: default;
+    opacity: 0.35;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+}
+
+.slider::-moz-range-thumb {
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+}
+
+.times {
+    color: rgba(255, 255, 255, 0.55);
+    display: flex;
+    font-size: 0.78rem;
+    justify-content: space-between;
+}
+
+.controls {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+.skipBtn {
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.25rem 0.5rem;
+    transition: color 0.15s;
+}
+
+.skipBtn:hover:not(:disabled) {
+    color: #fff;
+}
+
+.skipBtn:disabled {
+    cursor: default;
+    opacity: 0.35;
+}
+
+.skipLabel {
+    font-size: 0.65rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.playBtn {
+    align-items: center;
+    background: #e91e8c;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    height: 46px;
+    justify-content: center;
+    padding: 0;
+    transition:
+        background 0.15s,
+        transform 0.1s;
+    width: 46px;
+}
+
+.playBtn:hover:not(:disabled) {
+    background: #c2185b;
+    transform: scale(1.06);
+}
+
+.playBtn:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.playBtn:disabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.spinner {
+    animation: spin 0.8s linear infinite;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    display: block;
+    height: 20px;
+    width: 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

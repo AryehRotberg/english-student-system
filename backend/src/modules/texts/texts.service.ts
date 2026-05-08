@@ -15,6 +15,13 @@ export class TextsService {
         return this.textRepo.find({ order: { createdAt: 'DESC' } });
     }
 
+    findOne(id: string): Promise<Text | null> {
+        return this.textRepo.findOne({
+            where: { id },
+            relations: ['quiz', 'vocabularyTopic'],
+        });
+    }
+
     async create(dto: TextCreateDto): Promise<Text> {
         const entity = this.textRepo.create({
             title: dto.title,

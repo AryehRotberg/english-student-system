@@ -30,30 +30,42 @@ export function fillPromptBlanks(
 ): React.ReactNode {
     const parts = question.prompt.split(BLANK);
 
-    if (parts.length === 1) return question.prompt;
-
     const questionAnswers = answers
         .filter((a) => a.questionId === question.questionId)
         .sort((a, b) => a.blankIndex - b.blankIndex);
 
+    const mcAnswer = questionAnswers.find(
+        (a) => a.selectedOptionId !== null && a.selectedOptionId !== undefined,
+    );
+
+    if (parts.length === 1) {
+        if (!mcAnswer) return question.prompt;
+
+        const option = question.options.find(
+            (o) => o.id === mcAnswer.selectedOptionId,
+        );
+        if (!option) return question.prompt;
+
+        return (
+            <>
+                {question.prompt}{' '}
+                <span style={answerStyle}>{option.label}</span>
+            </>
+        );
+    }
+
+    // Fill-in-the-blank prompt
     let answerTexts: (string | null)[];
 
     if (questionAnswers.length === 0) {
         answerTexts = parts.slice(0, -1).map(() => null);
-    } else {
-        const mcAnswer = questionAnswers.find(
-            (a) =>
-                a.selectedOptionId !== null && a.selectedOptionId !== undefined,
+    } else if (mcAnswer) {
+        const option = question.options.find(
+            (o) => o.id === mcAnswer.selectedOptionId,
         );
-
-        if (mcAnswer) {
-            const option = question.options.find(
-                (o) => o.id === mcAnswer.selectedOptionId,
-            );
-            answerTexts = [option?.label ?? null];
-        } else {
-            answerTexts = questionAnswers.map((a) => a.textAnswer ?? null);
-        }
+        answerTexts = [option?.label ?? null];
+    } else {
+        answerTexts = questionAnswers.map((a) => a.textAnswer ?? null);
     }
 
     return (

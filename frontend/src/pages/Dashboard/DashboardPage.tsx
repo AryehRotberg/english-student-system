@@ -32,7 +32,7 @@ export function DashboardPage() {
         }
 
         if (contentType === 'text') {
-            return '/reading';
+            return `/reading/${contentId}`;
         }
 
         if (contentType === 'vocabulary') {

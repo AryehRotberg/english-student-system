@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseUUIDPipe,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { TextCreateDto } from './dto/text.create.dto';
 import { TextsService } from './texts.service';
@@ -10,6 +18,11 @@ export class TextsController {
     @Get()
     async findAll() {
         return await this.textsService.findAll();
+    }
+
+    @Get(':id')
+    async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+        return await this.textsService.findOne(id);
     }
 
     @Post()

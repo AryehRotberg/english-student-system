@@ -5,4 +5,5 @@ export type ReadingItem = {
     title: string;
     level: ReadingLevel;
     minutes: number;
+    content: string;
 };

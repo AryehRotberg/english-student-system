@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ReadingItem, ReadingLevel } from '../../types/reading';
 import styles from './ReadingLibrary.module.css';
 
@@ -10,6 +11,7 @@ type ReadingLibraryProps = {
 
 export function ReadingLibrary({ items }: ReadingLibraryProps) {
     const [selectedLevel, setSelectedLevel] = useState<ReadingLevel>('B1');
+    const navigate = useNavigate();
 
     const filteredItems = useMemo(
         () => items.filter((item) => item.level === selectedLevel),
@@ -52,7 +54,15 @@ export function ReadingLibrary({ items }: ReadingLibraryProps) {
                                 {item.minutes} minute read
                             </p>
                         </div>
-                        <button className={styles.readButton} type="button">
+                        <button
+                            className={styles.readButton}
+                            onClick={() =>
+                                navigate(`/reading/${item.id}`, {
+                                    state: { item },
+                                })
+                            }
+                            type="button"
+                        >
                             Read
                         </button>
                     </article>
@@ -61,3 +71,4 @@ export function ReadingLibrary({ items }: ReadingLibraryProps) {
         </section>
     );
 }
+

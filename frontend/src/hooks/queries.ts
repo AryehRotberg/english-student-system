@@ -53,6 +53,14 @@ export function useReadingLibrary() {
     });
 }
 
+export function useText(id?: string) {
+    return useQuery({
+        queryKey: ['text', id],
+        queryFn: () => textsService.findOne(id!),
+        enabled: !!id,
+    });
+}
+
 export function useAuthUser() {
     return useQuery<AuthUser | null>({
         queryKey: ['auth-user'],

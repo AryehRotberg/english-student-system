@@ -31,19 +31,13 @@ export class AudioController {
         res.send(audioBuffer);
     }
 
-    @Get('download')
+    @Get('signed-url')
     @UseGuards(AuthGuard)
-    async downloadAudio(@Res() res, @Query() dto: AudioDownloadDto) {
-        const { bucket, path } = dto;
-
-        const audioBuffer = await this.supabaseService.loadFromBucket(
-            bucket,
-            path,
+    async getSignedUrl(@Query() dto: AudioDownloadDto) {
+        const url = await this.supabaseService.createSignedUrl(
+            dto.bucket,
+            dto.path,
         );
-        res.set({
-            'Content-Type': 'audio/mpeg',
-            'Content-Length': audioBuffer.length,
-        });
-        res.send(audioBuffer);
+        return { url };
     }
 }

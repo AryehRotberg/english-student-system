@@ -1,8 +1,8 @@
 import type { AxiosInstance } from 'axios';
-import { httpClientService } from './http-client.service';
-import type { TextApiItem } from '../types/api-items/text';
 import type { TextAdminItem } from '../types/admin-query-items';
+import type { TextApiItem } from '../types/api-items/text';
 import type { ReadingItem, ReadingLevel } from '../types/reading';
+import { httpClientService } from './http-client.service';
 
 class TextsService {
     private readonly httpClient: AxiosInstance;
@@ -44,12 +44,26 @@ class TextsService {
                 Math.max(Math.ceil((item.content?.length ?? 800) / 170), 3),
                 12,
             ),
+            content: item.content ?? '',
         }));
     }
 
     public async listAdmin(): Promise<TextAdminItem[]> {
         const data = await this.findAll();
         return Array.isArray(data) ? (data as TextAdminItem[]) : [];
+    }
+
+    public async findOne(id: string): Promise<{
+        id: string;
+        title: string;
+        content: string;
+        level: string;
+        quizId: string | null;
+        quiz: { id: string; title: string; description: string | null } | null;
+        vocabularyTopic: { id: string; topic: string; description: string | null } | null;
+    } | null> {
+        const response = await this.httpClient.get(`/texts/${id}`);
+        return response.data as any;
     }
 
     public async create(payload: {
