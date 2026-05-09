@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { VocabularyTopicCreateDto } from './dto/vocabulary-topic.create.dto';
+import { VocabularyTopicUpdateDto } from './dto/vocabulary-topic.update.dto';
 import { VocabularyTopic } from './entities/vocabulary-topic.entity';
 
 @Injectable()
@@ -21,5 +22,20 @@ export class VocabularyTopicsService {
             description: dto.description ?? null,
         });
         return this.topicRepo.save(entity);
+    }
+
+    async update(
+        id: string,
+        dto: VocabularyTopicUpdateDto,
+    ): Promise<VocabularyTopic | null> {
+        const entity = await this.topicRepo.findOne({ where: { id } });
+        if (!entity) return null;
+        if (dto.topic !== undefined) entity.topic = dto.topic;
+        if (dto.description !== undefined) entity.description = dto.description;
+        return this.topicRepo.save(entity);
+    }
+
+    async remove(id: string): Promise<void> {
+        await this.topicRepo.delete(id);
     }
 }

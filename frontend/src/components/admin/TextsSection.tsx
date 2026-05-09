@@ -1,28 +1,72 @@
 import { useState } from 'react';
-import { useTexts, type TextAdminItem } from '../../hooks/queries';
-import { useCreateText } from '../../hooks/mutations';
+import { useTexts, useQuizzes, useVocabularyTopics } from '../../hooks/queries';
+import {
+    useCreateText,
+    useUpdateText,
+    useDeleteText,
+} from '../../hooks/mutations';
+import { audioService } from '../../services/audio.service';
+import type { TextAdminItem } from '../../types/admin-query-items';
+import { TextForm } from './texts/TextForm';
+import type { TextFormValues } from './texts/TextForm';
+import { TextItem } from './texts/TextItem';
 import styles from '../../pages/Admin/AdminPage.module.css';
+
+type EditState = { id: string } & TextFormValues;
 
 export function TextsSection() {
     const { data: texts = [] } = useTexts();
+    const { data: quizzes = [] } = useQuizzes();
+    const { data: vocabTopics = [] } = useVocabularyTopics();
     const createText = useCreateText();
-    const [title, setTitle] = useState('');
-    const [level, setLevel] = useState('B1');
-    const [content, setContent] = useState('');
-    const [showForm, setShowForm] = useState(false);
+    const updateText = useUpdateText();
+    const deleteText = useDeleteText();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!title.trim() || !content.trim()) return;
-        await createText.mutateAsync({
-            title: title.trim(),
-            content: content.trim(),
-            level,
+    const [showForm, setShowForm] = useState(false);
+    const [editState, setEditState] = useState<EditState | null>(null);
+    const [expandedTextId, setExpandedTextId] = useState<string | null>(null);
+
+    const handleCreate = async (values: TextFormValues) => {
+        const created = await createText.mutateAsync({
+            title: values.title,
+            content: values.content,
+            level: values.level,
+            quizId: values.quizId || undefined,
+            vocabularyTopicId: values.vocabularyTopicId || undefined,
         });
-        setTitle('');
-        setContent('');
-        setLevel('B1');
+        if (values.includeAudio && created?.id) {
+            await audioService.generateAndSaveTts(
+                values.content,
+                'texts',
+                `${created.id}.mp3`,
+            );
+        }
         setShowForm(false);
+    };
+
+    const startEdit = (text: TextAdminItem) => {
+        setEditState({
+            id: text.id,
+            title: text.title,
+            content: text.content,
+            level: text.level,
+            quizId: text.quiz?.id ?? '',
+            vocabularyTopicId: text.vocabularyTopic?.id ?? '',
+            includeAudio: false,
+        });
+    };
+
+    const handleUpdate = async (values: TextFormValues) => {
+        if (!editState) return;
+        await updateText.mutateAsync({
+            id: editState.id,
+            title: values.title,
+            content: values.content,
+            level: values.level,
+            quizId: values.quizId || null,
+            vocabularyTopicId: values.vocabularyTopicId || null,
+        });
+        setEditState(null);
     };
 
     return (
@@ -32,71 +76,66 @@ export function TextsSection() {
                 <button
                     type="button"
                     className={styles.addButton}
-                    onClick={() => setShowForm((v) => !v)}
+                    onClick={() => {
+                        setShowForm((v) => !v);
+                        setEditState(null);
+                    }}
                 >
                     {showForm ? 'Cancel' : '+ Add Text'}
                 </button>
             </div>
 
             {showForm && (
-                <form
-                    className={styles.form}
-                    onSubmit={(e) => void handleSubmit(e)}
-                >
-                    <div className={styles.fieldRow}>
-                        <div className={styles.field}>
-                            <label>Title *</label>
-                            <input
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                placeholder="Text title"
-                                required
-                            />
-                        </div>
-                        <div className={styles.field} style={{ maxWidth: 120 }}>
-                            <label>Level</label>
-                            <select
-                                value={level}
-                                onChange={(e) => setLevel(e.target.value)}
-                            >
-                                <option>A2</option>
-                                <option>B1</option>
-                                <option>B2</option>
-                                <option>C1</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className={styles.field}>
-                        <label>Content *</label>
-                        <textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            rows={10}
-                            placeholder="Paste or type the reading text…"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className={styles.submitButton}
-                        disabled={createText.isPending}
-                    >
-                        {createText.isPending ? 'Saving…' : 'Create Text'}
-                    </button>
-                    {createText.isError && (
-                        <p className={styles.error}>
-                            {(createText.error as Error).message}
-                        </p>
-                    )}
-                </form>
+                <TextForm
+                    submitLabel="Create Text"
+                    showAudioCheckbox
+                    isPending={createText.isPending}
+                    isError={createText.isError}
+                    errorMessage={(createText.error as Error | null)?.message}
+                    quizzes={quizzes}
+                    vocabTopics={vocabTopics}
+                    onSubmit={(values) => void handleCreate(values)}
+                    onCancel={() => setShowForm(false)}
+                />
+            )}
+
+            {editState && (
+                <TextForm
+                    heading="Editing text"
+                    initialTitle={editState.title}
+                    initialContent={editState.content}
+                    initialLevel={editState.level}
+                    initialQuizId={editState.quizId}
+                    initialVocabularyTopicId={editState.vocabularyTopicId}
+                    submitLabel="Save Changes"
+                    isPending={updateText.isPending}
+                    isError={updateText.isError}
+                    errorMessage={(updateText.error as Error | null)?.message}
+                    quizzes={quizzes}
+                    vocabTopics={vocabTopics}
+                    onSubmit={(values) => void handleUpdate(values)}
+                    onCancel={() => setEditState(null)}
+                />
             )}
 
             <ul className={styles.itemList}>
                 {(texts as TextAdminItem[]).map((text) => (
-                    <li key={text.id} className={styles.item}>
-                        <strong>{text.title}</strong>
-                        <span className={styles.typeBadge}>{text.level}</span>
-                    </li>
+                    <TextItem
+                        key={text.id}
+                        text={text}
+                        isExpanded={expandedTextId === text.id}
+                        onToggle={() =>
+                            setExpandedTextId((prev) =>
+                                prev === text.id ? null : text.id,
+                            )
+                        }
+                        onEdit={() => {
+                            setShowForm(false);
+                            startEdit(text);
+                        }}
+                        onDelete={() => void deleteText.mutate(text.id)}
+                        deleteIsPending={deleteText.isPending}
+                    />
                 ))}
                 {texts.length === 0 && (
                     <li className={styles.empty}>No texts yet.</li>

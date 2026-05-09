@@ -45,6 +45,18 @@ class AudioService {
     fetchQuestionAudio(questionId: string): Promise<string> {
         return this.downloadAudio('questions', `${questionId}.mp3`);
     }
+
+    async generateAndSaveTts(
+        text: string,
+        bucket: string,
+        path: string,
+    ): Promise<void> {
+        await this.httpClient.post(
+            '/audio/tts',
+            { text, bucket, path },
+            { responseType: 'arraybuffer' },
+        );
+    }
 }
 
 export const audioService = new AudioService();

@@ -31,6 +31,10 @@ export class QuizzesService {
         return this.quizRepo.save(entity);
     }
 
+    async remove(id: string): Promise<void> {
+        await this.quizRepo.delete(id);
+    }
+
     async createFromAiDraft(metadata: QuizAiDraftCreateDto): Promise<Quiz> {
         const quiz = await this.create({
             title: metadata.title,

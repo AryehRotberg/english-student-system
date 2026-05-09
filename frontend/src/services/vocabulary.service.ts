@@ -85,6 +85,68 @@ class VocabularyService {
             words,
         }));
     }
+
+    public async createTopic(payload: {
+        topic: string;
+        description?: string;
+    }): Promise<VocabularyTopicPreview> {
+        const response = await this.httpClient.post<VocabularyTopicApiItem>(
+            '/vocabulary-topics',
+            payload,
+        );
+        return this.toTopicPreview(response.data);
+    }
+
+    public async updateTopic(
+        id: string,
+        payload: { topic?: string; description?: string },
+    ): Promise<VocabularyTopicPreview> {
+        const response = await this.httpClient.patch<VocabularyTopicApiItem>(
+            `/vocabulary-topics/${id}`,
+            payload,
+        );
+        return this.toTopicPreview(response.data);
+    }
+
+    public async createVocabularyWord(payload: {
+        word: string;
+        meaning?: string;
+        example?: string;
+        translation?: string;
+    }): Promise<{ id: string; word: string | null }> {
+        const response = await this.httpClient.post<{
+            id: string;
+            word: string | null;
+        }>('/vocabulary', payload);
+        return response.data;
+    }
+
+    public async updateVocabularyWord(
+        id: string,
+        payload: {
+            word?: string;
+            meaning?: string;
+            example?: string;
+            translation?: string;
+        },
+    ): Promise<void> {
+        await this.httpClient.patch(`/vocabulary/${id}`, payload);
+    }
+
+    public async createTopicWord(payload: {
+        vocabularyId: string;
+        topicId: string;
+    }): Promise<void> {
+        await this.httpClient.post('/vocabulary-topic-words', payload);
+    }
+
+    public async removeTopic(id: string): Promise<void> {
+        await this.httpClient.delete(`/vocabulary-topics/${id}`);
+    }
+
+    public async removeWord(id: string): Promise<void> {
+        await this.httpClient.delete(`/vocabulary/${id}`);
+    }
 }
 
 export const vocabularyService = new VocabularyService();

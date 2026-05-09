@@ -60,7 +60,11 @@ class TextsService {
         level: string;
         quizId: string | null;
         quiz: { id: string; title: string; description: string | null } | null;
-        vocabularyTopic: { id: string; topic: string; description: string | null } | null;
+        vocabularyTopic: {
+            id: string;
+            topic: string;
+            description: string | null;
+        } | null;
     } | null> {
         const response = await this.httpClient.get(`/texts/${id}`);
         return response.data as any;
@@ -70,9 +74,29 @@ class TextsService {
         title: string;
         content: string;
         level: string;
+        quizId?: string;
+        vocabularyTopicId?: string;
     }) {
         const response = await this.httpClient.post('/texts', payload);
         return response.data;
+    }
+
+    public async update(
+        id: string,
+        payload: {
+            title?: string;
+            content?: string;
+            level?: string;
+            quizId?: string | null;
+            vocabularyTopicId?: string | null;
+        },
+    ) {
+        const response = await this.httpClient.patch(`/texts/${id}`, payload);
+        return response.data;
+    }
+
+    public async remove(id: string): Promise<void> {
+        await this.httpClient.delete(`/texts/${id}`);
     }
 }
 

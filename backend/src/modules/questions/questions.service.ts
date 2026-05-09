@@ -22,4 +22,8 @@ export class QuestionsService {
         });
         return this.questionRepo.save(entity);
     }
+
+    async remove(id: string): Promise<void> {
+        await this.questionRepo.delete(id);
+    }
 }
