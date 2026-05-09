@@ -354,8 +354,13 @@ export function useDeleteVocabularyTopic() {
 export function useDeleteVocabularyWord() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, topicId }: { id: string; topicId: string }) =>
-            vocabularyService.removeWord(id),
+        mutationFn: ({
+            id,
+            topicId: _topicId,
+        }: {
+            id: string;
+            topicId: string;
+        }) => vocabularyService.removeWord(id),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
                 queryKey: ['vocabulary-topic-words', variables.topicId],
