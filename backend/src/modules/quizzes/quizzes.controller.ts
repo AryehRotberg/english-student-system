@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseUUIDPipe,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import { TeacherGuard } from '../../auth/guards/auth.guard';
 import { QuizAiDraftCreateDto, QuizCreateDto } from './dto/quiz.create.dto';
 import { QuizzesService } from './quizzes.service';
@@ -19,5 +28,11 @@ export class QuizzesController {
             return this.quizzesService.create(dto);
         }
         return this.quizzesService.createFromAiDraft(dto);
+    }
+
+    @Delete(':id')
+    @UseGuards(TeacherGuard)
+    async remove(@Param('id', new ParseUUIDPipe()) id: string) {
+        return this.quizzesService.remove(id);
     }
 }

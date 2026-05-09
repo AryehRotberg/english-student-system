@@ -18,6 +18,10 @@ class QuizzesService {
         const response = await this.httpClient.post('/quizzes', payload);
         return response.data;
     }
+
+    public async remove(id: string): Promise<void> {
+        await this.httpClient.delete(`/quizzes/${id}`);
+    }
 }
 
 export const quizzesService = new QuizzesService();

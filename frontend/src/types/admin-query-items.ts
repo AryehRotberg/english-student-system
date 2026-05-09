@@ -33,4 +33,7 @@ export type TextAdminItem = {
     title: string;
     level: string;
     content: string;
+    quizId: string | null;
+    quiz: { id: string; title: string } | null;
+    vocabularyTopic: { id: string; topic: string } | null;
 };

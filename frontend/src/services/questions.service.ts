@@ -27,6 +27,10 @@ class QuestionsService {
         const response = await this.httpClient.post('/questions', payload);
         return response.data;
     }
+
+    public async remove(id: string): Promise<void> {
+        await this.httpClient.delete(`/questions/${id}`);
+    }
 }
 
 export const questionsService = new QuestionsService();

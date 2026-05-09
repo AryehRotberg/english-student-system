@@ -1,5 +1,5 @@
-import { IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class TextCreateDto {
     @IsString()
@@ -13,4 +13,14 @@ export class TextCreateDto {
     @IsString()
     @ApiProperty()
     level: string;
+
+    @IsOptional()
+    @IsUUID()
+    @ApiPropertyOptional()
+    quizId?: string;
+
+    @IsOptional()
+    @IsUUID()
+    @ApiPropertyOptional()
+    vocabularyTopicId?: string;
 }

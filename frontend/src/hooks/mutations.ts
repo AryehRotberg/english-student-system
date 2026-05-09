@@ -10,6 +10,7 @@ import { quizzesService } from '../services/quizzes.service';
 import { studentAnswersService } from '../services/student-answers.service';
 import { textsService } from '../services/texts.service';
 import { usersService } from '../services/users.service';
+import { vocabularyService } from '../services/vocabulary.service';
 import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
@@ -203,11 +204,167 @@ export function useCreateText() {
             title: string;
             content: string;
             level: string;
+            quizId?: string;
+            vocabularyTopicId?: string;
         }) => textsService.create(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['reading-library'] });
             queryClient.invalidateQueries({ queryKey: ['texts'] });
         },
+    });
+}
+
+export function useUpdateText() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: {
+            id: string;
+            title?: string;
+            content?: string;
+            level?: string;
+            quizId?: string | null;
+            vocabularyTopicId?: string | null;
+        }) => textsService.update(id, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['reading-library'] });
+            queryClient.invalidateQueries({ queryKey: ['texts'] });
+        },
+    });
+}
+
+export function useCreateVocabularyTopic() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: { topic: string; description?: string }) =>
+            vocabularyService.createTopic(payload),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['vocabulary-topics'] }),
+    });
+}
+
+export function useUpdateVocabularyTopic() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: {
+            id: string;
+            topic?: string;
+            description?: string;
+        }) => vocabularyService.updateTopic(id, payload),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['vocabulary-topics'] }),
+    });
+}
+
+export function useCreateVocabularyWord() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: {
+            topicId: string;
+            word: string;
+            meaning?: string;
+            example?: string;
+            translation?: string;
+        }) =>
+            vocabularyService
+                .createVocabularyWord({
+                    word: payload.word,
+                    meaning: payload.meaning,
+                    example: payload.example,
+                    translation: payload.translation,
+                })
+                .then((vocab) =>
+                    vocabularyService.createTopicWord({
+                        vocabularyId: vocab.id,
+                        topicId: payload.topicId,
+                    }),
+                ),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['vocabulary-topic-words', variables.topicId],
+            }),
+    });
+}
+
+export function useUpdateVocabularyWord() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            topicId,
+            ...payload
+        }: {
+            id: string;
+            topicId: string;
+            word?: string;
+            meaning?: string;
+            example?: string;
+            translation?: string;
+        }) => vocabularyService.updateVocabularyWord(id, payload),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['vocabulary-topic-words', variables.topicId],
+            }),
+    });
+}
+
+export function useDeleteQuiz() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => quizzesService.remove(id),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['quizzes'] }),
+    });
+}
+
+export function useDeleteQuestion() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => questionsService.remove(id),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    });
+}
+
+export function useDeleteText() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => textsService.remove(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['texts'] });
+            queryClient.invalidateQueries({ queryKey: ['reading-library'] });
+        },
+    });
+}
+
+export function useDeleteVocabularyTopic() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => vocabularyService.removeTopic(id),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['vocabulary-topics'] }),
+    });
+}
+
+export function useDeleteVocabularyWord() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            topicId: _topicId,
+        }: {
+            id: string;
+            topicId: string;
+        }) => vocabularyService.removeWord(id),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['vocabulary-topic-words', variables.topicId],
+            }),
     });
 }
 
