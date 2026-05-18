@@ -9,10 +9,12 @@ class TextsService {
 
     private toReadingLevel(value: string): ReadingLevel {
         if (
+            value === 'A1' ||
             value === 'A2' ||
             value === 'B1' ||
             value === 'B2' ||
-            value === 'C1'
+            value === 'C1' ||
+            value === 'C2'
         ) {
             return value;
         }
