@@ -19,6 +19,9 @@ export class Question {
     @Column({ type: 'jsonb', nullable: true })
     hints: any | null;
 
+    @Column({ type: 'text', array: true, default: '{}' })
+    topics: string[];
+
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 }
