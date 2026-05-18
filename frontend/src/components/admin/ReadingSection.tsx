@@ -12,9 +12,9 @@ import {
 import styles from '../../pages/Admin/AdminPage.module.css';
 import { audioService } from '../../services/audio.service';
 import type { ReadingAdminItem } from '../../types/admin-query-items';
-import type { ReadingFormValues } from './texts/ReadingForm';
-import { ReadingForm } from './texts/ReadingForm';
-import { TextItem } from './texts/TextItem';
+import type { ReadingFormValues } from './readings/ReadingForm';
+import { ReadingForm } from './readings/ReadingForm';
+import { TextItem } from './readings/TextItem';
 
 type EditState = { id: string } & ReadingFormValues;
 
