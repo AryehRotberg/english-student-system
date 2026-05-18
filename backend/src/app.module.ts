@@ -23,9 +23,9 @@ import { QuizAttemptsModule } from './modules/quiz-attempts/quiz-attempts.module
 import { QuizQuestionsModule } from './modules/quiz-questions/quiz-questions.module';
 import { QuizStudyGuidesModule } from './modules/quiz-study-guides/quiz-study-guides.module';
 import { QuizzesModule } from './modules/quizzes/quizzes.module';
+import { ReadingsModule } from './modules/readings/readings.module';
 import { SendEmailModule } from './modules/send-email/send-email.module';
 import { StudentAnswersModule } from './modules/student-answers/student-answers.module';
-import { TextsModule } from './modules/texts/texts.module';
 import { UsersModule } from './modules/users/users.module';
 import { VocabularyTopicWordsModule } from './modules/vocabulary-topic-words/vocabulary-topic-words.module';
 import { VocabularyTopicsModule } from './modules/vocabulary-topics/vocabulary-topics.module';
@@ -94,7 +94,7 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
         QuestionsModule,
         QuizQuestionsModule,
         QuestionChoicesModule,
-        TextsModule,
+        ReadingsModule,
         WritingTasksModule,
         WritingSubmissionsModule,
         UsersModule,

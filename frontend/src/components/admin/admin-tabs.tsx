@@ -2,7 +2,7 @@ export type AdminTab =
     | 'quizzes'
     | 'questions'
     | 'quiz-builder'
-    | 'texts'
+    | 'readings'
     | 'vocabulary'
     | 'student-progress'
     | 'pending-students';
@@ -182,8 +182,8 @@ export const adminTabs: TabDef[] = [
         icon: <WrenchIcon />,
     },
     {
-        id: 'texts',
-        label: 'Texts',
+        id: 'readings',
+        label: 'Readings',
         description: 'Manage reading texts used across lessons and quizzes.',
         icon: <FileTextIcon />,
     },

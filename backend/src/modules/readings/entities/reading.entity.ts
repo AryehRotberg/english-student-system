@@ -9,8 +9,8 @@ import {
 import { Quiz } from '../../quizzes/entities/quiz.entity';
 import { VocabularyTopic } from '../../vocabulary-topics/entities/vocabulary-topic.entity';
 
-@Entity({ name: 'texts' })
-export class Text {
+@Entity({ name: 'readings' })
+export class Reading {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

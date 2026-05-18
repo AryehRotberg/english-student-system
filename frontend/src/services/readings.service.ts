@@ -1,10 +1,10 @@
 import type { AxiosInstance } from 'axios';
-import type { TextAdminItem } from '../types/admin-query-items';
+import type { ReadingAdminItem } from '../types/admin-query-items';
 import type { TextApiItem } from '../types/api-items/text';
 import type { ReadingItem, ReadingLevel } from '../types/reading';
 import { httpClientService } from './http-client.service';
 
-class TextsService {
+class ReadingsService {
     private readonly httpClient: AxiosInstance;
 
     private toReadingLevel(value: string): ReadingLevel {
@@ -27,7 +27,7 @@ class TextsService {
     }
 
     public async findAll() {
-        const response = await this.httpClient.get('/texts');
+        const response = await this.httpClient.get('/readings');
         return response.data;
     }
 
@@ -50,9 +50,9 @@ class TextsService {
         }));
     }
 
-    public async listAdmin(): Promise<TextAdminItem[]> {
+    public async listAdmin(): Promise<ReadingAdminItem[]> {
         const data = await this.findAll();
-        return Array.isArray(data) ? (data as TextAdminItem[]) : [];
+        return Array.isArray(data) ? (data as ReadingAdminItem[]) : [];
     }
 
     public async findOne(id: string): Promise<{
@@ -68,7 +68,7 @@ class TextsService {
             description: string | null;
         } | null;
     } | null> {
-        const response = await this.httpClient.get(`/texts/${id}`);
+        const response = await this.httpClient.get(`/readings/${id}`);
         return response.data as any;
     }
 
@@ -79,7 +79,7 @@ class TextsService {
         quizId?: string;
         vocabularyTopicId?: string;
     }) {
-        const response = await this.httpClient.post('/texts', payload);
+        const response = await this.httpClient.post('/readings', payload);
         return response.data;
     }
 
@@ -93,13 +93,13 @@ class TextsService {
             vocabularyTopicId?: string | null;
         },
     ) {
-        const response = await this.httpClient.patch(`/texts/${id}`, payload);
+        const response = await this.httpClient.patch(`/readings/${id}`, payload);
         return response.data;
     }
 
     public async remove(id: string): Promise<void> {
-        await this.httpClient.delete(`/texts/${id}`);
+        await this.httpClient.delete(`/readings/${id}`);
     }
 }
 
-export const textsService = new TextsService();
+export const readingsService = new ReadingsService();

@@ -1,30 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TextCreateDto } from './dto/text.create.dto';
-import { TextUpdateDto } from './dto/text.update.dto';
-import { Text } from './entities/text.entity';
+import { ReadingCreateDto } from './dto/reading.create.dto';
+import { ReadingUpdateDto } from './dto/reading.update.dto';
+import { Reading } from './entities/reading.entity';
 
 @Injectable()
-export class TextsService {
+export class ReadingsService {
     constructor(
-        @InjectRepository(Text)
-        private readonly textRepo: Repository<Text>,
+        @InjectRepository(Reading)
+        private readonly readingRepo: Repository<Reading>,
     ) {}
 
-    findAll(): Promise<Text[]> {
-        return this.textRepo.find({ order: { createdAt: 'DESC' } });
+    findAll(): Promise<Reading[]> {
+        return this.readingRepo.find({ order: { createdAt: 'DESC' } });
     }
 
-    findOne(id: string): Promise<Text | null> {
-        return this.textRepo.findOne({
+    findOne(id: string): Promise<Reading | null> {
+        return this.readingRepo.findOne({
             where: { id },
             relations: ['quiz', 'vocabularyTopic'],
         });
     }
 
-    async create(dto: TextCreateDto): Promise<Text> {
-        const entity = this.textRepo.create({
+    async create(dto: ReadingCreateDto): Promise<Reading> {
+        const entity = this.readingRepo.create({
             title: dto.title,
             content: dto.content,
             level: dto.level,
@@ -33,11 +33,11 @@ export class TextsService {
                 ? { id: dto.vocabularyTopicId }
                 : null,
         });
-        return this.textRepo.save(entity);
+        return this.readingRepo.save(entity);
     }
 
-    async update(id: string, dto: TextUpdateDto): Promise<Text | null> {
-        const entity = await this.textRepo.findOne({ where: { id } });
+    async update(id: string, dto: ReadingUpdateDto): Promise<Reading | null> {
+        const entity = await this.readingRepo.findOne({ where: { id } });
         if (!entity) return null;
         if (dto.title !== undefined) entity.title = dto.title;
         if (dto.content !== undefined) entity.content = dto.content;
@@ -51,10 +51,10 @@ export class TextsService {
                 ? { id: dto.vocabularyTopicId }
                 : null;
         }
-        return this.textRepo.save(entity);
+        return this.readingRepo.save(entity);
     }
 
     async remove(id: string): Promise<void> {
-        await this.textRepo.delete(id);
+        await this.readingRepo.delete(id);
     }
 }

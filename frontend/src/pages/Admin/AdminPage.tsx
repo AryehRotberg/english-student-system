@@ -7,7 +7,7 @@ import { QuestionsSection } from '../../components/admin/QuestionsSection';
 import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
 import { QuizzesSection } from '../../components/admin/QuizzesSection';
 import { StudentProgressSection } from '../../components/admin/StudentProgressSection';
-import { TextsSection } from '../../components/admin/TextsSection';
+import { TextsSection } from '../../components/admin/ReadingSection';
 import { VocabularySection } from '../../components/admin/VocabularySection';
 import { useAuthUser } from '../../hooks/queries';
 import styles from './AdminPage.module.css';
