@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from '../../../pages/Admin/AdminPage.module.css';
 
-export type TextFormValues = {
+export type ReadingFormValues = {
     title: string;
     content: string;
     level: string;
@@ -10,7 +10,7 @@ export type TextFormValues = {
     includeAudio: boolean;
 };
 
-type TextFormProps = {
+type ReadingFormProps = {
     initialTitle?: string;
     initialContent?: string;
     initialLevel?: string;
@@ -24,11 +24,11 @@ type TextFormProps = {
     errorMessage?: string;
     quizzes: { id: string; title: string }[];
     vocabTopics: { id: string; topic: string }[];
-    onSubmit: (values: TextFormValues) => void;
+    onSubmit: (values: ReadingFormValues) => void;
     onCancel?: () => void;
 };
 
-export function TextForm({
+export function ReadingForm({
     initialTitle = '',
     initialContent = '',
     initialLevel = 'B1',
@@ -44,7 +44,7 @@ export function TextForm({
     vocabTopics,
     onSubmit,
     onCancel,
-}: TextFormProps) {
+}: ReadingFormProps) {
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
     const [level, setLevel] = useState(initialLevel);

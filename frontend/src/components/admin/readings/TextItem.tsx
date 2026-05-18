@@ -1,8 +1,8 @@
-import type { TextAdminItem } from '../../../types/admin-query-items';
+import type { ReadingAdminItem } from '../../../types/admin-query-items';
 import styles from '../../../pages/Admin/AdminPage.module.css';
 
 type TextItemProps = {
-    text: TextAdminItem;
+    text: ReadingAdminItem;
     isExpanded: boolean;
     onToggle: () => void;
     onEdit: () => void;

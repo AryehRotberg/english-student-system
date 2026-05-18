@@ -28,7 +28,7 @@ export type RawQuizQuestionAdminItem = {
     maxPoints: number;
 };
 
-export type TextAdminItem = {
+export type ReadingAdminItem = {
     id: string;
     title: string;
     level: string;

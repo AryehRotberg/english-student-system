@@ -21,7 +21,7 @@ export class AssignmentItemRepository extends Repository<AssignmentItem> {
         JOIN ASSIGNMENT_ITEMS AI ON AI.ASSIGNMENT_ID = A.ID
         LEFT JOIN QUIZZES Q ON AI.CONTENT_TYPE = 'quiz'
         AND AI.CONTENT_ID = Q.ID
-        LEFT JOIN TEXTS T ON AI.CONTENT_TYPE = 'text'
+        LEFT JOIN READINGS T ON AI.CONTENT_TYPE = 'reading'
         AND AI.CONTENT_ID = T.ID
         LEFT JOIN WRITING_TASKS W ON AI.CONTENT_TYPE = 'writing'
         AND AI.CONTENT_ID = W.ID

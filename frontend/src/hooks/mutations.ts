@@ -8,7 +8,7 @@ import { quizAttemptsService } from '../services/quiz-attempts.service';
 import { quizQuestionsService } from '../services/quiz-questions.service';
 import { quizzesService } from '../services/quizzes.service';
 import { studentAnswersService } from '../services/student-answers.service';
-import { textsService } from '../services/texts.service';
+import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
 import { isUuid } from '../utils/isUuid';
@@ -206,10 +206,10 @@ export function useCreateText() {
             level: string;
             quizId?: string;
             vocabularyTopicId?: string;
-        }) => textsService.create(payload),
+        }) => readingsService.create(payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['reading-library'] });
-            queryClient.invalidateQueries({ queryKey: ['texts'] });
+            queryClient.invalidateQueries({ queryKey: ['readings'] });
         },
     });
 }
@@ -227,10 +227,10 @@ export function useUpdateText() {
             level?: string;
             quizId?: string | null;
             vocabularyTopicId?: string | null;
-        }) => textsService.update(id, payload),
+        }) => readingsService.update(id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['reading-library'] });
-            queryClient.invalidateQueries({ queryKey: ['texts'] });
+            queryClient.invalidateQueries({ queryKey: ['readings'] });
         },
     });
 }
@@ -334,9 +334,9 @@ export function useDeleteQuestion() {
 export function useDeleteText() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (id: string) => textsService.remove(id),
+        mutationFn: (id: string) => readingsService.remove(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['texts'] });
+            queryClient.invalidateQueries({ queryKey: ['readings'] });
             queryClient.invalidateQueries({ queryKey: ['reading-library'] });
         },
     });

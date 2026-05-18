@@ -24,14 +24,14 @@ export function DashboardPage() {
     const featuredTask = data.tasks[0] ?? null;
 
     const getAssignmentRoute = (
-        contentType: 'quiz' | 'text' | 'writing' | 'vocabulary',
+        contentType: 'quiz' | 'reading' | 'writing' | 'vocabulary',
         contentId: string,
     ) => {
         if (contentType === 'quiz') {
             return `/quiz/${contentId}`;
         }
 
-        if (contentType === 'text') {
+        if (contentType === 'reading') {
             return `/reading/${contentId}`;
         }
 

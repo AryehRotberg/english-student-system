@@ -10,6 +10,6 @@ export type AssignmentTopic = {
     assignmentTitle: string;
     assignmentDescription: string;
     topicTitle: string;
-    contentType: 'quiz' | 'text' | 'writing' | 'vocabulary';
+    contentType: 'quiz' | 'reading' | 'writing' | 'vocabulary';
     contentId: string;
 };

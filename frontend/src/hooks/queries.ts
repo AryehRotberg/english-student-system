@@ -12,7 +12,7 @@ import { quizStudyGuidesService } from '../services/quiz-study-guides.service';
 import { quizzesService } from '../services/quizzes.service';
 import type { StudentAnswerApiItem } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
-import { textsService } from '../services/texts.service';
+import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
 import type {
@@ -20,7 +20,7 @@ import type {
     QuestionAdminItem,
     QuestionChoiceAdminItem,
     RawQuizQuestionAdminItem,
-    TextAdminItem,
+    ReadingAdminItem,
 } from '../types/admin-query-items';
 import type { QuizAttemptApiItem } from '../types/api-items/quiz-attempt';
 import type { AuthUser } from '../types/auth';
@@ -36,7 +36,7 @@ export type {
     QuestionAdminItem,
     QuestionChoiceAdminItem,
     RawQuizQuestionAdminItem,
-    TextAdminItem
+    ReadingAdminItem
 } from '../types/admin-query-items';
 
 export function useDashboardOverview() {
@@ -49,14 +49,14 @@ export function useDashboardOverview() {
 export function useReadingLibrary() {
     return useQuery<ReadingItem[]>({
         queryKey: ['reading-library'],
-        queryFn: () => textsService.getReadingLibrary(),
+        queryFn: () => readingsService.getReadingLibrary(),
     });
 }
 
 export function useText(id?: string) {
     return useQuery({
         queryKey: ['text', id],
-        queryFn: () => textsService.findOne(id!),
+        queryFn: () => readingsService.findOne(id!),
         enabled: !!id,
     });
 }
@@ -154,10 +154,10 @@ export function useRawQuizQuestions(quizId?: string) {
     });
 }
 
-export function useTexts() {
-    return useQuery<TextAdminItem[]>({
-        queryKey: ['texts'],
-        queryFn: () => textsService.listAdmin(),
+export function useReadings() {
+    return useQuery<ReadingAdminItem[]>({
+        queryKey: ['readings'],
+        queryFn: () => readingsService.listAdmin(),
     });
 }
 

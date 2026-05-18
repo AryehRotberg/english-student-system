@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class TextCreateDto {
+export class ReadingCreateDto {
     @IsString()
     @ApiProperty()
     title: string;

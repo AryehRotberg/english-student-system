@@ -6,8 +6,10 @@ import { PendingStudentsSection } from '../../components/admin/PendingStudentsSe
 import { QuestionsSection } from '../../components/admin/QuestionsSection';
 import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
 import { QuizzesSection } from '../../components/admin/QuizzesSection';
+import {
+    ReadingsSection
+} from '../../components/admin/ReadingSection';
 import { StudentProgressSection } from '../../components/admin/StudentProgressSection';
-import { TextsSection } from '../../components/admin/TextsSection';
 import { VocabularySection } from '../../components/admin/VocabularySection';
 import { useAuthUser } from '../../hooks/queries';
 import styles from './AdminPage.module.css';
@@ -51,7 +53,7 @@ export function AdminPage() {
                     {activeTab === 'quizzes' && <QuizzesSection />}
                     {activeTab === 'questions' && <QuestionsSection />}
                     {activeTab === 'quiz-builder' && <QuizBuilderSection />}
-                    {activeTab === 'texts' && <TextsSection />}
+                    {activeTab === 'readings' && <ReadingsSection />}
                     {activeTab === 'vocabulary' && <VocabularySection />}
                     {activeTab === 'student-progress' && (
                         <StudentProgressSection />

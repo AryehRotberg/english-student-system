@@ -1,21 +1,25 @@
 import { useState } from 'react';
-import { useTexts, useQuizzes, useVocabularyTopics } from '../../hooks/queries';
 import {
     useCreateText,
-    useUpdateText,
     useDeleteText,
+    useUpdateText,
 } from '../../hooks/mutations';
-import { audioService } from '../../services/audio.service';
-import type { TextAdminItem } from '../../types/admin-query-items';
-import { TextForm } from './texts/TextForm';
-import type { TextFormValues } from './texts/TextForm';
-import { TextItem } from './texts/TextItem';
+import {
+    useQuizzes,
+    useReadings,
+    useVocabularyTopics,
+} from '../../hooks/queries';
 import styles from '../../pages/Admin/AdminPage.module.css';
+import { audioService } from '../../services/audio.service';
+import type { ReadingAdminItem } from '../../types/admin-query-items';
+import type { ReadingFormValues } from './readings/ReadingForm';
+import { ReadingForm } from './readings/ReadingForm';
+import { TextItem } from './readings/TextItem';
 
-type EditState = { id: string } & TextFormValues;
+type EditState = { id: string } & ReadingFormValues;
 
-export function TextsSection() {
-    const { data: texts = [] } = useTexts();
+export function ReadingsSection() {
+    const { data: readings = [] } = useReadings();
     const { data: quizzes = [] } = useQuizzes();
     const { data: vocabTopics = [] } = useVocabularyTopics();
     const createText = useCreateText();
@@ -26,7 +30,7 @@ export function TextsSection() {
     const [editState, setEditState] = useState<EditState | null>(null);
     const [expandedTextId, setExpandedTextId] = useState<string | null>(null);
 
-    const handleCreate = async (values: TextFormValues) => {
+    const handleCreate = async (values: ReadingFormValues) => {
         const created = await createText.mutateAsync({
             title: values.title,
             content: values.content,
@@ -44,7 +48,7 @@ export function TextsSection() {
         setShowForm(false);
     };
 
-    const startEdit = (text: TextAdminItem) => {
+    const startEdit = (text: ReadingAdminItem) => {
         setEditState({
             id: text.id,
             title: text.title,
@@ -56,7 +60,7 @@ export function TextsSection() {
         });
     };
 
-    const handleUpdate = async (values: TextFormValues) => {
+    const handleUpdate = async (values: ReadingFormValues) => {
         if (!editState) return;
         await updateText.mutateAsync({
             id: editState.id,
@@ -86,7 +90,7 @@ export function TextsSection() {
             </div>
 
             {showForm && (
-                <TextForm
+                <ReadingForm
                     submitLabel="Create Text"
                     showAudioCheckbox
                     isPending={createText.isPending}
@@ -100,7 +104,7 @@ export function TextsSection() {
             )}
 
             {editState && (
-                <TextForm
+                <ReadingForm
                     heading="Editing text"
                     initialTitle={editState.title}
                     initialContent={editState.content}
@@ -119,7 +123,7 @@ export function TextsSection() {
             )}
 
             <ul className={styles.itemList}>
-                {(texts as TextAdminItem[]).map((text) => (
+                {(readings as ReadingAdminItem[]).map((text) => (
                     <TextItem
                         key={text.id}
                         text={text}
@@ -137,8 +141,8 @@ export function TextsSection() {
                         deleteIsPending={deleteText.isPending}
                     />
                 ))}
-                {texts.length === 0 && (
-                    <li className={styles.empty}>No texts yet.</li>
+                {readings.length === 0 && (
+                    <li className={styles.empty}>No readings yet.</li>
                 )}
             </ul>
         </div>
