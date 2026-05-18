@@ -8,11 +8,11 @@ import {
 } from 'typeorm';
 
 export enum QuizCategory {
-    GRAMMAR = 'GRAMMAR',
-    VOCABULARY = 'VOCABULARY',
-    READING = 'READING',
-    LISTENING = 'LISTENING',
-    CUSTOM = 'CUSTOM',
+    GRAMMAR = 'grammar',
+    VOCABULARY = 'vocabulary',
+    READING = 'reading',
+    LISTENING = 'listening',
+    CUSTOM = 'custom',
 }
 
 export enum ProficiencyLevel {
@@ -22,7 +22,7 @@ export enum ProficiencyLevel {
     B2 = 'B2',
     C1 = 'C1',
     C2 = 'C2',
-    ANY = 'ANY',
+    ANY = 'any',
 }
 
 @Entity({ name: 'quizzes' })
