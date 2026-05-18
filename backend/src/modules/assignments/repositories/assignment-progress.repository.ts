@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class SendEmailRepository {
+export class AssignmentProgressRepository {
     private readonly FIND_ASSIGNMENT_COMPLETION_SQL = `
     WITH
         ATTEMPT_DATA AS (
@@ -70,24 +70,11 @@ export class SendEmailRepository {
 
     constructor(private readonly dataSource: DataSource) {}
 
-    async findAssignmentCompletionByQuizAttemptId(
-        attemptId: number,
-    ): Promise<any> {
+    async findAssignmentCompletionByQuizAttemptId(attemptId: string) {
         const result = await this.dataSource.query(
             this.FIND_ASSIGNMENT_COMPLETION_SQL,
             [attemptId],
         );
-
-        if (!result || result.length === 0) {
-            throw new NotFoundException('Quiz attempt not found');
-        }
-
-        if (!result[0].completedAt) {
-            throw new NotFoundException(
-                'Quiz attempt must be completed before sending email',
-            );
-        }
-
         return result[0];
     }
 }

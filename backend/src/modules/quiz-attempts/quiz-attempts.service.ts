@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IsNull, Not } from 'typeorm';
+import { AssignmentsService } from '../assignments/assignments.service';
 import { SendEmailService } from '../send-email/send-email.service';
 import { UserResponseDto } from '../users/dto/user.response.dto';
 import { QuizAttemptCreateDto } from './dto/quiz-attempt.create.dto';
@@ -12,6 +12,7 @@ export class QuizAttemptsService {
     constructor(
         private readonly attemptRepo: QuizAttemptRepository,
         private readonly sendEmailService: SendEmailService,
+        private readonly assignmentsService: AssignmentsService,
     ) {}
 
     async findByUserIdAndQuizId(dto: QuizAttemptQueryDto) {
@@ -27,8 +28,13 @@ export class QuizAttemptsService {
         });
     }
 
-    async submitAttempt(attemptId: string): Promise<QuizAttempt> {
-        return await this.attemptRepo.submitAttempt(attemptId);
+    async submitAttempt(
+        user: UserResponseDto,
+        attemptId: string,
+    ): Promise<QuizAttempt> {
+        const result = await this.attemptRepo.submitAttempt(attemptId);
+        void this.assignmentsService.sendCompletionEmail(user, attemptId);
+        return result;
     }
 
     async create(
@@ -46,13 +52,12 @@ export class QuizAttemptsService {
         });
         const result = await this.attemptRepo.save(entity);
 
-        void this.sendEmailService.sendFromDto({
-            name: user.name,
-            email: user.teacherEmail!,
-            subject: `${user.name} has started quiz "${quizTitle}"`,
-            title: `Quiz Attempt Started`,
-            body: `${user.name} has started a quiz attempt for quiz "${quizTitle}" on ${new Date().toLocaleString()}.`,
-        });
+        void this.sendEmailService.send(
+            user.teacherEmail!,
+            `${user.name} has started quiz "${quizTitle}"`,
+            `Quiz Attempt Started`,
+            `${user.name} has started a quiz attempt for quiz "${quizTitle}" on ${new Date().toLocaleString()}.`,
+        );
 
         return result;
     }

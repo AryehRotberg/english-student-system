@@ -45,9 +45,11 @@ export class QuizAttemptsController {
     }
 
     @Post(':attemptId/submit')
+    @UseGuards(AuthGuard)
     async submitAttempt(
+        @User() user: UserResponseDto,
         @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
     ): Promise<QuizAttempt> {
-        return await this.service.submitAttempt(attemptId);
+        return await this.service.submitAttempt(user, attemptId);
     }
 }

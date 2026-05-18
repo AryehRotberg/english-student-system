@@ -78,13 +78,12 @@ export class UsersService {
             relations: ['teacher'],
         });
         const dto = UserResponseDto.fromEntity(entity!);
-        await this.sendEmailService.sendFromDto({
-            name: dto.name,
-            email: dto.email,
-            subject: 'Your account has been approved — welcome!',
-            title: `Welcome, ${dto.name}!`,
-            body: `Great news — your registration has been approved by your teacher. You can now sign in and start learning.`,
-        });
+        await this.sendEmailService.send(
+            dto.email,
+            'Your account has been approved — welcome!',
+            `Welcome, ${dto.name}!`,
+            `Great news — your registration has been approved by your teacher. You can now sign in and start learning.`,
+        );
         return dto;
     }
 

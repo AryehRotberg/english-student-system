@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { NodemailerService } from '../../config/nodemailer';
-import { SendEmailDto } from './dto/send-email.dto';
 import { escapeHtml } from './send-email.utils';
 import { defaultTemplate } from './templates/default-template.template';
 
@@ -12,13 +11,13 @@ export class SendEmailService {
         }
     }
 
-    async send(to: string, subject: string, html: string) {
-        return await this.nodemailerService.sendEmail(to, subject, html);
-    }
-
-    async sendFromDto(sendEmailDto: SendEmailDto) {
-        const { email, subject, title, body } = sendEmailDto;
-
+    async send(
+        to: string,
+        subject: string,
+        title: string,
+        body: string,
+        cards = '',
+    ) {
         const safeTitle = escapeHtml(title);
         const safeBody = escapeHtml(body)
             .replace(/\r\n|\r|\n/g, '<br/>')
@@ -26,9 +25,9 @@ export class SendEmailService {
         const portalUrl = process.env.FRONTEND_URL!;
 
         const html = defaultTemplate(
-            { title: safeTitle, body: safeBody },
+            { title: safeTitle, body: safeBody, cards },
             portalUrl,
         );
-        return await this.send(email, subject, html);
+        return await this.nodemailerService.sendEmail(to, subject, html);
     }
 }

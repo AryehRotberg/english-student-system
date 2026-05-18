@@ -28,7 +28,9 @@ export function PendingStudentsSection() {
     if (students.length === 0) {
         return (
             <div className={styles.section}>
-                <p className={styles.empty}>No pending students awaiting approval.</p>
+                <p className={styles.empty}>
+                    No pending students awaiting approval.
+                </p>
             </div>
         );
     }
@@ -42,7 +44,9 @@ export function PendingStudentsSection() {
                     </div>
                     <div className={styles.studentCardBody}>
                         <p className={styles.studentCardName}>{student.name}</p>
-                        <p className={styles.studentCardEmail}>{student.email}</p>
+                        <p className={styles.studentCardEmail}>
+                            {student.email}
+                        </p>
                     </div>
                     <div className={styles.pendingCardActions}>
                         <button
