@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { QuestionAcceptedAnswersService } from '../question-accepted-answers/question-accepted-answers.service';
 import { QuestionChoicesService } from '../question-choices/question-choices.service';
 import { QuestionsService } from '../questions/questions.service';
 import { QuizQuestionsService } from '../quiz-questions/quiz-questions.service';
 import { QuizAiDraftCreateDto, QuizCreateDto } from './dto/quiz.create.dto';
-import { Quiz } from './entities/quiz.entity';
+import { ProficiencyLevel, Quiz, QuizCategory } from './entities/quiz.entity';
 
 @Injectable()
 export class QuizzesService {
@@ -19,8 +19,18 @@ export class QuizzesService {
         private readonly questionChoicesService: QuestionChoicesService,
     ) {}
 
-    findAll(): Promise<Quiz[]> {
-        return this.quizRepo.find();
+    findAll(
+        category?: QuizCategory,
+        level?: ProficiencyLevel,
+    ): Promise<Quiz[]> {
+        const where: FindOptionsWhere<Quiz> = {};
+        if (category) {
+            where.category = category;
+        }
+        if (level) {
+            where.level = level;
+        }
+        return this.quizRepo.find({ where, order: { createdAt: 'DESC' } });
     }
 
     async create(dto: QuizCreateDto): Promise<Quiz> {

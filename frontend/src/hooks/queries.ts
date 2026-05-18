@@ -10,6 +10,7 @@ import { quizAttemptsService } from '../services/quiz-attempts.service';
 import { quizQuestionsService } from '../services/quiz-questions.service';
 import { quizStudyGuidesService } from '../services/quiz-study-guides.service';
 import { quizzesService } from '../services/quizzes.service';
+import type { QuizFilters } from '../services/quizzes.service';
 import type { StudentAnswerApiItem } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
 import { readingsService } from '../services/readings.service';
@@ -36,7 +37,7 @@ export type {
     QuestionAdminItem,
     QuestionChoiceAdminItem,
     RawQuizQuestionAdminItem,
-    ReadingAdminItem
+    ReadingAdminItem,
 } from '../types/admin-query-items';
 
 export function useDashboardOverview() {
@@ -99,10 +100,10 @@ export function useQuizQuestions(quizId?: string) {
     });
 }
 
-export function useQuizzes() {
+export function useQuizzes(filters: QuizFilters = {}) {
     return useQuery<QuizSummary[]>({
-        queryKey: ['quizzes'],
-        queryFn: () => quizzesService.findAll(),
+        queryKey: ['quizzes', filters],
+        queryFn: () => quizzesService.findAll(filters),
     });
 }
 
