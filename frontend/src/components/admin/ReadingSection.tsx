@@ -18,7 +18,7 @@ import { TextItem } from './readings/TextItem';
 
 type EditState = { id: string } & ReadingFormValues;
 
-export function TextsSection() {
+export function ReadingsSection() {
     const { data: readings = [] } = useReadings();
     const { data: quizzes = [] } = useQuizzes();
     const { data: vocabTopics = [] } = useVocabularyTopics();
