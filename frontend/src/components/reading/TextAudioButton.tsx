@@ -19,7 +19,9 @@ export function TextAudioPlayer({ textId }: Props) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [speed, setSpeed] = useState(1);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const speedRef = useRef(1);
 
     useEffect(() => {
         return () => {
@@ -30,6 +32,7 @@ export function TextAudioPlayer({ textId }: Props) {
     useEffect(() => {
         if (!url) return;
         const audio = new Audio(url);
+        audio.playbackRate = speedRef.current;
         audioRef.current = audio;
         setIsReady(true);
 
@@ -66,7 +69,7 @@ export function TextAudioPlayer({ textId }: Props) {
             setIsFetching(true);
             try {
                 const fetched = await audioService.downloadAudio(
-                    'texts',
+                    'texts/audio',
                     `${textId}.mp3`,
                 );
                 setUrl(fetched);
@@ -94,6 +97,12 @@ export function TextAudioPlayer({ textId }: Props) {
         const a = audioRef.current;
         if (!a) return;
         a.currentTime = Math.max(0, Math.min(duration, a.currentTime + secs));
+    };
+
+    const handleSpeed = (s: number) => {
+        speedRef.current = s;
+        setSpeed(s);
+        if (audioRef.current) audioRef.current.playbackRate = s;
     };
 
     if (notFound) return null;
@@ -194,6 +203,22 @@ export function TextAudioPlayer({ textId }: Props) {
                     </svg>
                     <span className={styles.skipLabel}>10s</span>
                 </button>
+            </div>
+
+            <div className={styles.speedRow}>
+                {[0.5, 0.75, 1, 1.25, 1.5, 2].map((s) => (
+                    <button
+                        aria-label={`Set speed to ${s}x`}
+                        aria-pressed={speed === s}
+                        className={`${styles.speedBtn} ${speed === s ? styles.speedBtnActive : ''}`}
+                        disabled={!isReady}
+                        key={s}
+                        onClick={() => handleSpeed(s)}
+                        type="button"
+                    >
+                        {s}x
+                    </button>
+                ))}
             </div>
         </div>
     );

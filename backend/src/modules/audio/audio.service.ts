@@ -9,7 +9,7 @@ type AudioModelId = 'eleven_v3' | 'eleven_flash_v2_5';
 @Injectable()
 export class AudioService {
     private elevenlabs: ElevenLabsClient;
-    private modelId: AudioModelId = 'eleven_v3';
+    private modelId: AudioModelId = 'eleven_flash_v2_5';
 
     constructor(private readonly supabaseService: SupabaseService) {
         this.elevenlabs = new ElevenLabsClient();

@@ -57,4 +57,15 @@ export class SupabaseService {
         }
         return data.signedUrl;
     }
+
+    async createPublicUrl(bucket: string, path: string): Promise<string> {
+        const { data } = this.supabase.storage.from(bucket).getPublicUrl(path);
+        if (!data?.publicUrl) {
+            console.error('Supabase public URL error: publicUrl not found');
+            throw new BadRequestException(
+                'Audio file not found or could not generate public URL.',
+            );
+        }
+        return data.publicUrl;
+    }
 }

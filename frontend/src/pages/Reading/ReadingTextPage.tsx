@@ -1,5 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import { TextAudioPlayer } from '../../components/reading/TextAudioButton';
@@ -11,6 +12,7 @@ const SANITIZE_SCHEMA = {
     ...defaultSchema,
     tagNames: [
         ...(defaultSchema.tagNames || []),
+        'center',
         'table',
         'thead',
         'tbody',
@@ -22,6 +24,7 @@ const SANITIZE_SCHEMA = {
         ...defaultSchema.attributes,
         th: ['align'],
         td: ['align'],
+        img: ['src', 'alt', 'title', 'width', 'height'],
     },
 };
 
@@ -76,7 +79,10 @@ export function ReadingTextPage() {
 
                 <div className={styles.markdownBody}>
                     <ReactMarkdown
-                        rehypePlugins={[[rehypeSanitize, SANITIZE_SCHEMA]]}
+                        rehypePlugins={[
+                            rehypeRaw,
+                            [rehypeSanitize, SANITIZE_SCHEMA],
+                        ]}
                         remarkPlugins={[remarkGfm]}
                     >
                         {item.content}
@@ -90,10 +96,16 @@ export function ReadingTextPage() {
                     onClick={() => navigate(`/quiz/${textDetail.quiz!.id}`)}
                     type="button"
                 >
-                    <div className={styles.quizCardLabel}>Quiz for this text</div>
-                    <div className={styles.quizCardTitle}>{textDetail.quiz.title}</div>
+                    <div className={styles.quizCardLabel}>
+                        Quiz for this text
+                    </div>
+                    <div className={styles.quizCardTitle}>
+                        {textDetail.quiz.title}
+                    </div>
                     {textDetail.quiz.description && (
-                        <div className={styles.quizCardDesc}>{textDetail.quiz.description}</div>
+                        <div className={styles.quizCardDesc}>
+                            {textDetail.quiz.description}
+                        </div>
                     )}
                 </button>
             )}
@@ -101,13 +113,23 @@ export function ReadingTextPage() {
             {textDetail?.vocabularyTopic && (
                 <button
                     className={styles.vocabCard}
-                    onClick={() => navigate(`/vocab?topicId=${textDetail.vocabularyTopic!.id}`)}
+                    onClick={() =>
+                        navigate(
+                            `/vocab?topicId=${textDetail.vocabularyTopic!.id}`,
+                        )
+                    }
                     type="button"
                 >
-                    <div className={styles.vocabCardLabel}>Vocabulary for this text</div>
-                    <div className={styles.vocabCardTitle}>{textDetail.vocabularyTopic.topic}</div>
+                    <div className={styles.vocabCardLabel}>
+                        Vocabulary for this text
+                    </div>
+                    <div className={styles.vocabCardTitle}>
+                        {textDetail.vocabularyTopic.topic}
+                    </div>
                     {textDetail.vocabularyTopic.description && (
-                        <div className={styles.vocabCardDesc}>{textDetail.vocabularyTopic.description}</div>
+                        <div className={styles.vocabCardDesc}>
+                            {textDetail.vocabularyTopic.description}
+                        </div>
                     )}
                 </button>
             )}

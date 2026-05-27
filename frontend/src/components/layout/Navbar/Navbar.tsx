@@ -89,18 +89,6 @@ export function Navbar({ sticky = true }: NavbarProps) {
                                 {link.label}
                             </NavLink>
                         ))}
-                    {user?.role === 'teacher' && (
-                        <NavLink
-                            to="/admin"
-                            className={({ isActive }) =>
-                                isActive
-                                    ? `${styles.link} ${styles.active}`
-                                    : styles.link
-                            }
-                        >
-                            Admin
-                        </NavLink>
-                    )}
                 </nav>
 
                 <div className={styles.actions}>
