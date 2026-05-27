@@ -57,6 +57,11 @@
     line-height: 1.75;
 }
 
+.markdownBody img {
+    height: auto;
+    max-width: 100%;
+}
+
 .markdownBody h1,
 .markdownBody h2,
 .markdownBody h3 {
@@ -95,7 +100,9 @@
     display: block;
     padding: 1.25rem 1.5rem;
     text-align: left;
-    transition: box-shadow 0.15s, border-color 0.15s;
+    transition:
+        box-shadow 0.15s,
+        border-color 0.15s;
     width: 100%;
 }
 
@@ -135,7 +142,9 @@
     display: block;
     padding: 1.25rem 1.5rem;
     text-align: left;
-    transition: box-shadow 0.15s, border-color 0.15s;
+    transition:
+        box-shadow 0.15s,
+        border-color 0.15s;
     width: 100%;
 }
 

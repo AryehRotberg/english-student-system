@@ -142,3 +142,43 @@
         transform: rotate(360deg);
     }
 }
+
+.speedRow {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+.speedBtn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    color: rgba(255, 255, 255, 0.65);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    transition:
+        background 0.15s,
+        color 0.15s,
+        border-color 0.15s;
+}
+
+.speedBtn:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff;
+}
+
+.speedBtn:disabled {
+    cursor: default;
+    opacity: 0.35;
+}
+
+.speedBtnActive {
+    background: #e91e8c;
+    border-color: #e91e8c;
+    color: #fff;
+}
