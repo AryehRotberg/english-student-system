@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useVocabAudio } from '../../hooks/queries';
 import { AudioNotFoundError } from '../../services/audio.service';
 import type { VocabAudioType } from '../../services/audio.service';
@@ -52,16 +52,31 @@ function AudioButton({ word, type, label }: AudioButtonProps) {
 type VocabStudyPanelProps = {
     topic: VocabularyTopicWithWords;
     isLoadingWords?: boolean;
+    initialWord?: string;
     onBack: () => void;
 };
 
 export function VocabStudyPanel({
     topic,
     isLoadingWords = false,
+    initialWord,
     onBack,
 }: VocabStudyPanelProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
+    const hasJumpedRef = useRef(false);
+
+    useEffect(() => {
+        if (!initialWord || hasJumpedRef.current || topic.words.length === 0)
+            return;
+        const idx = topic.words.findIndex(
+            (w) => w.word.toLowerCase() === initialWord.toLowerCase(),
+        );
+        if (idx >= 0) {
+            setCurrentIndex(idx);
+            hasJumpedRef.current = true;
+        }
+    }, [topic.words, initialWord]);
 
     const totalCards = topic.words.length;
     const currentCard = topic.words[currentIndex];
