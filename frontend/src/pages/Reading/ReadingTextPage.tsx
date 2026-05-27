@@ -1,5 +1,5 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
@@ -84,6 +84,36 @@ export function ReadingTextPage() {
                             [rehypeSanitize, SANITIZE_SCHEMA],
                         ]}
                         remarkPlugins={[remarkGfm]}
+                        components={{
+                            a({ href, children, ...props }) {
+                                const isInternal = href?.startsWith('/');
+                                if (isInternal) {
+                                    return (
+                                        <a
+                                            {...props}
+                                            href={href}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate(href!);
+                                            }}
+                                            className={styles.vocabLink}
+                                        >
+                                            {children}
+                                        </a>
+                                    );
+                                }
+                                return (
+                                    <a
+                                        {...props}
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {children}
+                                    </a>
+                                );
+                            },
+                        }}
                     >
                         {item.content}
                     </ReactMarkdown>

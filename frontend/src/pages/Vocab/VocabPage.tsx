@@ -18,6 +18,7 @@ export function VocabPage() {
     const [filterQuery, setFilterQuery] = useState('');
 
     const activeTopicId = searchParams.get('topicId');
+    const activeWord = searchParams.get('word') ?? undefined;
 
     const { data: words = [], isLoading: isWordsLoading } =
         useVocabularyTopicWords(activeTopicId ?? undefined);
@@ -57,6 +58,7 @@ export function VocabPage() {
                 <VocabStudyPanel
                     topic={activeTopic}
                     isLoadingWords={isWordsLoading}
+                    initialWord={activeWord}
                     onBack={handleBackToTopics}
                 />
             ) : (
