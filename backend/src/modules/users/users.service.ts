@@ -87,6 +87,19 @@ export class UsersService {
         return dto;
     }
 
+    async updatePassword(
+        id: string,
+        newPassword: string,
+    ): Promise<UserResponseDto> {
+        const hashedPassword = await this.hashingService.hash(newPassword);
+        Logger.debug(`Updating password for user ${id}. Hashed password: ${hashedPassword}`);
+        await this.userRepo.update(id, { password: hashedPassword });
+        const entity = await this.userRepo.findOne({
+            where: { id },
+        });
+        return UserResponseDto.fromEntity(entity!);
+    }
+
     async remove(id: string): Promise<UserResponseDto> {
         const entity = await this.userRepo.findOneBy({ id });
         await this.userRepo.delete(id);

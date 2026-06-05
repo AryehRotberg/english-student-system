@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import type { Response } from 'express';
-import { UserCreateDto } from '../modules/users/dto/user.create.dto';
 import { UserResponseDto } from '../modules/users/dto/user.response.dto';
 import { UsersService } from '../modules/users/users.service';
 import { LoginDto } from './dto/login.dto';
@@ -40,10 +39,6 @@ export class AuthService {
         res.cookie('access_token', token, this.getCookieOptions());
 
         return UserResponseDto.fromEntity(user);
-    }
-
-    async register(createUserDto: UserCreateDto): Promise<UserResponseDto> {
-        return this.usersService.create(createUserDto);
     }
 
     async logout(res: Response): Promise<void> {

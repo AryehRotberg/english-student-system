@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useVocabAudio } from '../../hooks/queries';
-import { AudioNotFoundError } from '../../services/audio.service';
 import type { VocabAudioType } from '../../services/audio.service';
+import { AudioNotFoundError } from '../../services/audio.service';
 import type { VocabularyTopicWithWords } from '../../types/vocabulary';
 import styles from './VocabStudyPanel.module.css';
 

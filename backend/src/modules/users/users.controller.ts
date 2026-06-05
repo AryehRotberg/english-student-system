@@ -19,11 +19,11 @@ export class UsersController {
     @Get('students')
     @UseGuards(TeacherGuard)
     async findStudentsByTeacherId(
-        @User() user,
+        @User('id') teacherId: string,
         @Query('approved') approved = 'true',
     ) {
         return await this.usersService.findStudentsByTeacherId(
-            user.id,
+            teacherId,
             approved === 'true',
         );
     }
