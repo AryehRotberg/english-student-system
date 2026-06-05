@@ -1,10 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-    IsArray,
-    IsString,
-    IsUUID,
-    ValidateIf
-} from 'class-validator';
+import { IsArray, IsString, IsUUID, ValidateIf } from 'class-validator';
 
 export class StudentAnswerUpsertDto {
     @IsUUID()

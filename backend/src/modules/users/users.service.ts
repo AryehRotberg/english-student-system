@@ -92,7 +92,9 @@ export class UsersService {
         newPassword: string,
     ): Promise<UserResponseDto> {
         const hashedPassword = await this.hashingService.hash(newPassword);
-        Logger.debug(`Updating password for user ${id}. Hashed password: ${hashedPassword}`);
+        Logger.debug(
+            `Updating password for user ${id}. Hashed password: ${hashedPassword}`,
+        );
         await this.userRepo.update(id, { password: hashedPassword });
         const entity = await this.userRepo.findOne({
             where: { id },

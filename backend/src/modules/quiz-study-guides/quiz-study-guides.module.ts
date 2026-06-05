@@ -7,6 +7,5 @@ import { StudyGuide } from './entities/study-guide.entity';
     imports: [TypeOrmModule.forFeature([StudyGuide])],
     controllers: [QuizStudyGuidesController],
     providers: [],
-
 })
 export class QuizStudyGuidesModule {}

@@ -3,8 +3,8 @@ import type { Response } from 'express';
 import { UserCreateDto } from '../modules/users/dto/user.create.dto';
 import { UserResponseDto } from '../modules/users/dto/user.response.dto';
 import { UsersService } from '../modules/users/users.service';
-import { AuthService } from './auth.service';
 import { User } from './decorators/user.decorator';
+import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './guards/auth.guard';
 

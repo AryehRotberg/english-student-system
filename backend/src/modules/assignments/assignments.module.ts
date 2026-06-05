@@ -9,9 +9,17 @@ import { AssignmentProgressRepository } from './repositories/assignment-progress
 import { AssignmentRepository } from './repositories/assignment.repository';
 
 @Module({
-    imports: [AuthModule, SendEmailModule, TypeOrmModule.forFeature([Assignment])],
+    imports: [
+        AuthModule,
+        SendEmailModule,
+        TypeOrmModule.forFeature([Assignment]),
+    ],
     controllers: [AssignmentsController],
-    providers: [AssignmentsService, AssignmentRepository, AssignmentProgressRepository],
+    providers: [
+        AssignmentsService,
+        AssignmentRepository,
+        AssignmentProgressRepository,
+    ],
     exports: [AssignmentsService],
 })
 export class AssignmentsModule {}

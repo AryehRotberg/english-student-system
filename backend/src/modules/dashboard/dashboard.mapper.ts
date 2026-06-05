@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AssignmentItemResponseDto } from '../assignment-items/dto/assignment-item.response.dto';
 import { Assignment } from '../assignments/entities/assignment.entity';
-import { ContentProgressRow, ProgressMetric, QuizProgressRow } from './types/dashboard.types';
+import {
+    ContentProgressRow,
+    ProgressMetric,
+    QuizProgressRow,
+} from './types/dashboard.types';
 
 const DEFAULT_ASSIGNMENT_DESCRIPTION = 'No assignment description.';
 

@@ -5,15 +5,7 @@ import { SupabaseService } from './supabase.client';
 
 @Global()
 @Module({
-    providers: [
-        NodemailerService,
-        RedisService,
-        SupabaseService,
-    ],
-    exports: [
-        NodemailerService,
-        RedisService,
-        SupabaseService,
-    ],
+    providers: [NodemailerService, RedisService, SupabaseService],
+    exports: [NodemailerService, RedisService, SupabaseService],
 })
 export class ConfigModule {}

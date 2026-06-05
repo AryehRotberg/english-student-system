@@ -2,15 +2,15 @@ import { IsBoolean, IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class QuestionChoiceCreateDto {
-	@IsUUID()
-	@ApiProperty()
-	questionId: string;
+    @IsUUID()
+    @ApiProperty()
+    questionId: string;
 
-	@IsString()
-	@ApiProperty()
-	optionText: string;
+    @IsString()
+    @ApiProperty()
+    optionText: string;
 
-	@IsBoolean()
-	@ApiProperty()
-	isCorrect: boolean;
+    @IsBoolean()
+    @ApiProperty()
+    isCorrect: boolean;
 }
