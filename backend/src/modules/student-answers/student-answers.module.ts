@@ -9,6 +9,10 @@ import { StudentAnswerRepository } from './repositories/student-answer.repositor
 @Module({
     imports: [TypeOrmModule.forFeature([StudentAnswer])],
     controllers: [StudentAnswersController],
-    providers: [StudentAnswersService, StudentAnswersCommon, StudentAnswerRepository],
+    providers: [
+        StudentAnswersService,
+        StudentAnswersCommon,
+        StudentAnswerRepository,
+    ],
 })
 export class StudentAnswersModule {}

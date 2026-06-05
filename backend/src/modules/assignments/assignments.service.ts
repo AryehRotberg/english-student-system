@@ -72,7 +72,13 @@ export class AssignmentsService {
                 totalItems,
             });
 
-        return await this.sendEmailService.send(user.teacherEmail!, subject, title, body, cards);
+        return await this.sendEmailService.send(
+            user.teacherEmail!,
+            subject,
+            title,
+            body,
+            cards,
+        );
     }
 
     private formatNumber(value: number): string {
