@@ -4,6 +4,7 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class NodemailerService {
+    private readonly logger = new Logger(NodemailerService.name);
     private transporter: nodemailer.Transporter;
 
     constructor() {
@@ -34,10 +35,10 @@ export class NodemailerService {
                 subject,
                 html,
             });
-            Logger.log('Email sent: ' + info.response);
+            this.logger.log('Email sent: ' + info.response);
             return info;
         } catch (error) {
-            Logger.error('Error sending email:', error);
+            this.logger.error('Error sending email:', error);
             Sentry.captureException(error);
             throw error;
         }

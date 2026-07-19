@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/guards/auth.guard';
+import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { AssignmentItemsService } from './assignment-items.service';
 import { AssignmentItemCreateDto } from './dto/assignment-item.create.dto';
 import { AssignmentItemQueryDto } from './dto/assignment-item.query.dto';
@@ -10,6 +10,7 @@ export class AssignmentItemsController {
     constructor(private readonly service: AssignmentItemsService) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     async findByUserId(
         @Query() dto: AssignmentItemQueryDto,
     ): Promise<AssignmentItemResponseDto[]> {

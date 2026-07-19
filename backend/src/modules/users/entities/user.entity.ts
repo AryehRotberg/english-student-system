@@ -7,6 +7,8 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
+export type UserRole = 'student' | 'teacher';
+
 @Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn('uuid')
@@ -22,7 +24,7 @@ export class User {
     password: string;
 
     @Column({ type: 'text' })
-    role: string;
+    role: UserRole;
 
     @Column({ name: 'teacher_id', type: 'uuid', nullable: true })
     teacherId: string | null;

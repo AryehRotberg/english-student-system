@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-@Injectable()
-export class AssignmentProgressRepository {
-    private readonly FIND_ASSIGNMENT_COMPLETION_SQL = `
+const FIND_ASSIGNMENT_COMPLETION_SQL = `
     WITH
         ATTEMPT_DATA AS (
             SELECT
@@ -68,11 +66,13 @@ export class AssignmentProgressRepository {
         ) AP ON AD2."assignmentId" IS NOT NULL;
     `;
 
+@Injectable()
+export class AssignmentProgressRepository {
     constructor(private readonly dataSource: DataSource) {}
 
     async findAssignmentCompletionByQuizAttemptId(attemptId: string) {
         const result = await this.dataSource.query(
-            this.FIND_ASSIGNMENT_COMPLETION_SQL,
+            FIND_ASSIGNMENT_COMPLETION_SQL,
             [attemptId],
         );
         return result[0];

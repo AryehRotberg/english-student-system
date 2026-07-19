@@ -1,8 +1,6 @@
 # Build stage
 FROM node:25-alpine AS builder
 
-RUN npm install -g npm@latest
-
 WORKDIR /usr/src/app
 
 # Copy package files
@@ -25,8 +23,6 @@ ENV TZ=Asia/Jerusalem
 RUN apk update && apk upgrade && apk add --no-cache tzdata
 
 WORKDIR /usr/src/app
-
-RUN npm install -g npm@latest && npm cache clean --force
 
 # Copy package files
 COPY package*.json ./

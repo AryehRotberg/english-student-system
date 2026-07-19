@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
 
+const logger = new Logger('buildQuizPrompt');
+
 export type TargetLevel =
     | 'Beginner (CEFR A1)'
     | 'Elementary (CEFR A2)'
@@ -15,7 +17,7 @@ export function buildQuizPrompt(
     targetLevel: TargetLevel = 'Intermediate (CEFR B1)',
     additionalInstructions?: string,
 ): string {
-    Logger.debug(
+    logger.debug(
         `Building quiz prompt with topic="${topic}", openEndedCount=${openEndedCount}, multipleChoiceCount=${multipleChoiceCount}, targetLevel=${targetLevel}`,
     );
 

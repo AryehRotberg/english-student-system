@@ -2,9 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { StudentAnswer } from '../entities/student-answer.entity';
 
-@Injectable()
-export class StudentAnswerRepository extends Repository<StudentAnswer> {
-    private readonly FIND_CORRECT_OPTIONS_SQL = `
+const FIND_CORRECT_OPTIONS_SQL = `
     SELECT
         QQ.MAX_POINTS AS "maxPoints",
         QO.ID::TEXT AS "correctOptionId"
@@ -18,27 +16,25 @@ export class StudentAnswerRepository extends Repository<StudentAnswer> {
         AND QO.IS_CORRECT = TRUE;
     `;
 
-    private readonly FIND_VALID_TEXT_ANSWERS_SQL = `
+const FIND_VALID_TEXT_ANSWERS_SQL = `
     SELECT
-        QQ.max_points AS "questionMaxPoints",
-        A.answer AS "validAnswer",
-        A.blank_index AS "blankIndex"
+        QQ.MAX_POINTS AS "questionMaxPoints",
+        A.ANSWER AS "validAnswer",
+        A.BLANK_INDEX AS "blankIndex"
     FROM
-        public.quiz_attempts QA
-    INNER JOIN
-        public.quiz_questions QQ ON QQ.quiz_id = QA.quiz_id
-    INNER JOIN 
-        public.question_accepted_answers A ON A.question_id = QQ.question_id
+        QUIZ_ATTEMPTS QA
+        INNER JOIN QUIZ_QUESTIONS QQ ON QQ.QUIZ_ID = QA.QUIZ_ID
+        INNER JOIN QUESTION_ACCEPTED_ANSWERS A ON A.QUESTION_ID = QQ.QUESTION_ID
     WHERE
-        QA.id = $1 
-        AND QQ.question_id = $2
-    ORDER BY 
-        A.blank_index ASC;
+        QA.ID = $1
+        AND QQ.QUESTION_ID = $2
+    ORDER BY
+        A.BLANK_INDEX ASC;
     `;
 
-    private readonly UPSERT_ANSWER_SQL = `
+const UPSERT_ANSWER_SQL = `
     INSERT INTO
-        PUBLIC.STUDENT_ANSWERS (
+        STUDENT_ANSWERS (
             ATTEMPT_ID,
             QUESTION_ID,
             BLANK_INDEX,
@@ -55,7 +51,7 @@ export class StudentAnswerRepository extends Repository<StudentAnswer> {
         (PAYLOAD ->> 'points')::NUMERIC
     FROM
         JSONB_ARRAY_ELEMENTS($3::JSONB) AS PAYLOAD
-        INNER JOIN PUBLIC.QUIZ_ATTEMPTS QA ON QA.ID = $1::UUID
+        INNER JOIN QUIZ_ATTEMPTS QA ON QA.ID = $1::UUID
         AND QA.COMPLETED_AT IS NULL
     ON CONFLICT (ATTEMPT_ID, QUESTION_ID, BLANK_INDEX) DO UPDATE
     SET
@@ -74,6 +70,8 @@ export class StudentAnswerRepository extends Repository<StudentAnswer> {
         CREATED_AT AS "createdAt";
     `;
 
+@Injectable()
+export class StudentAnswerRepository extends Repository<StudentAnswer> {
     constructor(dataSource: DataSource) {
         super(StudentAnswer, dataSource.createEntityManager());
     }
@@ -83,7 +81,7 @@ export class StudentAnswerRepository extends Repository<StudentAnswer> {
         questionId: string,
         payload: Array<any>,
     ): Promise<StudentAnswer[]> {
-        const results = await this.query(this.UPSERT_ANSWER_SQL, [
+        const results = await this.query(UPSERT_ANSWER_SQL, [
             attemptId,
             questionId,
             JSON.stringify(payload),
@@ -99,7 +97,7 @@ export class StudentAnswerRepository extends Repository<StudentAnswer> {
     }
 
     async findCorrectOption(attemptId: string, questionId: string) {
-        const results = await this.query(this.FIND_CORRECT_OPTIONS_SQL, [
+        const results = await this.query(FIND_CORRECT_OPTIONS_SQL, [
             attemptId,
             questionId,
         ]);
@@ -107,10 +105,6 @@ export class StudentAnswerRepository extends Repository<StudentAnswer> {
     }
 
     async findValidTextAnswers(attemptId: string, questionId: string) {
-        const results = await this.query(this.FIND_VALID_TEXT_ANSWERS_SQL, [
-            attemptId,
-            questionId,
-        ]);
-        return results;
+        return this.query(FIND_VALID_TEXT_ANSWERS_SQL, [attemptId, questionId]);
     }
 }

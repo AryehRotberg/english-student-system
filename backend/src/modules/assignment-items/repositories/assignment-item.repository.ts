@@ -3,9 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AssignmentItemResponseDto } from '../dto/assignment-item.response.dto';
 import { AssignmentItem } from '../entities/assignment-item.entity';
 
-@Injectable()
-export class AssignmentItemRepository extends Repository<AssignmentItem> {
-    private readonly BASE_QUERY = `
+const BASE_QUERY = `
     SELECT
         AI.ID,
         A.ID AS "assignmentId",
@@ -29,13 +27,15 @@ export class AssignmentItemRepository extends Repository<AssignmentItem> {
         AND AI.CONTENT_ID = VT.ID
     `;
 
+@Injectable()
+export class AssignmentItemRepository extends Repository<AssignmentItem> {
     constructor(dataSource: DataSource) {
         super(AssignmentItem, dataSource.createEntityManager());
     }
 
     async findByUserId(userId: string): Promise<AssignmentItemResponseDto[]> {
         return this.query(
-            this.BASE_QUERY +
+            BASE_QUERY +
                 `
             WHERE
                 A.USER_ID = $1
@@ -50,11 +50,11 @@ export class AssignmentItemRepository extends Repository<AssignmentItem> {
         userId: string,
     ): Promise<AssignmentItemResponseDto[]> {
         return this.query(
-            this.BASE_QUERY +
+            BASE_QUERY +
                 `
             WHERE
                 A.USER_ID = $1
-                AND AI.IS_COMPLETED = false
+                AND AI.IS_COMPLETED = FALSE
             ORDER BY
                 A.CREATED_AT DESC,
                 A.DUE_DATE ASC NULLS LAST;`,

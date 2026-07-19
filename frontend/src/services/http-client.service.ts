@@ -8,7 +8,7 @@ class HttpClientService {
     constructor() {
         this.API_BASE_URL = import.meta.env.PROD
             ? '/api'
-            : 'http://localhost:3000';
+            : 'http://localhost:5117';
 
         this.instance = axios.create(this.getAxiosConfig());
         this.setupInterceptors();

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
 import { QuestionAcceptedAnswersService } from '../question-accepted-answers/question-accepted-answers.service';
 import { QuestionChoicesService } from '../question-choices/question-choices.service';
 import { QuestionsService } from '../questions/questions.service';
@@ -17,6 +17,7 @@ export class QuizzesService {
         private readonly quizQuestionsService: QuizQuestionsService,
         private readonly questionAcceptedAnswersService: QuestionAcceptedAnswersService,
         private readonly questionChoicesService: QuestionChoicesService,
+        private readonly dataSource: DataSource,
     ) {}
 
     findAll(
@@ -46,50 +47,52 @@ export class QuizzesService {
     }
 
     async createFromAiDraft(metadata: QuizAiDraftCreateDto): Promise<Quiz> {
-        const quiz = await this.create({
-            title: metadata.title,
-            description: metadata.description,
-        });
-
-        for (let i = 0; i < metadata.questions.length; i++) {
-            Logger.debug(
-                `Processing question ${i + 1}/${metadata.questions.length}`,
-            );
-            const q = metadata.questions[i];
-
-            const question = await this.questionsService.create({
-                question: q.question,
-                questionType: q.question_type,
+        return this.dataSource.transaction(async () => {
+            const quiz = await this.create({
+                title: metadata.title,
+                description: metadata.description,
             });
 
-            await this.quizQuestionsService.create({
-                quizId: quiz.id,
-                questionId: question.id,
-                maxPoints: q.maxPoints,
-                orderIndex: i + 1,
-            });
+            for (let i = 0; i < metadata.questions.length; i++) {
+                const q = metadata.questions[i];
 
-            if (q.question_type === 'open_ended' && Array.isArray(q.answers)) {
-                for (const answer of q.answers) {
-                    await this.questionAcceptedAnswersService.create({
-                        questionId: question.id,
-                        answer: answer.text,
-                        blankIndex: answer.blankIndex,
-                    });
-                }
-            } else if (
-                q.question_type === 'multiple_choice' &&
-                Array.isArray(q.options)
-            ) {
-                for (const option of q.options) {
-                    await this.questionChoicesService.create({
-                        questionId: question.id,
-                        optionText: option.text,
-                        isCorrect: option.isCorrect,
-                    });
+                const question = await this.questionsService.create({
+                    question: q.question,
+                    questionType: q.question_type,
+                });
+
+                await this.quizQuestionsService.create({
+                    quizId: quiz.id,
+                    questionId: question.id,
+                    maxPoints: q.maxPoints,
+                    orderIndex: i + 1,
+                });
+
+                if (
+                    q.question_type === 'open_ended' &&
+                    Array.isArray(q.answers)
+                ) {
+                    for (const answer of q.answers) {
+                        await this.questionAcceptedAnswersService.create({
+                            questionId: question.id,
+                            answer: answer.text,
+                            blankIndex: answer.blankIndex,
+                        });
+                    }
+                } else if (
+                    q.question_type === 'multiple_choice' &&
+                    Array.isArray(q.options)
+                ) {
+                    for (const option of q.options) {
+                        await this.questionChoicesService.create({
+                            questionId: question.id,
+                            optionText: option.text,
+                            isCorrect: option.isCorrect,
+                        });
+                    }
                 }
             }
-        }
-        return quiz;
+            return quiz;
+        });
     }
 }

@@ -2,11 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { QuizQuestion } from '../entities/quiz-question.entity';
 
-@Injectable()
-export class QuizQuestionRepository extends Repository<QuizQuestion> {
-    private readonly FIND_FULL_QUIZ_SQL = `
+// CTE is named QUESTION_LIST (not QUIZ_QUESTIONS) to avoid shadowing the real table.
+const FIND_FULL_QUIZ_SQL = `
     WITH
-        quiz_questions AS (
+        QUESTION_LIST AS (
             SELECT
                 QQ.ID,
                 QQ.QUESTION_ID,
@@ -17,7 +16,7 @@ export class QuizQuestionRepository extends Repository<QuizQuestion> {
             WHERE
                 QQ.QUIZ_ID = $1
         ),
-        options_by_question AS (
+        OPTIONS_BY_QUESTION AS (
             SELECT
                 QO.QUESTION_ID,
                 json_agg(
@@ -31,49 +30,49 @@ export class QuizQuestionRepository extends Repository<QuizQuestion> {
                     )
                     ORDER BY
                         QO.ID
-                ) AS options
+                ) AS OPTIONS
             FROM
                 QUESTION_CHOICES QO
-                JOIN quiz_questions QQ ON QQ.QUESTION_ID = QO.QUESTION_ID
+                JOIN QUESTION_LIST QL ON QL.QUESTION_ID = QO.QUESTION_ID
             GROUP BY
                 QO.QUESTION_ID
         ),
-        blanks_by_question AS (
+        BLANKS_BY_QUESTION AS (
             SELECT
                 A.QUESTION_ID,
-                MAX(A.BLANK_INDEX) AS blank_count
+                MAX(A.BLANK_INDEX) AS BLANK_COUNT
             FROM
                 QUESTION_ACCEPTED_ANSWERS A
-                JOIN quiz_questions QQ ON QQ.QUESTION_ID = A.QUESTION_ID
+                JOIN QUESTION_LIST QL ON QL.QUESTION_ID = A.QUESTION_ID
             GROUP BY
                 A.QUESTION_ID
         )
     SELECT
-        QQ.ID AS id,
-        QQ.QUESTION_ID AS "questionId",
+        QL.ID AS ID,
+        QL.QUESTION_ID AS "questionId",
         Q.QUESTION AS "prompt",
         Q.HINTS AS "hints",
         Q.QUESTION_TYPE AS "questionType",
-        QQ.MAX_POINTS AS "maxPoints",
-        COALESCE(OBQ.OPTIONS, '[]'::json) AS options,
-        COALESCE(BBQ.blank_count, 0) AS "blankCount"
+        QL.MAX_POINTS AS "maxPoints",
+        COALESCE(OBQ.OPTIONS, '[]'::json) AS OPTIONS,
+        COALESCE(BBQ.BLANK_COUNT, 0) AS "blankCount"
     FROM
-        quiz_questions QQ
-        JOIN QUESTIONS Q ON QQ.QUESTION_ID = Q.ID
-        LEFT JOIN options_by_question OBQ ON OBQ.QUESTION_ID = QQ.QUESTION_ID
-        LEFT JOIN blanks_by_question BBQ ON BBQ.QUESTION_ID = QQ.QUESTION_ID
+        QUESTION_LIST QL
+        JOIN QUESTIONS Q ON QL.QUESTION_ID = Q.ID
+        LEFT JOIN OPTIONS_BY_QUESTION OBQ ON OBQ.QUESTION_ID = QL.QUESTION_ID
+        LEFT JOIN BLANKS_BY_QUESTION BBQ ON BBQ.QUESTION_ID = QL.QUESTION_ID
     ORDER BY
-        QQ.ORDER_INDEX ASC;
+        QL.ORDER_INDEX ASC;
     `;
 
+@Injectable()
+export class QuizQuestionRepository extends Repository<QuizQuestion> {
     constructor(dataSource: DataSource) {
         super(QuizQuestion, dataSource.createEntityManager());
     }
 
     async getFullQuiz(quizId: string) {
-        const questionsRaw = await this.query(this.FIND_FULL_QUIZ_SQL, [
-            quizId,
-        ]);
+        const questionsRaw = await this.query(FIND_FULL_QUIZ_SQL, [quizId]);
 
         return questionsRaw.map((q, index) => ({
             ...q,

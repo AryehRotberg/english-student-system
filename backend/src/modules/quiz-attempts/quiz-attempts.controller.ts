@@ -21,6 +21,7 @@ export class QuizAttemptsController {
     constructor(private readonly service: QuizAttemptsService) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     async findByUserIdAndQuizId(
         @Query() dto: QuizAttemptQueryDto,
     ): Promise<QuizAttempt[]> {

@@ -36,8 +36,4 @@ export class UserResponseDto {
     static fromEntity(user: User): UserResponseDto {
         return new UserResponseDto(user);
     }
-
-    static fromEntities(users: User[]): UserResponseDto[] {
-        return users.map(UserResponseDto.fromEntity);
-    }
 }

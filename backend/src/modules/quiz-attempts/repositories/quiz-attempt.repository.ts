@@ -2,9 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { QuizAttempt } from '../entities/quiz-attempt.entity';
 
-@Injectable()
-export class QuizAttemptRepository extends Repository<QuizAttempt> {
-    private readonly SUBMIT_SQL = `
+const SUBMIT_SQL = `
     WITH
         UPDATED_ATTEMPT AS (
             UPDATE QUIZ_ATTEMPTS
@@ -15,7 +13,7 @@ export class QuizAttemptRepository extends Repository<QuizAttempt> {
                         SELECT
                             SUM(COALESCE(POINTS, 0))
                         FROM
-                            student_answers
+                            STUDENT_ANSWERS
                         WHERE
                             ATTEMPT_ID = $1
                     ),
@@ -57,12 +55,14 @@ export class QuizAttemptRepository extends Repository<QuizAttempt> {
         UPDATED_ATTEMPT;
     `;
 
+@Injectable()
+export class QuizAttemptRepository extends Repository<QuizAttempt> {
     constructor(dataSource: DataSource) {
         super(QuizAttempt, dataSource.createEntityManager());
     }
 
     async submitAttempt(attemptId: string): Promise<QuizAttempt> {
-        const rawResults = await this.query(this.SUBMIT_SQL, [attemptId]);
+        const rawResults = await this.query(SUBMIT_SQL, [attemptId]);
 
         if (!rawResults || rawResults.length === 0) {
             throw new ForbiddenException(

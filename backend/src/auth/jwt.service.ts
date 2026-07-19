@@ -34,11 +34,13 @@ export class JwtService {
                 sub: userDto.id,
             },
             this.jwtSecret,
-            { expiresIn: this.jwtExpiration },
+            { expiresIn: this.jwtExpiration, algorithm: 'HS256' },
         );
     }
 
     verifyToken(token: string): jwt.JwtPayload {
-        return jwt.verify(token, this.jwtSecret) as jwt.JwtPayload;
+        return jwt.verify(token, this.jwtSecret, {
+            algorithms: ['HS256'],
+        }) as jwt.JwtPayload;
     }
 }

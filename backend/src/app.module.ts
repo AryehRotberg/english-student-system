@@ -4,6 +4,7 @@ import {
     ConfigService,
     ConfigModule as NestConfigModule,
 } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -38,6 +39,7 @@ import { WritingTasksModule } from './modules/writing-tasks/writing-tasks.module
         NestConfigModule.forRoot({
             isGlobal: true,
         }),
+        ThrottlerModule.forRoot([{ ttl: 60000, limit: 3 }]),
         AppConfigModule,
         BullModule.forRoot({
             connection: {

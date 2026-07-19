@@ -2,11 +2,11 @@ import {
     BadRequestException,
     Injectable,
     InternalServerErrorException,
-    Logger,
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import type { Response } from 'express';
 import { UserResponseDto } from '../modules/users/dto/user.response.dto';
+import { User } from '../modules/users/entities/user.entity';
 import { UsersService } from '../modules/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { HashingService } from './hashing.service';
@@ -29,13 +29,14 @@ export class AuthService {
             throw new BadRequestException('Invalid email or password');
         }
 
-        await this.verifyPassword(user.password, password);
+        await this.verifyPassword(user, password);
 
         if (!user.isApproved) {
             throw new BadRequestException('Your account is pending approval');
         }
 
         const token = this.jwtService.generateToken(user);
+
         res.cookie('access_token', token, this.getCookieOptions());
 
         return UserResponseDto.fromEntity(user);
@@ -46,24 +47,23 @@ export class AuthService {
             res.clearCookie('access_token', this.getCookieOptions());
         } catch (error) {
             Sentry.captureException(error);
-            Logger.error('Logout error:', error);
             throw new InternalServerErrorException('Logout failed');
         }
     }
 
-    private async verifyPassword(
-        hashedPassword: string,
-        plainPassword: string,
-    ) {
+    private async verifyPassword(user: User, plainPassword: string) {
         let isValid = false;
+        const dummyHash =
+            '$argon2id$v=19$m=65536,t=3,p=1$ZHVtbXlTYWx0$ZHVtbXlIYXNo'; // A dummy hash for timing attack prevention
         try {
-            isValid = await this.hashingService.compare(
-                plainPassword,
-                hashedPassword,
-            );
+            isValid = user
+                ? await this.hashingService.compare(
+                      plainPassword,
+                      user.password,
+                  )
+                : await this.hashingService.compare(plainPassword, dummyHash);
         } catch (error) {
             Sentry.captureException(error);
-            Logger.error('Password verification error:', error);
             throw new InternalServerErrorException(
                 'An error occurred during login',
             );

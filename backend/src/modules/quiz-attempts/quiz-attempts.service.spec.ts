@@ -89,7 +89,6 @@ describe('QuizAttemptsService', () => {
         it('should create an attempt and fire a notification email', async () => {
             const dto: QuizAttemptCreateDto = {
                 quizId: 'quiz-uuid-1',
-                quizTitle: 'Vocab Quiz',
             };
             mockAttemptRepo.create.mockReturnValue(mockAttempt);
             mockAttemptRepo.save.mockResolvedValue(mockAttempt);
