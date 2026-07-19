@@ -25,10 +25,13 @@ export class QuizzesController {
 
     @Post()
     @UseGuards(TeacherGuard)
-    async create(@Body() dto: QuizCreateDto | QuizAiDraftCreateDto) {
-        if (dto instanceof QuizCreateDto) {
-            return this.quizzesService.create(dto);
-        }
+    async create(@Body() dto: QuizCreateDto) {
+        return this.quizzesService.create(dto);
+    }
+
+    @Post('from-draft')
+    @UseGuards(TeacherGuard)
+    async createFromDraft(@Body() dto: QuizAiDraftCreateDto) {
         return this.quizzesService.createFromAiDraft(dto);
     }
 

@@ -1,4 +1,5 @@
 import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
+import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { LlmService } from '../../llm/llm.service';
 import { AiDraftsService } from '../ai-drafts.service';
@@ -6,6 +7,8 @@ import { quizPipeline } from '../pipelines/quiz/quiz.pipeline';
 
 @Processor('generate-quiz')
 export class QuizGeneratorWorker extends WorkerHost {
+    private readonly logger = new Logger(QuizGeneratorWorker.name);
+
     constructor(
         private readonly llmService: LlmService,
         private readonly aiDraftsService: AiDraftsService,
@@ -14,7 +17,7 @@ export class QuizGeneratorWorker extends WorkerHost {
     }
 
     async process(job: Job) {
-        console.log(`Processing job ${job.id} with data:`, job.data);
+        this.logger.log(`Processing job ${job.id} with data: ${JSON.stringify(job.data)}`);
 
         const {
             topic,
@@ -44,16 +47,16 @@ export class QuizGeneratorWorker extends WorkerHost {
 
     @OnWorkerEvent('active')
     onActive(job: Job) {
-        console.log(`Job ${job.id} is now active`);
+        this.logger.log(`Job ${job.id} is now active`);
     }
 
     @OnWorkerEvent('completed')
     onCompleted(job: Job) {
-        console.log(JSON.stringify(job.returnvalue, null, 2));
+        this.logger.log(JSON.stringify(job.returnvalue, null, 2));
     }
 
     @OnWorkerEvent('failed')
     onFailed(job: Job, error: Error) {
-        console.error(`Job ${job.id} failed:`, error);
+        this.logger.error(`Job ${job.id} failed: ${error.message}`, error.stack);
     }
 }

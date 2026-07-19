@@ -32,7 +32,7 @@ export class AssignmentsService {
     }
 
     async create(dto: AssignmentCreateDto): Promise<Assignment> {
-        return this.assignmentRepo.create(dto);
+        return this.assignmentRepo.createAssignment(dto);
     }
 
     async sendCompletionEmail(user: UserResponseDto, attemptId: string) {
@@ -72,8 +72,10 @@ export class AssignmentsService {
                 totalItems,
             });
 
+        if (!user.teacherEmail) return;
+
         return await this.sendEmailService.send(
-            user.teacherEmail!,
+            user.teacherEmail,
             subject,
             title,
             body,

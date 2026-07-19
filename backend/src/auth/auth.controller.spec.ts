@@ -112,10 +112,9 @@ describe('AuthController', () => {
             const updatedUser = { ...mockUserDto };
             mockUsersService.updatePassword.mockResolvedValue(updatedUser);
 
-            const result = await controller.updatePassword(
-                mockUserDto as any,
-                'new-password',
-            );
+            const result = await controller.updatePassword(mockUserDto as any, {
+                newPassword: 'new-password',
+            });
 
             expect(mockUsersService.updatePassword).toHaveBeenCalledWith(
                 mockUserDto.id,

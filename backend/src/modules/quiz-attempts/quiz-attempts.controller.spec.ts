@@ -78,7 +78,6 @@ describe('QuizAttemptsController', () => {
         it('should create an attempt for the authenticated user', async () => {
             const dto: QuizAttemptCreateDto = {
                 quizId: 'quiz-uuid-1',
-                quizTitle: 'Vocab Quiz',
             };
             mockService.create.mockResolvedValue(mockAttempt);
 

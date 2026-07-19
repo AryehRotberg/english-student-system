@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { HashingService } from '../../auth/hashing.service';
@@ -60,7 +64,7 @@ export class UsersService {
             relations: ['teacher'],
             order: { name: 'ASC' },
         });
-        return UserResponseDto.fromEntities(students);
+        return students.map(UserResponseDto.fromEntity);
     }
 
     async findAllTeachers(): Promise<UserResponseDto[]> {
@@ -68,7 +72,7 @@ export class UsersService {
             where: { role: 'teacher' },
             order: { name: 'ASC' },
         });
-        return UserResponseDto.fromEntities(teachers);
+        return teachers.map(UserResponseDto.fromEntity);
     }
 
     async approve(id: string): Promise<UserResponseDto> {
@@ -77,7 +81,12 @@ export class UsersService {
             where: { id },
             relations: ['teacher'],
         });
-        const dto = UserResponseDto.fromEntity(entity!);
+
+        if (!entity) {
+            throw new NotFoundException(`User ${id} not found`);
+        }
+
+        const dto = UserResponseDto.fromEntity(entity);
         await this.sendEmailService.send(
             dto.email,
             'Your account has been approved — welcome!',
@@ -92,19 +101,22 @@ export class UsersService {
         newPassword: string,
     ): Promise<UserResponseDto> {
         const hashedPassword = await this.hashingService.hash(newPassword);
-        Logger.debug(
-            `Updating password for user ${id}. Hashed password: ${hashedPassword}`,
-        );
         await this.userRepo.update(id, { password: hashedPassword });
-        const entity = await this.userRepo.findOne({
-            where: { id },
-        });
-        return UserResponseDto.fromEntity(entity!);
+        const entity = await this.userRepo.findOne({ where: { id } });
+
+        if (!entity) {
+            throw new NotFoundException(`User ${id} not found`);
+        }
+
+        return UserResponseDto.fromEntity(entity);
     }
 
     async remove(id: string): Promise<UserResponseDto> {
         const entity = await this.userRepo.findOneBy({ id });
+        if (!entity) {
+            throw new NotFoundException(`User ${id} not found`);
+        }
         await this.userRepo.delete(id);
-        return UserResponseDto.fromEntity(entity!);
+        return UserResponseDto.fromEntity(entity);
     }
 }

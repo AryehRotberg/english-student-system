@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://english-student-system-backend-50903603985.europe-west3.run.app/:path*"
+            "destination": "https://dotnet-api-50903603985.europe-west3.run.app/:path*"
         },
         {
             "source": "/(.*)",

@@ -9,7 +9,7 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { User } from '../../auth/decorators/user.decorator';
-import { TeacherGuard } from '../../auth/guards/auth.guard';
+import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -29,6 +29,7 @@ export class UsersController {
     }
 
     @Get('teachers')
+    @UseGuards(AuthGuard)
     async findAllTeachers() {
         return await this.usersService.findAllTeachers();
     }

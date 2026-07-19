@@ -1,11 +1,13 @@
 import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { UserCreateDto } from '../modules/users/dto/user.create.dto';
 import { UserResponseDto } from '../modules/users/dto/user.response.dto';
 import { UsersService } from '../modules/users/users.service';
-import { User } from './decorators/user.decorator';
 import { AuthService } from './auth.service';
+import { User } from './decorators/user.decorator';
 import { LoginDto } from './dto/login.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { AuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
@@ -22,6 +24,7 @@ export class AuthController {
     }
 
     @Post('login')
+    @Throttle({ default: { limit: 10, ttl: 60_000 } })
     async login(
         @Body() dto: LoginDto,
         @Res({ passthrough: true }) res: Response,
@@ -35,6 +38,7 @@ export class AuthController {
     }
 
     @Post('register')
+    @Throttle({ default: { limit: 5, ttl: 60_000 } })
     async register(@Body() dto: UserCreateDto) {
         const user = await this.usersService.create(dto);
 
@@ -54,11 +58,11 @@ export class AuthController {
     @UseGuards(AuthGuard)
     async updatePassword(
         @User() user: UserResponseDto,
-        @Body('newPassword') newPassword: string,
+        @Body() dto: UpdatePasswordDto,
     ) {
         const updatedUser = await this.usersService.updatePassword(
             user.id,
-            newPassword,
+            dto.newPassword,
         );
         return {
             message: 'Password updated successfully.',

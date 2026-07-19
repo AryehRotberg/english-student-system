@@ -9,7 +9,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { TeacherGuard } from '../../auth/guards/auth.guard';
+import { AuthGuard, TeacherGuard } from '../../auth/guards/auth.guard';
 import { WritingSubmissionCreateDto } from './dto/writing-submission.create.dto';
 import { WritingSubmissionFilterDto } from './dto/writing-submission.query.dto';
 import { WritingSubmissionUpdateDto } from './dto/writing-submission.update.dto';
@@ -22,11 +22,13 @@ export class WritingSubmissionsController {
     ) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     async findAll(@Query() filter: WritingSubmissionFilterDto) {
         return await this.writingSubmissionsService.findAll(filter);
     }
 
     @Post()
+    @UseGuards(AuthGuard)
     async create(
         @Body() createWritingSubmissionDto: WritingSubmissionCreateDto,
     ) {

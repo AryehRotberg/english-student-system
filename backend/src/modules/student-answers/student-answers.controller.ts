@@ -6,11 +6,14 @@ import {
     Param,
     ParseUUIDPipe,
     Post,
+    UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '../../auth/guards/auth.guard';
 import { StudentAnswerUpsertDto } from './dto/student-answer.upsert.dto';
 import { StudentAnswersService } from './student-answers.service';
 
 @Controller('student-answers')
+@UseGuards(AuthGuard)
 export class StudentAnswersController {
     constructor(
         private readonly studentAnswersService: StudentAnswersService,
