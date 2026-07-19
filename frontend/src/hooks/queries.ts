@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import type { VocabAudioType } from '../services/audio.service';
 import { audioService } from '../services/audio.service';
+import { assignmentItemsService } from '../services/assignment-items.service';
+import { assignmentsService } from '../services/assignments.service';
 import { authService } from '../services/auth.service';
 import { dashboardService } from '../services/dashboard.service';
 import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
@@ -16,6 +18,7 @@ import { studentAnswersService } from '../services/student-answers.service';
 import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
+import { writingTasksService } from '../services/writing-tasks.service';
 import type {
     QuestionAcceptedAnswerAdminItem,
     QuestionAdminItem,
@@ -23,7 +26,10 @@ import type {
     RawQuizQuestionAdminItem,
     ReadingAdminItem,
 } from '../types/admin-query-items';
+import type { AssignmentItemApiItem } from '../types/api-items/assignment-item';
+import type { AssignmentApiItem } from '../types/api-items/assignment';
 import type { QuizAttemptApiItem } from '../types/api-items/quiz-attempt';
+import type { WritingTaskApiItem } from '../types/api-items/writing-task';
 import type { AuthUser } from '../types/auth';
 import type { DashboardData } from '../types/dashboard';
 import type { QuizQuestion, QuizStudyGuide, QuizSummary } from '../types/quiz';
@@ -203,6 +209,29 @@ export function useStudentQuizAttempts(userId?: string) {
         queryKey: ['student-quiz-attempts', userId],
         enabled: Boolean(userId),
         queryFn: () => quizAttemptsService.findByUserId(userId as string),
+    });
+}
+
+export function useAssignments(userId?: string) {
+    return useQuery<AssignmentApiItem[]>({
+        queryKey: ['assignments', userId],
+        enabled: Boolean(userId),
+        queryFn: () => assignmentsService.findByUserId(userId as string),
+    });
+}
+
+export function useAssignmentItems(userId?: string) {
+    return useQuery<AssignmentItemApiItem[]>({
+        queryKey: ['assignment-items', userId],
+        enabled: Boolean(userId),
+        queryFn: () => assignmentItemsService.findByUserId(userId as string),
+    });
+}
+
+export function useWritingTasks() {
+    return useQuery<WritingTaskApiItem[]>({
+        queryKey: ['writing-tasks'],
+        queryFn: () => writingTasksService.findAll(),
     });
 }
 

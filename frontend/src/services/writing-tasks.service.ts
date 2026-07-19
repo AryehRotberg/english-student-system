@@ -1,4 +1,5 @@
 import type { AxiosInstance } from 'axios';
+import type { WritingTaskApiItem } from '../types/api-items/writing-task';
 import { httpClientService } from './http-client.service';
 
 class WritingTasksService {
@@ -8,9 +9,10 @@ class WritingTasksService {
         this.httpClient = httpClientService.getInstance();
     }
 
-    public async findAll() {
-        const response = await this.httpClient.get('/writing-tasks');
-        return response.data;
+    public async findAll(): Promise<WritingTaskApiItem[]> {
+        const response =
+            await this.httpClient.get<WritingTaskApiItem[]>('/writing-tasks');
+        return Array.isArray(response.data) ? response.data : [];
     }
 
     public async create(payload: {

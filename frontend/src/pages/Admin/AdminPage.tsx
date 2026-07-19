@@ -7,7 +7,7 @@ import { QuestionsSection } from '../../components/admin/QuestionsSection';
 import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
 import { QuizzesSection } from '../../components/admin/QuizzesSection';
 import { ReadingsSection } from '../../components/admin/ReadingSection';
-import { StudentProgressSection } from '../../components/admin/StudentProgressSection';
+import { StudentsSection } from '../../components/admin/StudentsSection';
 import { VocabularySection } from '../../components/admin/VocabularySection';
 import { useAuthUser } from '../../hooks/queries';
 import styles from './AdminPage.module.css';
@@ -15,8 +15,10 @@ import styles from './AdminPage.module.css';
 export function AdminPage() {
     const { data: user } = useAuthUser();
     const [searchParams, setSearchParams] = useSearchParams();
-    const activeTab =
-        (searchParams.get('tab') as AdminTab) ?? 'pending-students';
+    const requestedTab = searchParams.get('tab') as AdminTab | null;
+    const activeTab: AdminTab = adminTabs.some((t) => t.id === requestedTab)
+        ? (requestedTab as AdminTab)
+        : 'pending-students';
     const setActiveTab = (tab: AdminTab) => setSearchParams({ tab });
 
     if (user?.role !== 'teacher') {
@@ -53,9 +55,7 @@ export function AdminPage() {
                     {activeTab === 'quiz-builder' && <QuizBuilderSection />}
                     {activeTab === 'readings' && <ReadingsSection />}
                     {activeTab === 'vocabulary' && <VocabularySection />}
-                    {activeTab === 'student-progress' && (
-                        <StudentProgressSection />
-                    )}
+                    {activeTab === 'students' && <StudentsSection />}
                 </div>
             </main>
         </div>
