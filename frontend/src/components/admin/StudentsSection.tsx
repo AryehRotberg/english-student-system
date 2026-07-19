@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAllStudents } from '../../hooks/queries';
 import styles from '../../pages/Admin/AdminPage.module.css';
-import type { AuthUser } from '../../types/auth';
-import { StudentProgressDetail } from './StudentProgressDetail';
+import { StudentDetailPanel } from './StudentDetailPanel';
 
 function getInitials(name: string): string {
     return name
@@ -14,19 +14,22 @@ function getInitials(name: string): string {
         .join('');
 }
 
-export function StudentProgressSection() {
+export function StudentsSection() {
     const { data: students = [], isLoading } = useAllStudents();
-    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
-        null,
-    );
-    const [filterQuery, setFilterQuery] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const studentId = searchParams.get('studentId');
 
-    const selectedStudent = students.find((s) => s.id === selectedStudentId);
-    const filteredStudents = filterQuery.trim()
-        ? students.filter((s) =>
-              s.name?.toLowerCase().includes(filterQuery.toLowerCase()),
-          )
-        : students;
+    const setStudentId = (id: string | null) => {
+        const next = new URLSearchParams(searchParams);
+        if (id) {
+            next.set('studentId', id);
+        } else {
+            next.delete('studentId');
+        }
+        setSearchParams(next);
+    };
+
+    const [filterQuery, setFilterQuery] = useState('');
 
     if (isLoading) {
         return (
@@ -36,14 +39,21 @@ export function StudentProgressSection() {
         );
     }
 
-    if (selectedStudent) {
+    if (studentId) {
         return (
-            <StudentProgressDetail
-                student={selectedStudent as AuthUser}
-                onBack={() => setSelectedStudentId(null)}
+            <StudentDetailPanel
+                studentId={studentId}
+                onBack={() => setStudentId(null)}
+                onDeleted={() => setStudentId(null)}
             />
         );
     }
+
+    const filteredStudents = filterQuery.trim()
+        ? students.filter((s) =>
+              s.name?.toLowerCase().includes(filterQuery.toLowerCase()),
+          )
+        : students;
 
     if (students.length === 0) {
         return (
@@ -98,9 +108,9 @@ export function StudentProgressSection() {
                         <button
                             type="button"
                             className={styles.studentCardBtn}
-                            onClick={() => setSelectedStudentId(student.id)}
+                            onClick={() => setStudentId(student.id)}
                         >
-                            View Progress
+                            Details
                         </button>
                     </div>
                 ))}

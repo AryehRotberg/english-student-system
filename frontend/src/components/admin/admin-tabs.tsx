@@ -4,7 +4,7 @@ export type AdminTab =
     | 'quiz-builder'
     | 'readings'
     | 'vocabulary'
-    | 'student-progress'
+    | 'students'
     | 'pending-students';
 
 export interface TabDef {
@@ -156,10 +156,10 @@ export const adminTabs: TabDef[] = [
         icon: <UserCheckIcon />,
     },
     {
-        id: 'student-progress',
-        label: 'Student Progress',
+        id: 'students',
+        label: 'Students',
         description:
-            'Track academic performance, quiz completion rates, and individual learning milestones.',
+            'Manage individual students — view progress, assignments, and account details.',
         icon: <BarChartIcon />,
     },
     {

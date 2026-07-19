@@ -1,5 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
+import { assignmentItemsService } from '../services/assignment-items.service';
+import type { AssignmentItemContentType } from '../services/assignments.service';
+import { assignmentsService } from '../services/assignments.service';
 import { authService } from '../services/auth.service';
 import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
@@ -440,5 +443,132 @@ export function useRemoveStudent() {
             queryClient.invalidateQueries({ queryKey: ['pending-students'] });
             queryClient.invalidateQueries({ queryKey: ['all-students'] });
         },
+    });
+}
+
+// ─── Assignment mutations ─────────────────────────────────────────────────────
+
+export function useCreateAssignment() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: {
+            userId: string;
+            title: string;
+            description: string;
+            dueDate: string;
+            items?: {
+                contentType: AssignmentItemContentType;
+                contentId: string;
+            }[];
+        }) => assignmentsService.create(payload),
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ['assignments', variables.userId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['assignment-items', variables.userId],
+            });
+        },
+    });
+}
+
+export function useUpdateAssignment() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: {
+            id: string;
+            userId: string;
+            title?: string;
+            description?: string;
+            dueDate?: string;
+            isCompleted?: boolean;
+        }) =>
+            assignmentsService.update(id, {
+                title: payload.title,
+                description: payload.description,
+                dueDate: payload.dueDate,
+                isCompleted: payload.isCompleted,
+            }),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['assignments', variables.userId],
+            }),
+    });
+}
+
+export function useDeleteAssignment() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id }: { id: string; userId: string }) =>
+            assignmentsService.remove(id),
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ['assignments', variables.userId],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['assignment-items', variables.userId],
+            });
+        },
+    });
+}
+
+export function useCreateAssignmentItem() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: {
+            userId: string;
+            assignmentId: string;
+            contentType: AssignmentItemContentType;
+            contentId: string;
+        }) =>
+            assignmentItemsService.create({
+                assignmentId: payload.assignmentId,
+                contentType: payload.contentType,
+                contentId: payload.contentId,
+            }),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['assignment-items', variables.userId],
+            }),
+    });
+}
+
+export function useUpdateAssignmentItem() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: {
+            id: string;
+            userId: string;
+            contentType?: AssignmentItemContentType;
+            contentId?: string;
+            isCompleted?: boolean;
+        }) =>
+            assignmentItemsService.update(id, {
+                contentType: payload.contentType,
+                contentId: payload.contentId,
+                isCompleted: payload.isCompleted,
+            }),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['assignment-items', variables.userId],
+            }),
+    });
+}
+
+export function useDeleteAssignmentItem() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id }: { id: string; userId: string }) =>
+            assignmentItemsService.remove(id),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['assignment-items', variables.userId],
+            }),
     });
 }
