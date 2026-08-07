@@ -4,6 +4,12 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { adminTabs } from '../../admin/admin-tabs';
 import { useAuthUser } from '../../../hooks/queries';
 import { authService } from '../../../services/auth.service';
+import {
+    disablePushNotifications,
+    enablePushNotifications,
+    getPushSubscriptionStatus,
+    isPushSupported,
+} from '../../../utils/push-notifications';
 import styles from './Navbar.module.css';
 
 const links = [
@@ -24,7 +30,11 @@ export function Navbar({ sticky = true }: NavbarProps) {
     const queryClient = useQueryClient();
     const { data: user } = useAuthUser();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [pushEnabled, setPushEnabled] = useState(false);
+    const [pushBusy, setPushBusy] = useState(false);
     const displayName = user?.name?.trim() || 'Student';
+    const isStudent = user?.role !== 'teacher';
+    const showPushToggle = isStudent && isPushSupported();
 
     const currentAdminTab =
         new URLSearchParams(location.search).get('tab') ?? 'pending-students';
@@ -48,12 +58,38 @@ export function Navbar({ sticky = true }: NavbarProps) {
         };
     }, [isMobileMenuOpen]);
 
+    useEffect(() => {
+        if (!showPushToggle) {
+            return;
+        }
+
+        getPushSubscriptionStatus().then(setPushEnabled);
+    }, [showPushToggle]);
+
     const handleLogout = async () => {
         await authService.logout();
         queryClient.setQueryData(['auth-user'], null);
         queryClient.removeQueries();
         setIsMobileMenuOpen(false);
         navigate('/login', { replace: true });
+    };
+
+    const handleTogglePush = async () => {
+        setPushBusy(true);
+
+        try {
+            if (pushEnabled) {
+                await disablePushNotifications();
+                setPushEnabled(false);
+            } else {
+                await enablePushNotifications();
+                setPushEnabled(true);
+            }
+        } catch (err) {
+            console.error('Failed to toggle push notifications', err);
+        } finally {
+            setPushBusy(false);
+        }
     };
 
     return (
@@ -103,6 +139,19 @@ export function Navbar({ sticky = true }: NavbarProps) {
                         <span className={styles.menuLine} />
                         <span className={styles.menuLine} />
                     </button>
+
+                    {showPushToggle && (
+                        <button
+                            className={styles.logoutButton}
+                            disabled={pushBusy}
+                            onClick={() => void handleTogglePush()}
+                            type="button"
+                        >
+                            {pushEnabled
+                                ? 'Disable notifications'
+                                : 'Enable notifications'}
+                        </button>
+                    )}
 
                     <button
                         className={styles.logoutButton}
@@ -201,6 +250,19 @@ export function Navbar({ sticky = true }: NavbarProps) {
                                 </NavLink>
                             ))}
                     </nav>
+
+                    {showPushToggle && (
+                        <button
+                            className={styles.mobileLogout}
+                            disabled={pushBusy}
+                            onClick={() => void handleTogglePush()}
+                            type="button"
+                        >
+                            {pushEnabled
+                                ? 'Disable notifications'
+                                : 'Enable notifications'}
+                        </button>
+                    )}
 
                     <button
                         className={styles.mobileLogout}

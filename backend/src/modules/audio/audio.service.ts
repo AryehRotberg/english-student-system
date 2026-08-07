@@ -4,12 +4,12 @@ import Sentry from '../../config/sentry';
 import { SupabaseService } from '../../config/supabase.client';
 import { AudioCreateSpeechDto } from './dto/audio.create-speech.dto';
 
-type AudioModelId = 'eleven_v3' | 'eleven_flash_v2_5';
+type AudioModelId = 'eleven_v3' | 'eleven_flash_v2_5' | 'eleven_multilingual_v2';
 
 @Injectable()
 export class AudioService {
     private elevenlabs: ElevenLabsClient;
-    private modelId: AudioModelId = 'eleven_flash_v2_5';
+    private modelId: AudioModelId = 'eleven_multilingual_v2';
 
     constructor(private readonly supabaseService: SupabaseService) {
         this.elevenlabs = new ElevenLabsClient();
