@@ -83,6 +83,33 @@
     background: #e2e8f0;
 }
 
+.pushToggleButton {
+    align-items: center;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 10px;
+    color: #334155;
+    cursor: pointer;
+    display: inline-flex;
+    height: 2.5rem;
+    justify-content: center;
+    transition: background-color 140ms ease;
+    width: 2.5rem;
+}
+
+.pushToggleButton:hover {
+    background: #e2e8f0;
+}
+
+.pushToggleButton:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.pushToggleButtonActive {
+    color: #1c74e9;
+}
+
 .profileBlock {
     align-items: center;
     border-left: 1px solid #e2e8f0;
