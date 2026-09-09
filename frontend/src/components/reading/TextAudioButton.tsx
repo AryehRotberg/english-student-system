@@ -68,10 +68,7 @@ export function TextAudioPlayer({ textId }: Props) {
         if (!audioRef.current) {
             setIsFetching(true);
             try {
-                const fetched = await audioService.downloadAudio(
-                    'texts/audio',
-                    `${textId}.mp3`,
-                );
+                const fetched = await audioService.fetchTextAudio(textId);
                 setUrl(fetched);
             } catch (err) {
                 if (err instanceof AudioNotFoundError) setNotFound(true);

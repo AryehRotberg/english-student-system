@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { assignmentItemsService } from '../services/assignment-items.service';
+import { audioService } from '../services/audio.service';
 import type { AssignmentItemContentType } from '../services/assignments.service';
 import { assignmentsService } from '../services/assignments.service';
 import { authService } from '../services/auth.service';
@@ -214,6 +215,13 @@ export function useCreateText() {
             queryClient.invalidateQueries({ queryKey: ['reading-library'] });
             queryClient.invalidateQueries({ queryKey: ['readings'] });
         },
+    });
+}
+
+export function useUploadTextAudio() {
+    return useMutation({
+        mutationFn: ({ textId, file }: { textId: string; file: File }) =>
+            audioService.uploadTextAudio(textId, file),
     });
 }
 

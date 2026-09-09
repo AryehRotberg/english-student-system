@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { ReadingAdminItem } from '../../../types/admin-query-items';
 import styles from '../../../pages/Admin/AdminPage.module.css';
 
@@ -8,6 +9,9 @@ type TextItemProps = {
     onEdit: () => void;
     onDelete: () => void;
     deleteIsPending: boolean;
+    onUploadAudio: (file: File) => void;
+    uploadIsPending: boolean;
+    uploadErrorMessage?: string;
 };
 
 export function TextItem({
@@ -17,7 +21,12 @@ export function TextItem({
     onEdit,
     onDelete,
     deleteIsPending,
+    onUploadAudio,
+    uploadIsPending,
+    uploadErrorMessage,
 }: TextItemProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     return (
         <li className={`${styles.item} ${styles.expandable}`}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -65,6 +74,25 @@ export function TextItem({
                         flexShrink: 0,
                     }}
                 >
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="audio/mpeg,.mp3"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            e.target.value = '';
+                            if (file) onUploadAudio(file);
+                        }}
+                    />
+                    <button
+                        type="button"
+                        className={styles.editBtn}
+                        disabled={uploadIsPending}
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        {uploadIsPending ? 'Uploading…' : 'Audio'}
+                    </button>
                     <button
                         type="button"
                         className={styles.editBtn}
@@ -85,6 +113,14 @@ export function TextItem({
                     </button>
                 </div>
             </div>
+            {uploadErrorMessage && (
+                <p
+                    className={styles.error}
+                    style={{ padding: '0 1rem 0.75rem' }}
+                >
+                    {uploadErrorMessage}
+                </p>
+            )}
             {isExpanded && (
                 <div
                     style={{

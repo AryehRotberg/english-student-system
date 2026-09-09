@@ -3,6 +3,7 @@ import {
     useCreateText,
     useDeleteText,
     useUpdateText,
+    useUploadTextAudio,
 } from '../../hooks/mutations';
 import {
     useQuizzes,
@@ -25,12 +26,22 @@ export function ReadingsSection() {
     const createText = useCreateText();
     const updateText = useUpdateText();
     const deleteText = useDeleteText();
+    const uploadTextAudio = useUploadTextAudio();
 
     const [showForm, setShowForm] = useState(false);
     const [editState, setEditState] = useState<EditState | null>(null);
     const [expandedTextId, setExpandedTextId] = useState<string | null>(null);
+    const [createAudioError, setCreateAudioError] = useState<string | null>(
+        null,
+    );
+    const [uploadingTextId, setUploadingTextId] = useState<string | null>(null);
+    const [uploadErrors, setUploadErrors] = useState<Record<string, string>>(
+        {},
+    );
 
     const handleCreate = async (values: ReadingFormValues) => {
+        setCreateAudioError(null);
+
         const created = await createText.mutateAsync({
             title: values.title,
             content: values.content,
@@ -38,14 +49,51 @@ export function ReadingsSection() {
             quizId: values.quizId || undefined,
             vocabularyTopicId: values.vocabularyTopicId || undefined,
         });
-        if (values.includeAudio && created?.id) {
+
+        if (created?.id && values.audioFile) {
+            try {
+                await uploadTextAudio.mutateAsync({
+                    textId: created.id,
+                    file: values.audioFile,
+                });
+            } catch (err) {
+                setCreateAudioError(
+                    `The text was created, but the audio upload failed: ${
+                        (err as Error).message
+                    }`,
+                );
+                return;
+            }
+        } else if (created?.id && values.includeAudio) {
             await audioService.generateAndSaveTts(
                 values.content,
                 'texts',
                 `${created.id}.mp3`,
             );
         }
+
         setShowForm(false);
+    };
+
+    const handleUploadAudio = async (textId: string, file: File) => {
+        setUploadingTextId(textId);
+        setUploadErrors((prev) => {
+            if (!prev[textId]) return prev;
+            const next = { ...prev };
+            delete next[textId];
+            return next;
+        });
+
+        try {
+            await uploadTextAudio.mutateAsync({ textId, file });
+        } catch (err) {
+            setUploadErrors((prev) => ({
+                ...prev,
+                [textId]: (err as Error).message,
+            }));
+        } finally {
+            setUploadingTextId(null);
+        }
     };
 
     const startEdit = (text: ReadingAdminItem) => {
@@ -57,6 +105,7 @@ export function ReadingsSection() {
             quizId: text.quiz?.id ?? '',
             vocabularyTopicId: text.vocabularyTopic?.id ?? '',
             includeAudio: false,
+            audioFile: null,
         });
     };
 
@@ -92,10 +141,15 @@ export function ReadingsSection() {
             {showForm && (
                 <ReadingForm
                     submitLabel="Create Text"
-                    showAudioCheckbox
-                    isPending={createText.isPending}
-                    isError={createText.isError}
-                    errorMessage={(createText.error as Error | null)?.message}
+                    showAudioOptions
+                    isPending={
+                        createText.isPending || uploadTextAudio.isPending
+                    }
+                    isError={createText.isError || Boolean(createAudioError)}
+                    errorMessage={
+                        createAudioError ??
+                        (createText.error as Error | null)?.message
+                    }
                     quizzes={quizzes}
                     vocabTopics={vocabTopics}
                     onSubmit={(values) => void handleCreate(values)}
@@ -139,6 +193,11 @@ export function ReadingsSection() {
                         }}
                         onDelete={() => void deleteText.mutate(text.id)}
                         deleteIsPending={deleteText.isPending}
+                        onUploadAudio={(file) =>
+                            void handleUploadAudio(text.id, file)
+                        }
+                        uploadIsPending={uploadingTextId === text.id}
+                        uploadErrorMessage={uploadErrors[text.id]}
                     />
                 ))}
                 {readings.length === 0 && (

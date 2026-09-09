@@ -8,6 +8,7 @@ export type ReadingFormValues = {
     quizId: string;
     vocabularyTopicId: string;
     includeAudio: boolean;
+    audioFile: File | null;
 };
 
 type ReadingFormProps = {
@@ -18,7 +19,7 @@ type ReadingFormProps = {
     initialVocabularyTopicId?: string;
     heading?: string;
     submitLabel: string;
-    showAudioCheckbox?: boolean;
+    showAudioOptions?: boolean;
     isPending: boolean;
     isError: boolean;
     errorMessage?: string;
@@ -36,7 +37,7 @@ export function ReadingForm({
     initialVocabularyTopicId = '',
     heading,
     submitLabel,
-    showAudioCheckbox = false,
+    showAudioOptions = false,
     isPending,
     isError,
     errorMessage,
@@ -53,6 +54,7 @@ export function ReadingForm({
         initialVocabularyTopicId,
     );
     const [includeAudio, setIncludeAudio] = useState(false);
+    const [audioFile, setAudioFile] = useState<File | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,7 +64,8 @@ export function ReadingForm({
             level,
             quizId,
             vocabularyTopicId,
-            includeAudio,
+            includeAudio: includeAudio && !audioFile,
+            audioFile,
         });
     };
 
@@ -134,15 +137,29 @@ export function ReadingForm({
                     required
                 />
             </div>
-            {showAudioCheckbox && (
-                <label className={styles.checkLabel}>
-                    <input
-                        type="checkbox"
-                        checked={includeAudio}
-                        onChange={(e) => setIncludeAudio(e.target.checked)}
-                    />
-                    Generate audio
-                </label>
+            {showAudioOptions && (
+                <>
+                    <div className={styles.field}>
+                        <label>Audio file (.mp3)</label>
+                        <input
+                            type="file"
+                            accept="audio/mpeg,.mp3"
+                            onChange={(e) =>
+                                setAudioFile(e.target.files?.[0] ?? null)
+                            }
+                        />
+                    </div>
+                    <label className={styles.checkLabel}>
+                        <input
+                            type="checkbox"
+                            checked={includeAudio && !audioFile}
+                            disabled={Boolean(audioFile)}
+                            onChange={(e) => setIncludeAudio(e.target.checked)}
+                        />
+                        Generate audio
+                        {audioFile ? ' (using the uploaded file instead)' : ''}
+                    </label>
+                </>
             )}
             <div className={styles.fieldRow}>
                 <button
