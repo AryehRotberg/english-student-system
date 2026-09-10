@@ -1,15 +1,16 @@
 .player {
-    background: #1e2230;
-    border-radius: 14px;
+    background: linear-gradient(140deg, var(--ink-900), var(--brand-900));
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     color: #fff;
-    margin-bottom: 1.25rem;
-    padding: 1rem 1.25rem;
+    margin-bottom: var(--space-5);
+    padding: var(--space-5) var(--space-6);
 }
 
 .sliderRow {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: var(--space-1);
 }
 
 .slider {
@@ -17,14 +18,14 @@
     appearance: none;
     background: linear-gradient(
         to right,
-        #e91e8c 0%,
-        #e91e8c var(--p, 0%),
+        var(--brand-400) 0%,
+        var(--brand-400) var(--p, 0%),
         rgba(255, 255, 255, 0.25) var(--p, 0%),
         rgba(255, 255, 255, 0.25) 100%
     );
-    border-radius: 3px;
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    height: 5px;
+    height: 6px;
     outline: none;
     width: 100%;
 }
@@ -38,34 +39,36 @@
     -webkit-appearance: none;
     background: #fff;
     border-radius: 50%;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 4px rgba(247, 107, 28, 0.35);
     cursor: pointer;
-    height: 15px;
-    width: 15px;
+    height: 16px;
+    width: 16px;
 }
 
 .slider::-moz-range-thumb {
     background: #fff;
     border: none;
     border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(247, 107, 28, 0.35);
     cursor: pointer;
-    height: 15px;
-    width: 15px;
+    height: 16px;
+    width: 16px;
 }
 
 .times {
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.6);
     display: flex;
-    font-size: 0.78rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     justify-content: space-between;
 }
 
 .controls {
     align-items: center;
     display: flex;
-    gap: 1rem;
+    gap: var(--space-4);
     justify-content: center;
-    margin-top: 0.75rem;
+    margin-top: var(--space-3);
 }
 
 .skipBtn {
@@ -77,12 +80,15 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding: 0.25rem 0.5rem;
-    transition: color 0.15s;
+    padding: var(--space-1) var(--space-2);
+    transition:
+        color var(--dur) var(--ease-out),
+        transform var(--dur) var(--ease-bounce);
 }
 
 .skipBtn:hover:not(:disabled) {
     color: #fff;
+    transform: scale(1.1);
 }
 
 .skipBtn:disabled {
@@ -91,31 +97,34 @@
 }
 
 .skipLabel {
-    font-size: 0.65rem;
-    font-weight: 600;
+    font-size: var(--text-xs);
+    font-weight: 700;
     line-height: 1;
 }
 
 .playBtn {
     align-items: center;
-    background: #e91e8c;
+    background: var(--brand-500);
     border: none;
     border-radius: 50%;
+    box-shadow: 0 0 0 6px rgba(247, 107, 28, 0.2);
     color: #fff;
     cursor: pointer;
     display: flex;
-    height: 46px;
+    height: 52px;
     justify-content: center;
     padding: 0;
     transition:
-        background 0.15s,
-        transform 0.1s;
-    width: 46px;
+        background var(--dur) var(--ease-out),
+        box-shadow var(--dur) var(--ease-out),
+        transform var(--dur-fast) var(--ease-bounce);
+    width: 52px;
 }
 
 .playBtn:hover:not(:disabled) {
-    background: #c2185b;
-    transform: scale(1.06);
+    background: var(--brand-400);
+    box-shadow: 0 0 0 10px rgba(247, 107, 28, 0.22);
+    transform: scale(1.08);
 }
 
 .playBtn:active:not(:disabled) {
@@ -147,24 +156,25 @@
     align-items: center;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: var(--space-2);
     justify-content: center;
-    margin-top: 0.75rem;
+    margin-top: var(--space-3);
 }
 
 .speedBtn {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 20px;
-    color: rgba(255, 255, 255, 0.65);
+    border-radius: var(--radius-pill);
+    color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
-    font-size: 0.75rem;
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
     font-weight: 600;
-    padding: 0.2rem 0.55rem;
+    padding: var(--space-1) var(--space-3);
     transition:
-        background 0.15s,
-        color 0.15s,
-        border-color 0.15s;
+        background var(--dur) var(--ease-out),
+        color var(--dur) var(--ease-out),
+        border-color var(--dur) var(--ease-out);
 }
 
 .speedBtn:hover:not(:disabled) {
@@ -178,7 +188,7 @@
 }
 
 .speedBtnActive {
-    background: #e91e8c;
-    border-color: #e91e8c;
+    background: var(--brand-500);
+    border-color: var(--brand-500);
     color: #fff;
 }

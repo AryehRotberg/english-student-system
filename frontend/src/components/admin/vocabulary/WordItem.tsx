@@ -24,8 +24,8 @@ export function WordItem({ word: w, onEdit, onDelete }: WordItemProps) {
                         <span
                             className={styles.typeBadge}
                             style={{
-                                background: '#f3e8ff',
-                                color: '#6b21a8',
+                                background: 'var(--grape-100)',
+                                color: 'var(--grape-700)',
                                 marginLeft: '0.4rem',
                             }}
                         >
@@ -36,7 +36,7 @@ export function WordItem({ word: w, onEdit, onDelete }: WordItemProps) {
                         <div
                             style={{
                                 fontSize: '0.85rem',
-                                color: '#374151',
+                                color: 'var(--ink-700)',
                                 marginTop: '0.2rem',
                             }}
                         >
@@ -47,7 +47,7 @@ export function WordItem({ word: w, onEdit, onDelete }: WordItemProps) {
                         <div
                             style={{
                                 fontSize: '0.82rem',
-                                color: '#6b7280',
+                                color: 'var(--ink-500)',
                                 fontStyle: 'italic',
                                 marginTop: '0.1rem',
                             }}

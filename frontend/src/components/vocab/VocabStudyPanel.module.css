@@ -1,56 +1,65 @@
 .panel {
-    background: #ffffff;
-    border: 1px solid #d9dbe3;
-    border-radius: 14px;
+    background: var(--surface-0);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     display: grid;
-    gap: 12px;
-    padding: 1rem;
+    gap: var(--space-4);
+    padding: var(--space-6);
 }
 
 .headerRow {
     align-items: center;
     display: flex;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: var(--space-3);
 }
 
 .topicTitle {
-    color: #111827;
-    font-size: 1.2rem;
+    color: var(--ink-900);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
     margin: 0;
 }
 
 .backButton {
-    background: #111827;
-    border: 1px solid #0f172a;
-    border-radius: 10px;
-    color: #ffffff;
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--ink-700);
     cursor: pointer;
+    font-family: var(--font-display);
     font-weight: 600;
-    padding: 0.5rem 0.8rem;
+    padding: var(--space-2) var(--space-4);
+    transition:
+        background var(--dur) var(--ease-out),
+        transform var(--dur) var(--ease-bounce);
 }
 
 .backButton:hover {
-    background: #1f2937;
+    background: var(--surface-3);
+    transform: translateX(-3px);
 }
 
 .cardCount {
-    color: #374151;
+    color: var(--ink-700);
     font-weight: 700;
     margin: 0;
 }
 
 .progressBar {
-    background: #e5e7eb;
-    border-radius: 999px;
-    height: 8px;
+    background: var(--surface-3);
+    border-radius: var(--radius-pill);
+    height: 10px;
     overflow: hidden;
 }
 
 .progressFill {
-    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+    background: linear-gradient(90deg, var(--brand-500), var(--sun-500));
+    border-radius: var(--radius-pill);
     height: 100%;
-    transition: width 220ms ease;
+    transition: width var(--dur-slow) var(--ease-out);
 }
 
 .cardViewport {
@@ -67,16 +76,16 @@
 }
 
 .cardViewport:focus-visible {
-    outline: 2px solid #2563eb;
+    outline: 3px solid var(--brand-400);
     outline-offset: 4px;
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
 }
 
 .cardInner {
     min-height: 300px;
     position: relative;
     transform-style: preserve-3d;
-    transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 460ms var(--ease-bounce);
     width: 100%;
 }
 
@@ -86,12 +95,12 @@
 
 .cardFace {
     backface-visibility: hidden;
-    background: linear-gradient(130deg, #ffffff 0%, #f7f9ff 100%);
-    border: 1px solid #d1d5db;
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    background: linear-gradient(130deg, var(--surface-0), var(--surface-2));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
     inset: 0;
-    padding: 1rem;
+    padding: var(--space-6);
     position: absolute;
 }
 
@@ -110,64 +119,68 @@
 }
 
 .word {
-    color: #111827;
-    font-size: clamp(1.6rem, 3.2vw, 2.35rem);
+    color: var(--ink-900);
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+    font-weight: 600;
     margin: 0;
 }
 
 .hint {
-    color: #6b7280;
-    font-size: 0.9rem;
-    margin: 0.7rem 0 0;
+    color: var(--ink-400);
+    font-size: var(--text-sm);
+    margin: var(--space-3) 0 0;
 }
 
 .details {
-    color: #1f2937;
+    color: var(--ink-800);
     display: grid;
-    gap: 0.9rem;
+    gap: var(--space-4);
     max-width: 62ch;
     place-items: center;
 }
 
 .details p {
     font-size: clamp(1rem, 1.25vw, 1.18rem);
-    line-height: 1.45;
+    line-height: var(--leading-snug);
     margin: 0;
 }
 
 .controls {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: var(--space-4);
 }
 
 .arrowButton {
     align-items: center;
-    background: #ffffff;
-    border: 1.5px solid #d1d5db;
-    border-radius: 999px;
-    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
-    color: #111827;
+    background: var(--surface-0);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-xs);
+    color: var(--ink-900);
     cursor: pointer;
     display: inline-flex;
-    font-size: 0.875rem;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
     font-weight: 600;
-    gap: 0.35rem;
-    height: 44px;
+    gap: var(--space-2);
+    height: 46px;
     justify-content: center;
     letter-spacing: 0.01em;
-    padding: 0 1.25rem;
+    padding: 0 var(--space-6);
     transition:
-        background 150ms ease,
-        border-color 150ms ease,
-        box-shadow 150ms ease,
-        transform 100ms ease;
+        background var(--dur) var(--ease-out),
+        border-color var(--dur) var(--ease-out),
+        box-shadow var(--dur) var(--ease-out),
+        transform var(--dur-fast) var(--ease-bounce);
 }
 
 .arrowButton:hover:not(:disabled) {
-    background: #f8faff;
-    border-color: #93c5fd;
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.15);
+    background: var(--brand-50);
+    border-color: var(--brand-300);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
 }
 
 .arrowButton:active:not(:disabled) {
@@ -176,48 +189,52 @@
 }
 
 .arrowButton:disabled {
-    background: #f3f4f6;
-    border-color: #e5e7eb;
+    background: var(--surface-2);
+    border-color: var(--line);
     box-shadow: none;
-    color: #9ca3af;
+    color: var(--ink-300);
     cursor: not-allowed;
 }
 
 .emptyState {
-    color: #6b7280;
+    color: var(--ink-500);
     margin: 0;
 }
 
 .audioRow {
     display: flex;
     justify-content: center;
-    margin-top: 0.75rem;
+    margin-top: var(--space-3);
 }
 
 .detailItem {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.35rem;
+    gap: var(--space-2);
 }
 
 .audioButton {
     align-items: center;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 8px;
-    color: #1d4ed8;
+    background: var(--brand-50);
+    border: 1px solid var(--brand-200);
+    border-radius: var(--radius-pill);
+    color: var(--brand-700);
     cursor: pointer;
     display: inline-flex;
-    font-size: 0.82rem;
-    font-weight: 600;
-    gap: 0.3rem;
-    padding: 0.3rem 0.7rem;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    transition:
+        background var(--dur) var(--ease-out),
+        transform var(--dur) var(--ease-bounce);
 }
 
 .audioButton:hover:not(:disabled) {
-    background: #dbeafe;
-    border-color: #93c5fd;
+    background: var(--brand-100);
+    border-color: var(--brand-300);
+    transform: scale(1.05);
 }
 
 .audioButton:disabled {
@@ -226,19 +243,19 @@
 }
 
 .audioButtonLoading {
-    color: #6b7280;
-    border-color: #e5e7eb;
-    background: #f9fafb;
+    color: var(--ink-500);
+    border-color: var(--line);
+    background: var(--surface-1);
 }
 
 .audioUnavailable {
-    color: #9ca3af;
-    font-size: 0.78rem;
+    color: var(--ink-400);
+    font-size: var(--text-xs);
 }
 
 .audioError {
-    color: #dc2626;
-    font-size: 0.78rem;
+    color: var(--danger-500);
+    font-size: var(--text-xs);
 }
 
 @media (max-width: 640px) {

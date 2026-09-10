@@ -1,38 +1,48 @@
 .card {
-    background: linear-gradient(130deg, #ffffff 0%, #f7f9ff 100%);
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
+    background: linear-gradient(130deg, var(--surface-0), var(--surface-2));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
     cursor: pointer;
     display: grid;
-    gap: 6px;
+    gap: var(--space-2);
     font: inherit;
-    padding: 12px;
+    padding: var(--space-4);
     text-align: left;
+    transition:
+        transform var(--dur) var(--ease-bounce),
+        box-shadow var(--dur) var(--ease-out),
+        border-color var(--dur) var(--ease-out);
 }
 
 .title {
-    color: #111827;
-    font-size: 1.05rem;
-    margin: 0;
-}
-
-.description {
-    color: #4b5563;
-    margin: 0;
-}
-
-.meta {
-    color: #6b7280;
-    font-size: 0.82rem;
+    color: var(--ink-900);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
     font-weight: 600;
     margin: 0;
 }
 
+.description {
+    color: var(--ink-700);
+    margin: 0;
+}
+
+.meta {
+    color: var(--ink-500);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
 .card:hover {
-    border-color: #9ca3af;
+    border-color: var(--brand-300);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
 }
 
 .card:focus-visible {
-    outline: 2px solid #2563eb;
+    outline: 3px solid var(--brand-400);
     outline-offset: 2px;
 }

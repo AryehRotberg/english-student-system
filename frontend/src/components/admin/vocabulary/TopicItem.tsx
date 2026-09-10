@@ -129,7 +129,7 @@ export function TopicItem({
                         {topic.description && (
                             <span
                                 style={{
-                                    color: '#6b7280',
+                                    color: 'var(--ink-500)',
                                     fontSize: '0.85rem',
                                 }}
                             >

@@ -41,12 +41,12 @@ export function StudyGuidePage() {
 
     return (
         <div className={styles.studyGuideStandalone}>
-            <h1 style={{ color: '#111827', marginTop: 0 }}>{guide.topic}</h1>
+            <h1 style={{ color: 'var(--ink-900)', marginTop: 0 }}>
+                {guide.topic}
+            </h1>
             <div className={styles.topicMarkdown} style={{ marginTop: '2rem' }}>
                 <ReactMarkdown
-                    rehypePlugins={[
-                        [rehypeSanitize, SANITIZE_SCHEMA],
-                    ]}
+                    rehypePlugins={[[rehypeSanitize, SANITIZE_SCHEMA]]}
                     remarkPlugins={[remarkGfm]}
                 >
                     {guide.explanation}

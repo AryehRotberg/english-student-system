@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import { AssignmentTopicsSection } from '../../components/dashboard/AssignmentTopicsSection';
+import { AssignmentsSection } from '../../components/dashboard/AssignmentsSection';
 import { DashboardHero } from '../../components/dashboard/DashboardHero';
 import { QuizProgressCard } from '../../components/dashboard/QuizProgressCard';
-import { RecentActivityCard } from '../../components/dashboard/RecentActivityCard';
 import { TodayTasksSection } from '../../components/dashboard/TodayTasksSection';
 import { useDashboardOverview } from '../../hooks/queries';
+import {
+    assignmentContentRoute,
+    isOpenableTopic,
+} from '../../utils/assignmentTopic';
 import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
@@ -23,33 +26,16 @@ export function DashboardPage() {
 
     const featuredTask = data.tasks[0] ?? null;
 
-    const getAssignmentRoute = (
-        contentType: 'quiz' | 'reading' | 'writing' | 'vocabulary',
-        contentId: string,
-    ) => {
-        if (contentType === 'quiz') {
-            return `/quiz/${contentId}`;
-        }
-
-        if (contentType === 'reading') {
-            return `/reading/${contentId}`;
-        }
-
-        if (contentType === 'vocabulary') {
-            return `/vocab?topicId=${contentId}`;
-        }
-
-        return '/practice';
-    };
+    const openableTopics = data.assignmentTopics.filter(isOpenableTopic);
 
     const handleOpenAssignment = () => {
-        const firstAssignment = data.assignmentTopics[0];
+        const firstAssignment = openableTopics[0];
         if (!firstAssignment) {
             return;
         }
 
         navigate(
-            getAssignmentRoute(
+            assignmentContentRoute(
                 firstAssignment.contentType,
                 firstAssignment.contentId,
             ),
@@ -68,29 +54,25 @@ export function DashboardPage() {
 
                     <TodayTasksSection
                         featuredTask={featuredTask}
-                        hasAssignments={data.assignmentTopics.length > 0}
-                        onViewAll={() => navigate('/practice')}
+                        hasAssignments={openableTopics.length > 0}
+                        onViewAll={() => navigate('/assignments')}
                         onOpenAssignment={handleOpenAssignment}
-                    />
-
-                    <AssignmentTopicsSection
-                        topics={data.assignmentTopics}
-                        onOpenTopic={(topic) =>
-                            navigate(
-                                getAssignmentRoute(
-                                    topic.contentType,
-                                    topic.contentId,
-                                ),
-                            )
-                        }
                     />
                 </div>
 
                 <aside className={styles.rightColumn}>
                     <QuizProgressCard quizProgress={quizProgress} />
-                    <RecentActivityCard
-                        activities={data.activities}
-                        onViewFullHistory={() => navigate('/practice')}
+                    <AssignmentsSection
+                        assignments={data.activities}
+                        topics={data.assignmentTopics}
+                        onOpenTopic={(topic) =>
+                            navigate(
+                                assignmentContentRoute(
+                                    topic.contentType,
+                                    topic.contentId,
+                                ),
+                            )
+                        }
                     />
                 </aside>
             </div>

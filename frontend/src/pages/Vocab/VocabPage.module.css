@@ -1,80 +1,82 @@
 .stack {
     display: grid;
-    gap: 1rem;
+    gap: var(--space-6);
 }
 
 .topicSection {
-    background: #ffffff;
-    border: 1px solid #d9dbe3;
-    border-radius: 14px;
+    background: var(--surface-0);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     display: grid;
-    gap: 10px;
-    padding: 1rem;
+    gap: var(--space-3);
+    padding: var(--space-6);
 }
 
 .sectionHeader {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--space-4);
     justify-content: space-between;
-    margin-bottom: 1.6rem;
+    margin-bottom: var(--space-6);
 }
 
 .heading {
-    color: #0f172a;
-    font-family: 'Inter', 'Segoe UI', sans-serif;
-    font-size: clamp(1.8rem, 2.8vw, 2.05rem);
-    font-weight: 700;
+    color: var(--ink-900);
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 2.8vw, var(--text-3xl));
+    font-weight: 600;
     letter-spacing: -0.02em;
     margin: 0;
 }
 
 .subtitle {
-    color: #64748b;
-    margin: 0.45rem 0 0;
+    color: var(--ink-500);
+    margin: var(--space-2) 0 0;
 }
 
 .filterWrap {
     align-items: center;
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    background: var(--surface-1);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-pill);
     display: flex;
-    gap: 0.5rem;
-    padding: 0.45rem 0.75rem;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
     transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
+        border-color var(--dur) var(--ease-out),
+        box-shadow var(--dur) var(--ease-out);
 }
 
 .filterWrap:focus-within {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--brand-400);
+    box-shadow: var(--shadow-focus);
 }
 
 .filterIcon {
-    color: #94a3b8;
+    color: var(--ink-400);
     flex-shrink: 0;
 }
 
 .filterInput {
     background: transparent;
     border: none;
-    color: #0f172a;
-    font-size: 0.9rem;
+    color: var(--ink-900);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
     outline: none;
     width: 200px;
 }
 
 .topicGrid {
     display: grid;
-    gap: 10px;
+    gap: var(--space-4);
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .emptyState {
-    color: #6b7280;
+    color: var(--ink-500);
     margin: 0;
 }
 
@@ -90,7 +92,7 @@
 }
 
 .topicGrid > * {
-    animation: topicSlideIn 280ms ease both;
+    animation: topicSlideIn var(--dur-slow) var(--ease-out) both;
 }
 
 .topicGrid > *:nth-child(1) {

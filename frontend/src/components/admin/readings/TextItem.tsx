@@ -43,8 +43,8 @@ export function TextItem({
                             <span
                                 className={styles.typeBadge}
                                 style={{
-                                    background: '#e0f2fe',
-                                    color: '#0369a1',
+                                    background: 'var(--info-100)',
+                                    color: 'var(--info-700)',
                                 }}
                             >
                                 {text.quiz.title}
@@ -54,8 +54,8 @@ export function TextItem({
                             <span
                                 className={styles.typeBadge}
                                 style={{
-                                    background: '#fef9c3',
-                                    color: '#854d0e',
+                                    background: 'var(--sun-100)',
+                                    color: 'var(--sun-700)',
                                 }}
                             >
                                 {text.vocabularyTopic.topic}
@@ -125,8 +125,8 @@ export function TextItem({
                 <div
                     style={{
                         padding: '0.75rem 1rem 1rem',
-                        borderTop: '1px solid #f3f4f6',
-                        color: '#374151',
+                        borderTop: '1px solid var(--line)',
+                        color: 'var(--ink-700)',
                         fontSize: '0.9rem',
                         lineHeight: 1.6,
                         whiteSpace: 'pre-wrap',

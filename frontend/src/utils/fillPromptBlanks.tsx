@@ -6,8 +6,8 @@ const BLANK = '_____';
 
 const answerStyle: React.CSSProperties = {
     display: 'inline-block',
-    background: '#dbeafe',
-    color: '#1e3a8a',
+    background: 'var(--brand-100)',
+    color: 'var(--brand-700)',
     fontWeight: 600,
     borderRadius: '4px',
     padding: '0 0.35em',
@@ -16,8 +16,8 @@ const answerStyle: React.CSSProperties = {
 
 const missingStyle: React.CSSProperties = {
     display: 'inline-block',
-    background: '#f1f5f9',
-    color: '#94a3b8',
+    background: 'var(--surface-2)',
+    color: 'var(--ink-400)',
     borderRadius: '4px',
     padding: '0 0.35em',
     margin: '0 0.1em',

@@ -7,6 +7,7 @@ export type DailyTask = {
 
 export type AssignmentTopic = {
     id: string;
+    assignmentId: string;
     assignmentTitle: string;
     assignmentDescription: string;
     topicTitle: string;

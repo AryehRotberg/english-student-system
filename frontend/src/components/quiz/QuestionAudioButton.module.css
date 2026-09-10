@@ -1,21 +1,24 @@
 .speakerButton {
     align-items: center;
     background: transparent;
-    border: 1px solid #c8cfee;
-    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
     color: var(--ink-700);
     cursor: pointer;
     display: flex;
     flex-shrink: 0;
-    padding: 0.3rem 0.4rem;
+    padding: var(--space-2);
     transition:
-        background 0.15s,
-        color 0.15s;
+        background var(--dur) var(--ease-out),
+        color var(--dur) var(--ease-out),
+        transform var(--dur) var(--ease-bounce);
 }
 
 .speakerButton:hover:not(:disabled) {
-    background: #eef1ff;
-    color: #2a5bff;
+    background: var(--brand-50);
+    border-color: var(--brand-300);
+    color: var(--brand-600);
+    transform: scale(1.08);
 }
 
 .speakerButton:disabled {

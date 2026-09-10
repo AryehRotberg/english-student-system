@@ -1,4 +1,4 @@
-import type { RecentActivity } from './activity';
+import type { AssignmentSummary } from './assignment';
 import type { ProgressItem } from './progress';
 import type { DailyTask } from './task';
 import type { AssignmentTopic } from './task';
@@ -8,5 +8,5 @@ export type DashboardData = {
     tasks: DailyTask[];
     assignmentTopics: AssignmentTopic[];
     progress: ProgressItem[];
-    activities: RecentActivity[];
+    activities: AssignmentSummary[];
 };

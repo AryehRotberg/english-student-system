@@ -1,6 +1,6 @@
-export type RecentActivity = {
+export type AssignmentSummary = {
     id: string;
     title: string;
     dueDate: string | null;
-    topicDescription: string;
+    description: string;
 };

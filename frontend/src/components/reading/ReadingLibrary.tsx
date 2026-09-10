@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ReadingItem, ReadingLevel } from '../../types/reading';
 import styles from './ReadingLibrary.module.css';
 
-const levels: ReadingLevel[] = ['A2', 'B1', 'B2', 'C1'];
+const levels: ReadingLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 type ReadingLibraryProps = {
     items: ReadingItem[];
@@ -71,4 +71,3 @@ export function ReadingLibrary({ items }: ReadingLibraryProps) {
         </section>
     );
 }
-

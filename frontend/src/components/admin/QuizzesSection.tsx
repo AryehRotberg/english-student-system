@@ -128,8 +128,8 @@ export function QuizzesSection() {
                             <div
                                 style={{
                                     padding: '0.5rem 1rem 1rem',
-                                    borderTop: '1px solid #f3f4f6',
-                                    color: '#6b7280',
+                                    borderTop: '1px solid var(--line)',
+                                    color: 'var(--ink-500)',
                                     fontSize: '0.9rem',
                                 }}
                             >

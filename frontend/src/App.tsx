@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Navbar } from './components/layout/Navbar/Navbar';
 import { useAuth } from './contexts/AuthContext';
 import { AdminPage } from './pages/Admin/AdminPage';
+import { AssignmentsPage } from './pages/Assignments/AssignmentsPage';
 import { DashboardPage } from './pages/Dashboard/DashboardPage';
 import { LoginPage } from './pages/Login/LoginPage';
 import { PracticePage } from './pages/Practice/PracticePage';
@@ -82,6 +83,14 @@ function App() {
                 element={
                     <ProtectedPage>
                         <DashboardPage />
+                    </ProtectedPage>
+                }
+            />
+            <Route
+                path="/assignments"
+                element={
+                    <ProtectedPage>
+                        <AssignmentsPage />
                     </ProtectedPage>
                 }
             />
