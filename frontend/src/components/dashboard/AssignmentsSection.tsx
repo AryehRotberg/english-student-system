@@ -1,6 +1,9 @@
 import type { AssignmentSummary } from '../../types/assignment';
 import type { AssignmentTopic } from '../../types/task';
-import { isOpenableTopic, topicLabel } from '../../utils/assignmentTopic';
+import {
+    contentTypeLabel,
+    isOpenableTopic,
+} from '../../utils/assignmentTopic';
 import styles from '../../pages/Dashboard/DashboardPage.module.css';
 
 type Props = {
@@ -21,6 +24,23 @@ const chipStyleByContentType: Record<AssignmentTopic['contentType'], string> = {
     vocabulary: styles.chipVocabulary,
     writing: styles.chipWriting,
 };
+
+/** Leads with the category so students can tell a reading from a quiz of the same name. */
+function ChipContent({ topic }: { topic: AssignmentTopic }) {
+    const category = contentTypeLabel(topic.contentType);
+    const title = topic.topicTitle?.trim();
+
+    if (!title) {
+        return <>{category}</>;
+    }
+
+    return (
+        <>
+            <span className={styles.chipCategory}>{category}</span>
+            {title}
+        </>
+    );
+}
 
 function parseDueDate(dueDate: string | null) {
     if (!dueDate) {
@@ -105,7 +125,9 @@ export function AssignmentsSection({
                                                                 )
                                                             }
                                                         >
-                                                            {topicLabel(topic)}
+                                                            <ChipContent
+                                                                topic={topic}
+                                                            />
                                                         </button>
                                                     ) : (
                                                         <span
@@ -115,7 +137,9 @@ export function AssignmentsSection({
                                                             data-static="true"
                                                             title="This item has no content attached yet."
                                                         >
-                                                            {topicLabel(topic)}
+                                                            <ChipContent
+                                                                topic={topic}
+                                                            />
                                                         </span>
                                                     )}
                                                 </li>

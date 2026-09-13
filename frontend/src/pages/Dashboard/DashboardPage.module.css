@@ -457,6 +457,20 @@
     transform: none;
 }
 
+/* Kept before the title so truncation clips the title, never the category. */
+.chipCategory {
+    font-size: 0.85em;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+.chipCategory::after {
+    content: '·';
+    margin-inline: 0.4em;
+}
+
 .chipQuiz {
     background: var(--grape-100);
     border-color: var(--grape-300);
