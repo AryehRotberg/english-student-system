@@ -1,5 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import type {
+    GradingMode,
     QuizCategory,
     ProficiencyLevel,
     QuizSummary,
@@ -28,7 +29,11 @@ class QuizzesService {
         return response.data;
     }
 
-    public async create(payload: { title: string; description?: string }) {
+    public async create(payload: {
+        title: string;
+        description?: string;
+        gradingMode?: GradingMode;
+    }) {
         const response = await this.httpClient.post('/quizzes', payload);
         return response.data;
     }

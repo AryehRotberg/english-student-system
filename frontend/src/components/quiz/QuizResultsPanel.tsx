@@ -13,6 +13,7 @@ type Props = {
     finalScore: number;
     totalPossible: number;
     completedAttempts: QuizAttemptApiItem[];
+    isPendingReview: boolean;
     onBackToCurrentQuiz: () => void;
     onViewAttempt: (attemptId: string) => void;
 };
@@ -25,15 +26,20 @@ export function QuizResultsPanel({
     finalScore,
     totalPossible,
     completedAttempts,
+    isPendingReview,
     onBackToCurrentQuiz,
     onViewAttempt,
 }: Props) {
+    const completedMessage = isPendingReview
+        ? `You answered all ${questions.length} questions. Your teacher will grade this quiz.`
+        : `You answered all ${questions.length} questions.`;
+
     return (
         <section className={styles.completedPanel}>
             <h2>{isCompleted ? 'Quiz completed' : 'Quiz results'}</h2>
             <p>
                 {isCompleted
-                    ? `You answered all ${questions.length} questions.`
+                    ? completedMessage
                     : 'Review a previous attempt result.'}
             </p>
 
@@ -44,6 +50,7 @@ export function QuizResultsPanel({
                 finalScore={finalScore}
                 totalPossible={totalPossible}
                 gradePercent={gradePercent}
+                isPendingReview={isPendingReview}
             />
 
             <button

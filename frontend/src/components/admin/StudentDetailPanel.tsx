@@ -25,6 +25,7 @@ import type { AssignmentItemContentType } from '../../services/assignments.servi
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
 import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
+import { AttemptGradingPanel } from './AttemptGradingPanel';
 
 type Props = {
     studentId: string;
@@ -156,6 +157,9 @@ function StudentProgress({ studentId }: { studentId: string }) {
     const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(
         null,
     );
+    const [gradingAttemptId, setGradingAttemptId] = useState<string | null>(
+        null,
+    );
 
     const { data: quizzes = [] } = useQuizzes();
     const quizTitleMap = new Map(quizzes.map((q) => [q.id, q.title]));
@@ -170,6 +174,16 @@ function StudentProgress({ studentId }: { studentId: string }) {
 
     if (attemptsLoading) {
         return <p>Loading progress...</p>;
+    }
+
+    if (gradingAttemptId) {
+        return (
+            <AttemptGradingPanel
+                attemptId={gradingAttemptId}
+                backLabel="Back to attempts"
+                onBack={() => setGradingAttemptId(null)}
+            />
+        );
     }
 
     if (selectedAttempt && selectedAttemptQuizId && questions.length > 0) {
@@ -202,6 +216,7 @@ function StudentProgress({ studentId }: { studentId: string }) {
                     finalScore={finalScore}
                     totalPossible={totalPossible}
                     gradePercent={gradePercent}
+                    isPendingReview={selectedAttempt.status === 'pendingReview'}
                 />
             </div>
         );
@@ -219,6 +234,8 @@ function StudentProgress({ studentId }: { studentId: string }) {
                             ? new Date(attempt.completedAt)
                             : null;
                         const score = Number(attempt.points ?? 0);
+                        const isPendingReview =
+                            attempt.status === 'pendingReview';
                         const quizTitle =
                             quizTitleMap.get(attempt.quizId) ?? 'Quiz';
 
@@ -255,26 +272,57 @@ function StudentProgress({ studentId }: { studentId: string }) {
                                         {quizTitle}
                                     </p>
                                     <span
-                                        className={`${styles.attemptStatusBadge} ${completedAt ? styles.attemptStatusCompleted : styles.attemptStatusInProgress}`}
+                                        className={`${styles.attemptStatusBadge} ${completedAt && !isPendingReview ? styles.attemptStatusCompleted : styles.attemptStatusInProgress}`}
                                     >
-                                        {completedAt
-                                            ? `Completed at ${completedAt.toLocaleString()}`
-                                            : 'In progress'}
+                                        {isPendingReview
+                                            ? 'Awaiting grading'
+                                            : completedAt
+                                              ? `Completed at ${completedAt.toLocaleString()}`
+                                              : 'In progress'}
                                     </span>
                                     <p className={styles.attemptCardScore}>
-                                        Score:{' '}
-                                        <strong>{score.toFixed(2)}</strong>
+                                        {isPendingReview ? (
+                                            'Not graded yet'
+                                        ) : (
+                                            <>
+                                                Score:{' '}
+                                                <strong>
+                                                    {score.toFixed(2)}
+                                                </strong>
+                                            </>
+                                        )}
                                     </p>
                                 </div>
-                                <button
-                                    className={styles.studentCardBtn}
-                                    onClick={() =>
-                                        setSelectedAttemptId(attempt.id)
-                                    }
-                                    type="button"
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexWrap: 'wrap',
+                                        gap: '0.5rem',
+                                    }}
                                 >
-                                    View results
-                                </button>
+                                    <button
+                                        className={styles.studentCardBtn}
+                                        onClick={() =>
+                                            setSelectedAttemptId(attempt.id)
+                                        }
+                                        type="button"
+                                    >
+                                        View results
+                                    </button>
+                                    {attempt.status !== 'inProgress' && (
+                                        <button
+                                            className={styles.studentCardBtn}
+                                            onClick={() =>
+                                                setGradingAttemptId(attempt.id)
+                                            }
+                                            type="button"
+                                        >
+                                            {isPendingReview
+                                                ? 'Grade'
+                                                : 'Edit grades'}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         );
                     })}

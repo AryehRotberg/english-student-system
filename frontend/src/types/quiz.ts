@@ -20,12 +20,16 @@ export type ProficiencyLevel =
     | 'C2'
     | 'any';
 
+// auto: answers are graded instantly. teacher: the teacher grades after submission.
+export type GradingMode = 'auto' | 'teacher';
+
 export type QuizSummary = {
     id: string;
     title: string;
     description: string;
     category: QuizCategory;
     level: ProficiencyLevel;
+    gradingMode: GradingMode;
 };
 
 export type QuizStudyGuide = {

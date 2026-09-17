@@ -28,6 +28,10 @@ import type {
 } from '../types/admin-query-items';
 import type { AssignmentItemApiItem } from '../types/api-items/assignment-item';
 import type { AssignmentApiItem } from '../types/api-items/assignment';
+import type {
+    AttemptGrading,
+    PendingReviewAttempt,
+} from '../types/api-items/attempt-grading';
 import type { QuizAttemptApiItem } from '../types/api-items/quiz-attempt';
 import type { WritingTaskApiItem } from '../types/api-items/writing-task';
 import type { AuthUser } from '../types/auth';
@@ -209,6 +213,21 @@ export function useStudentQuizAttempts(userId?: string) {
         queryKey: ['student-quiz-attempts', userId],
         enabled: Boolean(userId),
         queryFn: () => quizAttemptsService.findByUserId(userId as string),
+    });
+}
+
+export function usePendingReviewAttempts() {
+    return useQuery<PendingReviewAttempt[]>({
+        queryKey: ['pending-review-attempts'],
+        queryFn: () => quizAttemptsService.findPendingReview(),
+    });
+}
+
+export function useAttemptGrading(attemptId?: string) {
+    return useQuery<AttemptGrading>({
+        queryKey: ['attempt-grading', attemptId],
+        enabled: Boolean(attemptId),
+        queryFn: () => quizAttemptsService.getGrading(attemptId as string),
     });
 }
 

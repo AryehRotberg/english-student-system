@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useCreateQuiz, useDeleteQuiz } from '../../hooks/mutations';
 import { useQuizzes } from '../../hooks/queries';
 import styles from '../../pages/Admin/AdminPage.module.css';
+import type { GradingMode } from '../../types/quiz';
 
 export function QuizzesSection() {
     const { data: quizzes = [] } = useQuizzes();
@@ -9,6 +10,7 @@ export function QuizzesSection() {
     const deleteQuiz = useDeleteQuiz();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [gradingMode, setGradingMode] = useState<GradingMode>('auto');
     const [showForm, setShowForm] = useState(false);
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -18,9 +20,11 @@ export function QuizzesSection() {
         await createQuiz.mutateAsync({
             title: title.trim(),
             description: description.trim() || undefined,
+            gradingMode,
         });
         setTitle('');
         setDescription('');
+        setGradingMode('auto');
         setShowForm(false);
     };
 
@@ -58,6 +62,23 @@ export function QuizzesSection() {
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Optional description"
                         />
+                    </div>
+                    <div className={styles.field}>
+                        <label>Grading</label>
+                        <select
+                            value={gradingMode}
+                            onChange={(e) =>
+                                setGradingMode(e.target.value as GradingMode)
+                            }
+                        >
+                            <option value="auto">
+                                Automatic - students see their score right away
+                            </option>
+                            <option value="teacher">
+                                Teacher graded - I review answers after
+                                submission
+                            </option>
+                        </select>
                     </div>
                     <button
                         type="submit"
@@ -98,6 +119,11 @@ export function QuizzesSection() {
                             >
                                 <div className={styles.expandRowLeft}>
                                     <strong>{quiz.title}</strong>
+                                    {quiz.gradingMode === 'teacher' && (
+                                        <span className={styles.typeBadge}>
+                                            Teacher graded
+                                        </span>
+                                    )}
                                 </div>
                                 <span className={styles.chevron}>
                                     {expandedId === quiz.id ? '▲' : '▼'}

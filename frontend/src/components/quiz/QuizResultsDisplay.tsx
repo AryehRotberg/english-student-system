@@ -10,6 +10,32 @@ type Props = {
     finalScore: number;
     totalPossible: number;
     gradePercent: number;
+    // Teacher-graded attempt that has not been finalized: no score or
+    // correct/wrong verdicts exist yet.
+    isPendingReview?: boolean;
+};
+
+type CardStatus = 'unanswered' | 'submitted' | 'correct' | 'wrong';
+
+const CARD_CLASS: Record<CardStatus, string> = {
+    unanswered: styles.cardUnanswered,
+    submitted: styles.cardPending,
+    correct: styles.cardCorrect,
+    wrong: styles.cardWrong,
+};
+
+const BADGE_CLASS: Record<CardStatus, string> = {
+    unanswered: styles.badgeUnanswered,
+    submitted: styles.badgePending,
+    correct: styles.badgeCorrect,
+    wrong: styles.badgeWrong,
+};
+
+const BADGE_LABEL: Record<CardStatus, string> = {
+    unanswered: 'Unanswered',
+    submitted: 'Submitted',
+    correct: 'Correct',
+    wrong: 'Wrong',
 };
 
 export function QuizResultsDisplay({
@@ -19,6 +45,7 @@ export function QuizResultsDisplay({
     finalScore,
     totalPossible,
     gradePercent,
+    isPendingReview = false,
 }: Props) {
     const pointsByQuestionId = new Map<string, number>();
     for (const answer of answers) {
@@ -35,14 +62,24 @@ export function QuizResultsDisplay({
                 <div
                     className={styles.gradeBadge}
                     data-pass={gradePercent >= 60}
+                    data-pending={isPendingReview}
                 >
-                    {gradePercent}%
+                    {isPendingReview ? '…' : `${gradePercent}%`}
                 </div>
                 <div>
                     <p className={styles.gradeTitle}>{title}</p>
                     <p className={styles.gradeSub}>
-                        Score: <strong>{finalScore.toFixed(2)}</strong> /{' '}
-                        {totalPossible.toFixed(2)} points
+                        {isPendingReview ? (
+                            <>
+                                <strong>Awaiting teacher grading.</strong> The
+                                score will appear once the answers are graded.
+                            </>
+                        ) : (
+                            <>
+                                Score: <strong>{finalScore.toFixed(2)}</strong>{' '}
+                                / {totalPossible.toFixed(2)} points
+                            </>
+                        )}
                     </p>
                 </div>
             </div>
@@ -51,40 +88,28 @@ export function QuizResultsDisplay({
                 {questions.map((question) => {
                     const points =
                         pointsByQuestionId.get(question.questionId) ?? 0;
-                    const isCorrect = points >= question.maxPoints;
                     const hasAnswer = answers.some(
                         (a) => a.questionId === question.questionId,
                     );
-
-                    const cardClass = !hasAnswer
-                        ? styles.cardUnanswered
-                        : isCorrect
-                          ? styles.cardCorrect
-                          : styles.cardWrong;
+                    const status: CardStatus = !hasAnswer
+                        ? 'unanswered'
+                        : isPendingReview
+                          ? 'submitted'
+                          : points >= question.maxPoints
+                            ? 'correct'
+                            : 'wrong';
 
                     return (
                         <div
-                            className={`${styles.card} ${cardClass}`}
+                            className={`${styles.card} ${CARD_CLASS[status]}`}
                             key={question.id}
                         >
                             <div className={styles.cardTop}>
                                 <span className={styles.cardNum}>
                                     Q{question.questionNumber}
                                 </span>
-                                <span
-                                    className={
-                                        !hasAnswer
-                                            ? styles.badgeUnanswered
-                                            : isCorrect
-                                              ? styles.badgeCorrect
-                                              : styles.badgeWrong
-                                    }
-                                >
-                                    {!hasAnswer
-                                        ? 'Unanswered'
-                                        : isCorrect
-                                          ? 'Correct'
-                                          : 'Wrong'}
+                                <span className={BADGE_CLASS[status]}>
+                                    {BADGE_LABEL[status]}
                                 </span>
                             </div>
                             <p className={styles.cardPrompt}>

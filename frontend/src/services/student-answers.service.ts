@@ -9,7 +9,13 @@ export type StudentAnswerApiItem = {
     selectedOptionId: string | null;
     textAnswer: string | null;
     createdAt: string;
+    // Official grade; null until graded on teacher-graded quizzes, and hidden
+    // from students until the teacher finalizes grading.
     points: number | null;
+    // Automatic grading suggestion; only visible to teachers.
+    autoPoints: number | null;
+    gradedAt: string | null;
+    gradedBy: string | null;
     feedback: string | null;
 };
 
@@ -39,6 +45,17 @@ class StudentAnswersService {
         const response = await this.httpClient.post(
             '/student-answers',
             payload,
+        );
+        return response.data;
+    }
+
+    public async grade(
+        id: string,
+        points: number,
+    ): Promise<StudentAnswerApiItem> {
+        const response = await this.httpClient.patch<StudentAnswerApiItem>(
+            `/student-answers/${id}/grade`,
+            { points },
         );
         return response.data;
     }

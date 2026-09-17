@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+    type QueryClient,
+    useMutation,
+    useQueryClient,
+} from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 import { assignmentItemsService } from '../services/assignment-items.service';
 import { audioService } from '../services/audio.service';
@@ -15,6 +19,7 @@ import { studentAnswersService } from '../services/student-answers.service';
 import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
+import type { GradingMode } from '../types/quiz';
 import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
@@ -55,9 +60,10 @@ export function useSubmitQuizAttempt() {
     return useMutation({
         mutationFn: (attemptId: string) =>
             quizAttemptsService.submitAttempt(attemptId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] });
-        },
+        // Returned so mutateAsync waits for the refetch: the results screen
+        // needs the attempt's new status to know whether it awaits grading.
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] }),
     });
 }
 
@@ -76,11 +82,64 @@ export function useStartQuizAttempt() {
 
 // ─── Admin mutations ─────────────────────────────────────────────────────────
 
+function invalidateGradingQueries(queryClient: QueryClient, attemptId: string) {
+    return Promise.all([
+        queryClient.invalidateQueries({
+            queryKey: ['attempt-grading', attemptId],
+        }),
+        queryClient.invalidateQueries({
+            queryKey: ['student-answers', attemptId],
+        }),
+        queryClient.invalidateQueries({
+            queryKey: ['pending-review-attempts'],
+        }),
+        queryClient.invalidateQueries({ queryKey: ['student-quiz-attempts'] }),
+        queryClient.invalidateQueries({ queryKey: ['quiz-attempts'] }),
+    ]);
+}
+
+export function useGradeStudentAnswer() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            points,
+        }: {
+            id: string;
+            attemptId: string;
+            points: number;
+        }) => studentAnswersService.grade(id, points),
+        onSuccess: (_data, variables) =>
+            invalidateGradingQueries(queryClient, variables.attemptId),
+    });
+}
+
+export function useFinalizeAttemptGrading() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            attemptId,
+            acceptSuggestions,
+        }: {
+            attemptId: string;
+            acceptSuggestions: boolean;
+        }) =>
+            quizAttemptsService.finalizeGrading(attemptId, {
+                acceptSuggestions,
+            }),
+        onSuccess: (_data, variables) =>
+            invalidateGradingQueries(queryClient, variables.attemptId),
+    });
+}
+
 export function useCreateQuiz() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: { title: string; description?: string }) =>
-            quizzesService.create(payload),
+        mutationFn: (payload: {
+            title: string;
+            description?: string;
+            gradingMode?: GradingMode;
+        }) => quizzesService.create(payload),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ['quizzes'] }),
     });
@@ -142,10 +201,13 @@ export function useCreateQuestionAcceptedAnswer() {
             answer: string;
             blankIndex: number;
         }) => questionAcceptedAnswersService.create(payload),
-        onSuccess: () =>
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['question-accepted-answers'],
-            }),
+            });
+            // The grading screen lists accepted answers per blank.
+            queryClient.invalidateQueries({ queryKey: ['attempt-grading'] });
+        },
     });
 }
 

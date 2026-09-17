@@ -57,6 +57,7 @@ export function QuizAttemptsViewer({
             finalScore={finalScore}
             totalPossible={totalPossible}
             completedAttempts={completedAttempts}
+            isPendingReview={selectedAttempt?.status === 'pendingReview'}
             onBackToCurrentQuiz={onBack}
             onViewAttempt={onViewAttempt}
         />

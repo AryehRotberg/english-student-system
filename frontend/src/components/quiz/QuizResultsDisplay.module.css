@@ -30,6 +30,11 @@
     color: var(--ok-700);
 }
 
+.gradeBadge[data-pending='true'] {
+    background: var(--sun-100);
+    color: var(--sun-700);
+}
+
 .gradeTitle {
     font-family: var(--font-display);
     font-size: var(--text-lg);
@@ -71,6 +76,21 @@
 
 .cardUnanswered {
     border-left-color: var(--warn-500);
+}
+
+.cardPending {
+    border-left-color: var(--brand-700);
+}
+
+.badgePending {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    background: var(--brand-100);
+    color: var(--brand-700);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
 }
 
 .cardTop {

@@ -29,8 +29,9 @@ export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
                                         : 'Completed attempt'}
                                 </strong>
                                 <p>
-                                    Score:{' '}
-                                    {Number(attempt.points ?? 0).toFixed(2)}
+                                    {attempt.status === 'pendingReview'
+                                        ? 'Awaiting teacher grading'
+                                        : `Score: ${Number(attempt.points ?? 0).toFixed(2)}`}
                                 </p>
                             </div>
                             <button

@@ -2,6 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import type { AdminTab } from '../../components/admin/admin-tabs';
 import { adminTabs } from '../../components/admin/admin-tabs';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
+import { GradingSection } from '../../components/admin/GradingSection';
 import { PendingStudentsSection } from '../../components/admin/PendingStudentsSection';
 import { QuestionsSection } from '../../components/admin/QuestionsSection';
 import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
@@ -56,6 +57,7 @@ export function AdminPage() {
                     {activeTab === 'readings' && <ReadingsSection />}
                     {activeTab === 'vocabulary' && <VocabularySection />}
                     {activeTab === 'students' && <StudentsSection />}
+                    {activeTab === 'grading' && <GradingSection />}
                 </div>
             </main>
         </div>
