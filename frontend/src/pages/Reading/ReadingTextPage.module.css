@@ -25,6 +25,15 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    /* Back button sits above the title so long titles get the full width */
+    .header {
+        flex-direction: column-reverse;
+        gap: var(--space-3);
+    }
 }
 
 .backButton {
@@ -54,6 +63,7 @@
     font-size: var(--text-2xl);
     font-weight: 600;
     margin: 0 0 var(--space-1);
+    overflow-wrap: break-word;
 }
 
 .meta {
