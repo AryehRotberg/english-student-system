@@ -4,6 +4,11 @@
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="open-book.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <!-- iOS only exposes Web Push to sites installed to the Home Screen as standalone apps -->
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="apple-touch-icon" href="/open-book.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="English" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
