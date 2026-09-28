@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
     useAllStudents,
+    useAnswerFiles,
     useAssignmentItems,
     useAssignments,
     useQuizQuestions,
@@ -24,8 +25,10 @@ import styles from '../../pages/Admin/AdminPage.module.css';
 import type { AssignmentItemContentType } from '../../services/assignments.service';
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
+import { isHandwritten, possiblePoints } from '../../utils/exam';
 import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
 import { AttemptGradingPanel } from './AttemptGradingPanel';
+import { StudentSubjectsEditor } from './StudentSubjectsEditor';
 
 type Props = {
     studentId: string;
@@ -143,6 +146,7 @@ export function StudentDetailPanel({ studentId, onBack, onDeleted }: Props) {
                         )}
                     </div>
 
+                    <StudentSubjectsEditor studentId={studentId} />
                     <StudentProgress studentId={studentId} />
                     <StudentAssignments studentId={studentId} />
                 </>
@@ -166,10 +170,16 @@ function StudentProgress({ studentId }: { studentId: string }) {
 
     const selectedAttempt = attempts.find((a) => a.id === selectedAttemptId);
     const selectedAttemptQuizId = selectedAttempt?.quizId;
+    const selectedQuiz = quizzes.find((q) => q.id === selectedAttemptQuizId);
 
     const { data: questions = [] } = useQuizQuestions(selectedAttemptQuizId);
     const { data: answers = [] } = useStudentAnswersByAttempt(
         selectedAttemptId || undefined,
+    );
+    const { data: files = [] } = useAnswerFiles(
+        questions.some(isHandwritten)
+            ? selectedAttemptId || undefined
+            : undefined,
     );
 
     if (attemptsLoading) {
@@ -188,9 +198,9 @@ function StudentProgress({ studentId }: { studentId: string }) {
 
     if (selectedAttempt && selectedAttemptQuizId && questions.length > 0) {
         const quizTitle = quizTitleMap.get(selectedAttemptQuizId) ?? 'Quiz';
-        const totalPossible = questions.reduce(
-            (sum, q) => sum + Number(q.maxPoints),
-            0,
+        const totalPossible = possiblePoints(
+            questions.map((q) => q.maxPoints),
+            selectedQuiz?.questionsToAnswer,
         );
         const finalScore = Number(selectedAttempt.points ?? 0);
         const gradePercent =
@@ -212,6 +222,7 @@ function StudentProgress({ studentId }: { studentId: string }) {
                 <QuizResultsDisplay
                     questions={questions}
                     answers={answers}
+                    files={files}
                     title={quizTitle}
                     finalScore={finalScore}
                     totalPossible={totalPossible}

@@ -1,14 +1,20 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
     useCreateQuestionAcceptedAnswer,
     useFinalizeAttemptGrading,
     useGradeStudentAnswer,
+    useRemoveFeedbackFile,
+    useUploadFeedbackFile,
 } from '../../hooks/mutations';
 import { useAttemptGrading } from '../../hooks/queries';
 import adminStyles from '../../pages/Admin/AdminPage.module.css';
+import { ANSWER_FILE_TYPES } from '../../services/answer-files.service';
 import type { StudentAnswerApiItem } from '../../services/student-answers.service';
 import type { GradingQuestion } from '../../types/api-items/attempt-grading';
 import { getApiErrorMessage } from '../../utils/getApiErrorMessage';
+import { QuestionImage } from '../content/QuestionImage';
+import { RichText } from '../content/RichText';
+import { AnswerFileGallery } from '../exam/AnswerFileGallery';
 import styles from './AttemptGradingPanel.module.css';
 
 type Props = {
@@ -44,6 +50,20 @@ function formatPoints(value: number | null | undefined): string {
         .toFixed(2)
         .replace(/\.?0+$/, '');
 }
+
+function questionKind(question: GradingQuestion) {
+    if (question.questionType === 'handwritten') return 'handwritten';
+    if (question.questionType === 'multiple_choice') return 'multipleChoice';
+    if (question.questionType === 'open_ended') return 'openEnded';
+    // Older questions have no stored type.
+    return question.choices.length > 0 ? 'multipleChoice' : 'openEnded';
+}
+
+const KIND_LABEL = {
+    handwritten: 'Handwritten',
+    multipleChoice: 'Multiple choice',
+    openEnded: 'Open-ended',
+} as const;
 
 function BackChevron() {
     return (
@@ -99,13 +119,27 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
     }
 
     const answers = grading.questions.flatMap((question) => question.answers);
-    const ungradedCount = answers.filter((a) => a.points === null).length;
-    const gradedPoints = answers.reduce(
+    const countedAnswers = answers.filter((a) => a.isCounted);
+    const ungraded = countedAnswers.filter((a) => a.points === null);
+    const ungradedCount = ungraded.length;
+    // Suggestions exist only for auto-gradable answers; handwritten work always
+    // needs a grade from the teacher.
+    const ungradedWithoutSuggestion = ungraded.filter(
+        (a) => a.autoPoints === null,
+    ).length;
+    const gradedPoints = countedAnswers.reduce(
         (sum, a) => sum + Number(a.points ?? 0),
         0,
     );
+    const countedQuestions = new Set(countedAnswers.map((a) => a.questionId))
+        .size;
+    const required = grading.questionsToAnswer;
+    const tooManyCounted = required !== null && countedQuestions > required;
     const isGraded = grading.status === 'graded';
-    const canFinalize = ungradedCount === 0 || acceptSuggestions;
+    const canFinalize =
+        !tooManyCounted &&
+        (ungradedCount === 0 ||
+            (acceptSuggestions && ungradedWithoutSuggestion === 0));
 
     return (
         <div className={adminStyles.section}>
@@ -131,6 +165,12 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
                         label="Ungraded answers"
                         value={String(ungradedCount)}
                     />
+                    {required !== null && (
+                        <Stat
+                            label="Counted questions"
+                            value={`${countedQuestions} / ${required}`}
+                        />
+                    )}
                     {isGraded && (
                         <Stat
                             label="Final score"
@@ -140,6 +180,14 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
                 </div>
             </div>
 
+            {tooManyCounted && (
+                <p className={styles.banner}>
+                    The student answered {countedQuestions} questions but only{' '}
+                    {required} count. Untick “Counts toward the grade” on the
+                    answers that should not count.
+                </p>
+            )}
+
             <div className={styles.questionList}>
                 {grading.questions.map((question, index) => (
                     <QuestionGradingCard
@@ -147,6 +195,7 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
                         attemptId={attemptId}
                         question={question}
                         number={index + 1}
+                        showCountedToggle={required !== null}
                     />
                 ))}
             </div>
@@ -154,12 +203,13 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
             <div className={styles.footer}>
                 {isGraded ? (
                     <p className={styles.success}>
-                        Grading is finalized and the student can see their
-                        score. Changing a grade updates the score automatically.
+                        Grading is finalized and the student can see their score
+                        and feedback. Changing a grade updates the score
+                        automatically.
                     </p>
                 ) : (
                     <>
-                        {ungradedCount > 0 && (
+                        {ungradedCount > ungradedWithoutSuggestion && (
                             <label className={adminStyles.checkLabel}>
                                 <input
                                     type="checkbox"
@@ -168,9 +218,13 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
                                         setAcceptSuggestions(e.target.checked)
                                     }
                                 />
-                                Use the suggested grade for the {ungradedCount}{' '}
-                                answer{ungradedCount === 1 ? '' : 's'} you
-                                haven&apos;t graded
+                                Use the suggested grade for the{' '}
+                                {ungradedCount - ungradedWithoutSuggestion}{' '}
+                                auto-gradable answer
+                                {ungradedCount - ungradedWithoutSuggestion === 1
+                                    ? ''
+                                    : 's'}{' '}
+                                you haven&apos;t graded
                             </label>
                         )}
                         <div>
@@ -194,8 +248,11 @@ export function AttemptGradingPanel({ attemptId, backLabel, onBack }: Props) {
                         </div>
                         {!canFinalize && (
                             <p className={styles.hint}>
-                                Grade every answer, or use the suggested grades,
-                                before finalizing.
+                                {tooManyCounted
+                                    ? `Only ${required} answers can count toward the grade.`
+                                    : ungradedWithoutSuggestion > 0
+                                      ? 'Grade every handwritten answer before finalizing.'
+                                      : 'Grade every answer, or use the suggested grades, before finalizing.'}
                             </p>
                         )}
                     </>
@@ -223,15 +280,18 @@ function QuestionGradingCard({
     attemptId,
     question,
     number,
+    showCountedToggle,
 }: {
     attemptId: string;
     question: GradingQuestion;
     number: number;
+    showCountedToggle: boolean;
 }) {
-    const isMultipleChoice = question.choices.length > 0;
+    const kind = questionKind(question);
+    const counted = question.answers.filter((a) => a.isCounted);
     const isFullyGraded =
         question.answers.length > 0 &&
-        question.answers.every((a) => a.points !== null);
+        (counted.length === 0 || counted.every((a) => a.points !== null));
 
     return (
         <section className={styles.questionCard} data-graded={isFullyGraded}>
@@ -241,12 +301,26 @@ function QuestionGradingCard({
                     {Number(question.maxPoints) === 1 ? '' : 's'}
                 </span>
                 <span className={adminStyles.typeBadge}>
-                    {isMultipleChoice ? 'Multiple choice' : 'Open-ended'}
+                    {KIND_LABEL[kind]}
                 </span>
             </div>
-            <p className={styles.questionText}>{question.questionText}</p>
+            <RichText
+                className={styles.questionText}
+                content={question.questionText}
+                format={question.contentFormat}
+            />
+            <QuestionImage
+                questionId={question.questionId}
+                hasImage={question.hasImage}
+            />
 
-            {isMultipleChoice ? (
+            {showCountedToggle && question.answers.length > 0 && (
+                <CountedToggle attemptId={attemptId} question={question} />
+            )}
+
+            {kind === 'handwritten' ? (
+                <HandwrittenGrading attemptId={attemptId} question={question} />
+            ) : kind === 'multipleChoice' ? (
                 <MultipleChoiceGrading
                     attemptId={attemptId}
                     question={question}
@@ -258,9 +332,155 @@ function QuestionGradingCard({
     );
 }
 
+// "Answer N of M": the teacher decides which answered questions count.
+function CountedToggle({
+    attemptId,
+    question,
+}: {
+    attemptId: string;
+    question: GradingQuestion;
+}) {
+    const grade = useGradeStudentAnswer();
+    const isCounted = question.answers.every((a) => a.isCounted);
+
+    return (
+        <label className={adminStyles.checkLabel}>
+            <input
+                type="checkbox"
+                checked={isCounted}
+                disabled={grade.isPending}
+                onChange={(e) => {
+                    for (const answer of question.answers) {
+                        grade.mutate({
+                            id: answer.id,
+                            attemptId,
+                            isCounted: e.target.checked,
+                        });
+                    }
+                }}
+            />
+            Counts toward the grade
+            {grade.isError && (
+                <span className={adminStyles.error}>
+                    {getApiErrorMessage(grade.error)}
+                </span>
+            )}
+        </label>
+    );
+}
+
 function answerRowKey(answer: StudentAnswerApiItem) {
-    // Remount after a save so the input resets to the stored grade.
-    return `${answer.id}-${answer.gradedAt ?? 'ungraded'}-${answer.points ?? ''}`;
+    // Remount after a save so the inputs reset to the stored values.
+    return `${answer.id}-${answer.gradedAt ?? 'ungraded'}-${answer.points ?? ''}-${answer.feedback ?? ''}`;
+}
+
+function HandwrittenGrading({
+    attemptId,
+    question,
+}: {
+    attemptId: string;
+    question: GradingQuestion;
+}) {
+    const answer = question.answers[0];
+    const files = [...question.files].sort((a, b) => a.pageOrder - b.pageOrder);
+
+    if (!answer) {
+        return <p className={styles.noAnswer}>No pages submitted.</p>;
+    }
+
+    return (
+        <>
+            {files.length > 0 ? (
+                <AnswerFileGallery files={files} />
+            ) : (
+                <p className={styles.noAnswer}>No pages submitted.</p>
+            )}
+            {answer.isCounted ? (
+                <AnswerGradeRow
+                    key={answerRowKey(answer)}
+                    attemptId={attemptId}
+                    answer={answer}
+                    maxPoints={Number(question.maxPoints)}
+                    showSuggestion={false}
+                    withFeedback
+                />
+            ) : (
+                <p className={styles.hint}>Not counted — no grade needed.</p>
+            )}
+            <FeedbackFileRow attemptId={attemptId} answer={answer} />
+        </>
+    );
+}
+
+function FeedbackFileRow({
+    attemptId,
+    answer,
+}: {
+    attemptId: string;
+    answer: StudentAnswerApiItem;
+}) {
+    const upload = useUploadFeedbackFile();
+    const remove = useRemoveFeedbackFile();
+    const inputRef = useRef<HTMLInputElement>(null);
+    const error = upload.error ?? remove.error;
+
+    return (
+        <div className={styles.feedbackFileRow}>
+            <span className={styles.statLabel}>Marked-up copy</span>
+            {answer.hasFeedbackFile ? (
+                <>
+                    <span className={styles.gradedBadge}>Attached</span>
+                    <button
+                        type="button"
+                        className={adminStyles.editBtn}
+                        disabled={upload.isPending}
+                        onClick={() => inputRef.current?.click()}
+                    >
+                        Replace
+                    </button>
+                    <button
+                        type="button"
+                        className={adminStyles.deleteBtn}
+                        disabled={remove.isPending}
+                        onClick={() =>
+                            remove.mutate({ answerId: answer.id, attemptId })
+                        }
+                    >
+                        Remove
+                    </button>
+                </>
+            ) : (
+                <button
+                    type="button"
+                    className={adminStyles.ghostAddBtn}
+                    disabled={upload.isPending}
+                    onClick={() => inputRef.current?.click()}
+                >
+                    {upload.isPending
+                        ? 'Uploading…'
+                        : '+ Upload annotated PDF or image'}
+                </button>
+            )}
+            <input
+                ref={inputRef}
+                type="file"
+                accept={ANSWER_FILE_TYPES.join(',')}
+                hidden
+                onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = '';
+                    if (file) {
+                        upload.mutate({ answerId: answer.id, attemptId, file });
+                    }
+                }}
+            />
+            {error && (
+                <span className={adminStyles.error}>
+                    {getApiErrorMessage(error)}
+                </span>
+            )}
+        </div>
+    );
 }
 
 function MultipleChoiceGrading({
@@ -283,7 +503,7 @@ function MultipleChoiceGrading({
                             className={styles.choice}
                             data-selected={isSelected}
                         >
-                            <span>{choice.text}</span>
+                            <span dir="auto">{choice.text}</span>
                             {choice.isCorrect && (
                                 <span className={adminStyles.correctBadge}>
                                     Correct
@@ -358,7 +578,10 @@ function OpenEndedGrading({
                         <div className={styles.answerLine}>
                             Student answer:{' '}
                             {studentText ? (
-                                <span className={styles.studentAnswer}>
+                                <span
+                                    className={styles.studentAnswer}
+                                    dir="auto"
+                                >
                                     {studentText}
                                 </span>
                             ) : (
@@ -376,6 +599,7 @@ function OpenEndedGrading({
                                     <span
                                         key={a.id}
                                         className={styles.acceptedChip}
+                                        dir="auto"
                                     >
                                         {a.answer}
                                     </span>
@@ -441,15 +665,24 @@ function AnswerGradeRow({
     attemptId,
     answer,
     maxPoints,
+    showSuggestion = true,
+    withFeedback = false,
 }: {
     attemptId: string;
     answer: StudentAnswerApiItem;
     maxPoints: number;
+    showSuggestion?: boolean;
+    withFeedback?: boolean;
 }) {
     const grade = useGradeStudentAnswer();
     const [value, setValue] = useState(
-        String(answer.points ?? answer.autoPoints ?? 0),
+        answer.points !== null
+            ? String(answer.points)
+            : showSuggestion
+              ? String(answer.autoPoints ?? 0)
+              : '',
     );
+    const [feedback, setFeedback] = useState(answer.feedback ?? '');
 
     const parsed = Number(value);
     const isValid =
@@ -458,67 +691,95 @@ function AnswerGradeRow({
         parsed >= 0 &&
         parsed <= maxPoints;
     const isGraded = answer.points !== null;
-    const isChanged = !isGraded || parsed !== Number(answer.points);
+    const pointsChanged = !isGraded || parsed !== Number(answer.points);
+    const feedbackChanged = feedback !== (answer.feedback ?? '');
+    const isChanged = pointsChanged || (withFeedback && feedbackChanged);
 
     return (
-        <div className={styles.gradeRow}>
-            <span
-                className={isGraded ? styles.gradedBadge : styles.pendingBadge}
-            >
-                {isGraded ? 'Graded' : 'Not graded'}
-            </span>
-            <span className={styles.hint}>
-                Suggested: {formatPoints(answer.autoPoints)} /{' '}
-                {formatPoints(maxPoints)}
-            </span>
-            <input
-                className={styles.pointsInput}
-                type="number"
-                min={0}
-                max={maxPoints}
-                step={0.01}
-                value={value}
-                aria-label="Points"
-                onChange={(e) => setValue(e.target.value)}
-            />
-            <span className={styles.hint}>/ {formatPoints(maxPoints)}</span>
-            <button
-                type="button"
-                className={adminStyles.editBtn}
-                onClick={() => setValue(String(maxPoints))}
-            >
-                Full
-            </button>
-            <button
-                type="button"
-                className={adminStyles.editBtn}
-                onClick={() => setValue('0')}
-            >
-                Zero
-            </button>
-            <button
-                type="button"
-                className={adminStyles.saveBtn}
-                disabled={!isValid || !isChanged || grade.isPending}
-                onClick={() =>
-                    grade.mutate({ id: answer.id, attemptId, points: parsed })
-                }
-            >
-                {grade.isPending
-                    ? 'Saving…'
-                    : isGraded
-                      ? 'Update grade'
-                      : 'Save grade'}
-            </button>
-            {!isValid && (
-                <span className={adminStyles.error}>
-                    Enter a value from 0 to {formatPoints(maxPoints)}
+        <div className={styles.gradeBlock}>
+            <div className={styles.gradeRow}>
+                <span
+                    className={
+                        isGraded ? styles.gradedBadge : styles.pendingBadge
+                    }
+                >
+                    {isGraded ? 'Graded' : 'Not graded'}
                 </span>
-            )}
-            {grade.isError && (
-                <span className={adminStyles.error}>
-                    {getApiErrorMessage(grade.error)}
-                </span>
+                {showSuggestion && (
+                    <span className={styles.hint}>
+                        Suggested: {formatPoints(answer.autoPoints)} /{' '}
+                        {formatPoints(maxPoints)}
+                    </span>
+                )}
+                <input
+                    className={styles.pointsInput}
+                    type="number"
+                    min={0}
+                    max={maxPoints}
+                    step={0.01}
+                    value={value}
+                    aria-label="Points"
+                    onChange={(e) => setValue(e.target.value)}
+                />
+                <span className={styles.hint}>/ {formatPoints(maxPoints)}</span>
+                <button
+                    type="button"
+                    className={adminStyles.editBtn}
+                    onClick={() => setValue(String(maxPoints))}
+                >
+                    Full
+                </button>
+                <button
+                    type="button"
+                    className={adminStyles.editBtn}
+                    onClick={() => setValue('0')}
+                >
+                    Zero
+                </button>
+                <button
+                    type="button"
+                    className={adminStyles.saveBtn}
+                    disabled={!isValid || !isChanged || grade.isPending}
+                    onClick={() =>
+                        grade.mutate({
+                            id: answer.id,
+                            attemptId,
+                            points: parsed,
+                            feedback: withFeedback ? feedback : undefined,
+                        })
+                    }
+                >
+                    {grade.isPending
+                        ? 'Saving…'
+                        : isGraded
+                          ? 'Update grade'
+                          : 'Save grade'}
+                </button>
+                {!isValid && value.trim() !== '' && (
+                    <span className={adminStyles.error}>
+                        Enter a value from 0 to {formatPoints(maxPoints)}
+                    </span>
+                )}
+                {grade.isError && (
+                    <span className={adminStyles.error}>
+                        {getApiErrorMessage(grade.error)}
+                    </span>
+                )}
+            </div>
+            {withFeedback && (
+                <label className={styles.feedbackField}>
+                    <span className={styles.statLabel}>
+                        Feedback for the student (Markdown and $LaTeX$ work)
+                    </span>
+                    <textarea
+                        className={styles.feedbackInput}
+                        dir="auto"
+                        rows={3}
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                        placeholder="What was right, what to fix…"
+                    />
+                </label>
             )}
         </div>
     );

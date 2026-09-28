@@ -1,18 +1,21 @@
 import { useParams } from 'react-router-dom';
 import { QuizPageContent } from '../../components/quiz/QuizPageContent';
-import { useQuizzes } from '../../hooks/queries';
+import { useQuiz } from '../../hooks/queries';
 
 export function QuizPage() {
     const { quizId } = useParams<{ quizId: string }>();
-    const { data: quizzes = [] } = useQuizzes();
+    const { data: quiz } = useQuiz(quizId);
 
     if (!quizId) {
         return null;
     }
 
-    const quizTitle = quizzes.find((q) => q.id === quizId)?.title ?? '';
-
     return (
-        <QuizPageContent key={quizId} quizId={quizId} quizTitle={quizTitle} />
+        <QuizPageContent
+            key={quizId}
+            quizId={quizId}
+            quizTitle={quiz?.title ?? ''}
+            quiz={quiz}
+        />
     );
 }

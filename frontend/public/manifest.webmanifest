@@ -1,6 +1,6 @@
 {
-    "name": "English Student System",
-    "short_name": "English",
+    "name": "Learning Hub",
+    "short_name": "Learning Hub",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

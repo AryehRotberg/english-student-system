@@ -3,10 +3,13 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import 'katex/dist/katex.min.css';
 
 import App from './App.tsx';
 import Sentry from './config/sentry.js';
 import { AuthProvider } from './contexts/AuthContext.tsx';
+import { SubjectProvider } from './contexts/SubjectProvider.tsx';
+import './i18n';
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -34,7 +37,9 @@ createRoot(document.getElementById('root')!, {
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
                 <AuthProvider>
-                    <App />
+                    <SubjectProvider>
+                        <App />
+                    </SubjectProvider>
                 </AuthProvider>
             </BrowserRouter>
             <ReactQueryDevtools initialIsOpen={false} />

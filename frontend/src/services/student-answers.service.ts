@@ -16,7 +16,17 @@ export type StudentAnswerApiItem = {
     autoPoints: number | null;
     gradedAt: string | null;
     gradedBy: string | null;
+    // Teacher feedback; like points, hidden from students until grading is final.
     feedback: string | null;
+    hasFeedbackFile: boolean;
+    // False when the teacher excluded this answer from an "answer N of M" exam.
+    isCounted: boolean;
+};
+
+export type GradePayload = {
+    points?: number;
+    feedback?: string;
+    isCounted?: boolean;
 };
 
 class StudentAnswersService {
@@ -51,11 +61,11 @@ class StudentAnswersService {
 
     public async grade(
         id: string,
-        points: number,
+        payload: GradePayload,
     ): Promise<StudentAnswerApiItem> {
         const response = await this.httpClient.patch<StudentAnswerApiItem>(
             `/student-answers/${id}/grade`,
-            { points },
+            payload,
         );
         return response.data;
     }

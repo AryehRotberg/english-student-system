@@ -1,13 +1,17 @@
+import { useTranslation } from 'react-i18next';
 import styles from '../../pages/Quiz/QuizPage.module.css';
+import type { AnswerFile } from '../../services/answer-files.service';
 import type { StudentAnswerApiItem } from '../../services/student-answers.service';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 import type { QuizQuestion } from '../../types/quiz';
+import { isHandwritten } from '../../utils/exam';
 import { QuizAttemptHistoryPanel } from './QuizAttemptHistoryPanel';
 import { QuizResultsDisplay } from './QuizResultsDisplay';
 
 type Props = {
     questions: QuizQuestion[];
     answers: StudentAnswerApiItem[];
+    files: AnswerFile[];
     isCompleted: boolean;
     gradePercent: number;
     finalScore: number;
@@ -21,6 +25,7 @@ type Props = {
 export function QuizResultsPanel({
     questions,
     answers,
+    files,
     isCompleted,
     gradePercent,
     finalScore,
@@ -30,23 +35,25 @@ export function QuizResultsPanel({
     onBackToCurrentQuiz,
     onViewAttempt,
 }: Props) {
-    const completedMessage = isPendingReview
-        ? `You answered all ${questions.length} questions. Your teacher will grade this quiz.`
-        : `You answered all ${questions.length} questions.`;
+    const { t } = useTranslation();
+    const isExam = questions.some(isHandwritten);
+
+    const completedMessage = isExam
+        ? t('results.submittedForGrading')
+        : isPendingReview
+          ? t('results.answeredAllTeacher', { count: questions.length })
+          : t('results.answeredAll', { count: questions.length });
 
     return (
         <section className={styles.completedPanel}>
-            <h2>{isCompleted ? 'Quiz completed' : 'Quiz results'}</h2>
-            <p>
-                {isCompleted
-                    ? completedMessage
-                    : 'Review a previous attempt result.'}
-            </p>
+            <h2>{isCompleted ? t('results.completed') : t('results.results')}</h2>
+            <p>{isCompleted ? completedMessage : t('results.reviewPrevious')}</p>
 
             <QuizResultsDisplay
                 questions={questions}
                 answers={answers}
-                title="Quiz Results"
+                files={files}
+                title={t('results.title')}
                 finalScore={finalScore}
                 totalPossible={totalPossible}
                 gradePercent={gradePercent}
@@ -58,7 +65,7 @@ export function QuizResultsPanel({
                 onClick={onBackToCurrentQuiz}
                 type="button"
             >
-                Back to current quiz
+                {t('results.backToQuiz')}
             </button>
 
             <QuizAttemptHistoryPanel

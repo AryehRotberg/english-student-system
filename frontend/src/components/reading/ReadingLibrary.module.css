@@ -25,7 +25,7 @@
 .filterLabel {
     color: var(--ink-700);
     font-weight: 700;
-    margin-right: var(--space-1);
+    margin-inline-end: var(--space-1);
 }
 
 .chip {

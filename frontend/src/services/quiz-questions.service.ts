@@ -45,6 +45,7 @@ class QuizQuestionsService {
         quizId: string;
         questionId: string;
         maxPoints: number;
+        orderIndex?: number;
     }) {
         const response = await this.httpClient.post('/quiz-questions', payload);
         return response.data;
@@ -56,6 +57,7 @@ class QuizQuestionsService {
             quizId: string;
             questionId: string;
             maxPoints: number;
+            orderIndex: number;
         }>,
     ) {
         const response = await this.httpClient.patch(
@@ -63,6 +65,11 @@ class QuizQuestionsService {
             payload,
         );
         return response.data;
+    }
+
+    /** Takes the question out of the quiz; the question stays in the bank. */
+    public async remove(id: string): Promise<void> {
+        await this.httpClient.delete(`/quiz-questions/${id}`);
     }
 }
 

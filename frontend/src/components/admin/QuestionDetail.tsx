@@ -45,6 +45,11 @@ export function QuestionDetail({ question }: Props) {
     const [editAnswerText, setEditAnswerText] = useState('');
     const [editBlankIndex, setEditBlankIndex] = useState(1);
 
+    // Handwritten answers are graded by hand: no options or answer key.
+    if (question.questionType === 'handwritten') {
+        return null;
+    }
+
     if (isMultipleChoice) {
         return (
             <div className={styles.subSection}>

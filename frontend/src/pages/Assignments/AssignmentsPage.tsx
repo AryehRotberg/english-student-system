@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAssignmentItems, useAssignments } from '../../hooks/queries';
@@ -13,11 +14,7 @@ import styles from './AssignmentsPage.module.css';
 
 type StatusFilter = 'all' | 'active' | 'completed';
 
-const filters: { id: StatusFilter; label: string }[] = [
-    { id: 'all', label: 'All' },
-    { id: 'active', label: 'Active' },
-    { id: 'completed', label: 'Completed' },
-];
+const filters: StatusFilter[] = ['all', 'active', 'completed'];
 
 const dueDateFormat: Intl.DateTimeFormatOptions = {
     weekday: 'short',
@@ -81,6 +78,7 @@ function AssignmentCard({
     items: AssignmentItemApiItem[];
     onOpenItem: (item: AssignmentItemApiItem) => void;
 }) {
+    const { t, i18n } = useTranslation();
     const dueDate = parseDueDate(assignment.dueDate);
     const isComplete = isAssignmentComplete(assignment, items);
     const isOverdue =
@@ -96,8 +94,12 @@ function AssignmentCard({
         <article className={styles.card}>
             <header className={styles.cardHead}>
                 <div className={styles.cardHeadMain}>
-                    <h2 className={styles.cardTitle}>{assignment.title}</h2>
-                    <p className={styles.cardDesc}>{assignment.description}</p>
+                    <h2 className={styles.cardTitle} dir="auto">
+                        {assignment.title}
+                    </h2>
+                    <p className={styles.cardDesc} dir="auto">
+                        {assignment.description}
+                    </p>
                 </div>
 
                 <span
@@ -107,29 +109,32 @@ function AssignmentCard({
                     }
                 >
                     {isComplete
-                        ? 'Completed'
+                        ? t('assignmentsPage.completed')
                         : isOverdue
-                          ? 'Overdue'
-                          : 'In progress'}
+                          ? t('assignmentsPage.overdue')
+                          : t('assignmentsPage.inProgress')}
                 </span>
             </header>
 
             <dl className={styles.metaRow}>
                 <div className={styles.meta}>
-                    <dt>Due</dt>
+                    <dt>{t('assignmentsPage.due')}</dt>
                     <dd>
                         {dueDate
                             ? dueDate.toLocaleDateString(
-                                  undefined,
+                                  i18n.language,
                                   dueDateFormat,
                               )
-                            : 'No due date'}
+                            : t('common.noDueDate')}
                     </dd>
                 </div>
                 <div className={styles.meta}>
-                    <dt>Items</dt>
+                    <dt>{t('assignmentsPage.items')}</dt>
                     <dd>
-                        {completedCount} of {items.length} done
+                        {t('assignmentsPage.itemsDone', {
+                            done: completedCount,
+                            total: items.length,
+                        })}
                     </dd>
                 </div>
             </dl>
@@ -142,7 +147,9 @@ function AssignmentCard({
                         aria-valuenow={percent}
                         aria-valuemin={0}
                         aria-valuemax={100}
-                        aria-label={`${assignment.title} progress`}
+                        aria-label={t('assignmentsPage.progressAria', {
+                            title: assignment.title,
+                        })}
                     >
                         <div
                             className={styles.progressFill}
@@ -185,7 +192,7 @@ function AssignmentCard({
                                     ) : (
                                         <span
                                             className={styles.itemTitleStatic}
-                                            title="This item has no content attached yet."
+                                            title={t('dashboard.noContent')}
                                         >
                                             {label}
                                         </span>
@@ -201,6 +208,7 @@ function AssignmentCard({
 }
 
 export function AssignmentsPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
     const [filter, setFilter] = useState<StatusFilter>('active');
@@ -231,35 +239,36 @@ export function AssignmentsPage() {
         <div className={styles.page}>
             <header className={styles.pageHead}>
                 <div>
-                    <h1 className={styles.heading}>Assignments</h1>
+                    <h1 className={styles.heading}>
+                        {t('assignmentsPage.heading')}
+                    </h1>
                     <p className={styles.subtitle}>
-                        Everything your teacher has assigned, with what&apos;s
-                        left to finish.
+                        {t('assignmentsPage.subtitle')}
                     </p>
                 </div>
 
                 <div
                     className={styles.filters}
                     role="group"
-                    aria-label="Filter assignments"
+                    aria-label={t('assignmentsPage.filterLabel')}
                 >
                     {filters.map((option) => (
                         <button
-                            key={option.id}
+                            key={option}
                             type="button"
                             className={styles.filterChip}
-                            data-active={filter === option.id}
-                            aria-pressed={filter === option.id}
-                            onClick={() => setFilter(option.id)}
+                            data-active={filter === option}
+                            aria-pressed={filter === option}
+                            onClick={() => setFilter(option)}
                         >
-                            {option.label}
+                            {t(`assignmentsPage.${option}`)}
                         </button>
                     ))}
                 </div>
             </header>
 
             {isLoading ? (
-                <p className={styles.empty}>Loading assignments…</p>
+                <p className={styles.empty}>{t('assignmentsPage.loading')}</p>
             ) : visible.length > 0 ? (
                 <div className={styles.list}>
                     {visible.map((assignment) => (
@@ -281,8 +290,10 @@ export function AssignmentsPage() {
             ) : (
                 <p className={styles.empty}>
                     {assignments.length === 0
-                        ? 'No assignments yet. New work will show up here.'
-                        : `No ${filter} assignments.`}
+                        ? t('assignmentsPage.none')
+                        : filter === 'completed'
+                          ? t('assignmentsPage.noneCompleted')
+                          : t('assignmentsPage.noneActive')}
                 </p>
             )}
         </div>

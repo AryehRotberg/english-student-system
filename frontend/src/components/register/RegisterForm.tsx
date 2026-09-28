@@ -1,7 +1,9 @@
 import type { FormEvent } from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useRegister } from '../../hooks/mutations';
+import { LanguageToggle } from '../layout/LanguageToggle';
 import { useTeachers } from '../../hooks/queries';
 import styles from '../../pages/Register/RegisterPage.module.css';
 import { TeacherSelect } from './TeacherSelect';
@@ -11,6 +13,7 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
+    const { t } = useTranslation();
     const registerMutation = useRegister();
     const { data: teachers = [], isLoading: teachersLoading } = useTeachers();
 
@@ -25,7 +28,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         event.preventDefault();
 
         if (password !== confirmPassword) {
-            setConfirmError('Passwords do not match');
+            setConfirmError(t('auth.passwordsDontMatch'));
             return;
         }
         setConfirmError('');
@@ -44,11 +47,12 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             className={styles.card}
             onSubmit={(event) => void handleSubmit(event)}
         >
-            <h1 className={styles.title}>English Student System</h1>
-            <p className={styles.subtitle}>Create an account to get started.</p>
+            <LanguageToggle className={styles.languageButton} />
+            <h1 className={styles.title}>{t('app.name')}</h1>
+            <p className={styles.subtitle}>{t('auth.registerSubtitle')}</p>
 
             <label className={styles.label} htmlFor="name">
-                Name
+                {t('auth.name')}
             </label>
             <input
                 className={styles.input}
@@ -60,7 +64,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             />
 
             <label className={styles.label} htmlFor="email">
-                Email
+                {t('auth.email')}
             </label>
             <input
                 className={styles.input}
@@ -72,7 +76,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             />
 
             <label className={styles.label} htmlFor="password">
-                Password
+                {t('auth.password')}
             </label>
             <input
                 className={styles.input}
@@ -85,7 +89,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             />
 
             <label className={styles.label} htmlFor="confirmPassword">
-                Confirm Password
+                {t('auth.confirmPassword')}
             </label>
             <input
                 className={styles.input}
@@ -116,8 +120,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
                 type="submit"
             >
                 {registerMutation.isPending
-                    ? 'Creating account...'
-                    : 'Register'}
+                    ? t('auth.creatingAccount')
+                    : t('auth.register')}
             </button>
 
             {registerMutation.isError ? (
@@ -127,7 +131,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             ) : null}
 
             <Link className={styles.navLink} to="/login">
-                Already have an account? Sign in
+                {t('auth.haveAccount')}
             </Link>
         </form>
     );

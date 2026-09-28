@@ -1,11 +1,16 @@
 import { useMemo } from 'react';
-import { useStudentAnswersByAttempt } from '../../hooks/queries';
+import {
+    useAnswerFiles,
+    useStudentAnswersByAttempt,
+} from '../../hooks/queries';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
-import type { QuizQuestion } from '../../types/quiz';
+import type { QuizQuestion, QuizSummary } from '../../types/quiz';
+import { isHandwritten, possiblePoints } from '../../utils/exam';
 import { QuizResultsPanel } from './QuizResultsPanel';
 
 type QuizAttemptsViewerProps = {
     questions: QuizQuestion[];
+    quiz: QuizSummary | undefined;
     completedAttempts: QuizAttemptApiItem[];
     isCompleted: boolean;
     viewAttemptId: string;
@@ -15,6 +20,7 @@ type QuizAttemptsViewerProps = {
 
 export function QuizAttemptsViewer({
     questions,
+    quiz,
     completedAttempts,
     isCompleted,
     viewAttemptId,
@@ -25,33 +31,32 @@ export function QuizAttemptsViewer({
         completedAttempts.find((a) => a.id === viewAttemptId) ?? null;
 
     const { data: answers = [] } = useStudentAnswersByAttempt(viewAttemptId);
+    const hasHandwritten = questions.some(isHandwritten);
+    const { data: files = [] } = useAnswerFiles(
+        hasHandwritten ? viewAttemptId : undefined,
+    );
 
     const { totalPossible, finalScore, gradePercent } = useMemo(() => {
-        const totalPossible = questions.reduce(
-            (sum, question) => sum + question.maxPoints,
-            0,
+        const totalPossible = possiblePoints(
+            questions.map((question) => question.maxPoints),
+            quiz?.questionsToAnswer,
         );
-        const earned = questions.reduce((sum, question) => {
-            const studentAnswerPoints = answers
-                .filter((answer) => answer.questionId === question.questionId)
-                .reduce(
-                    (total, answer) => total + Number(answer?.points ?? 0),
-                    0,
-                );
-            return sum + studentAnswerPoints;
-        }, 0);
+        const earned = answers
+            .filter((answer) => answer.isCounted !== false)
+            .reduce((total, answer) => total + Number(answer.points ?? 0), 0);
         const finalScore = Number(selectedAttempt?.points ?? earned);
         const gradePercent =
             totalPossible > 0
                 ? Math.round((finalScore / totalPossible) * 100)
                 : 0;
         return { totalPossible, finalScore, gradePercent };
-    }, [questions, answers, selectedAttempt]);
+    }, [questions, answers, selectedAttempt, quiz?.questionsToAnswer]);
 
     return (
         <QuizResultsPanel
             questions={questions}
             answers={answers}
+            files={files}
             isCompleted={isCompleted}
             gradePercent={gradePercent}
             finalScore={finalScore}

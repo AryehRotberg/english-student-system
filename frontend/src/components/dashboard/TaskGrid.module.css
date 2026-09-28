@@ -73,7 +73,7 @@
     display: grid;
     gap: var(--space-1);
     padding: var(--space-4);
-    text-align: left;
+    text-align: start;
     transition:
         transform var(--dur) var(--ease-bounce),
         box-shadow var(--dur) var(--ease-out);
