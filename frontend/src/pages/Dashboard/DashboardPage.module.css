@@ -31,7 +31,7 @@
     border-radius: var(--radius-pill);
     height: 18rem;
     position: absolute;
-    right: -5rem;
+    inset-inline-end: -5rem;
     top: -5rem;
     width: 18rem;
 }
@@ -41,7 +41,7 @@
     border-radius: var(--radius-pill);
     bottom: -4rem;
     height: 14rem;
-    left: -3rem;
+    inset-inline-start: -3rem;
     position: absolute;
     width: 14rem;
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { DailyTask } from '../../types/task';
 import styles from '../../pages/Dashboard/DashboardPage.module.css';
 
@@ -99,23 +100,27 @@ export function TodayTasksSection({
     onViewAll,
     onOpenAssignment,
 }: Props) {
+    const { t } = useTranslation();
+
     return (
         <section>
             <div className={styles.sectionBar}>
-                <h2 className={styles.sectionTitle}>Today&apos;s Tasks</h2>
+                <h2 className={styles.sectionTitle}>
+                    {t('dashboard.todaysTasks')}
+                </h2>
                 <button
                     className={styles.viewAll}
                     type="button"
                     onClick={onViewAll}
                 >
-                    View All
+                    {t('dashboard.viewAll')}
                 </button>
             </div>
 
             {featuredTask ? (
                 <article className={styles.taskCard}>
                     <div className={styles.taskMain}>
-                        <h3 className={styles.taskTitle}>
+                        <h3 className={styles.taskTitle} dir="auto">
                             {featuredTask.title}
                         </h3>
 
@@ -125,7 +130,7 @@ export function TodayTasksSection({
                             onClick={onOpenAssignment}
                             disabled={!hasAssignments}
                         >
-                            Open Assignment
+                            {t('dashboard.openAssignment')}
                         </button>
                     </div>
 
@@ -136,7 +141,7 @@ export function TodayTasksSection({
             ) : (
                 <div className={styles.cardShell}>
                     <p className={styles.emptyState}>
-                        No tasks are currently assigned.
+                        {t('dashboard.noTasks')}
                     </p>
                 </div>
             )}

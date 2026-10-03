@@ -70,7 +70,7 @@ export function TextItem({
                     style={{
                         display: 'flex',
                         gap: '0.4rem',
-                        paddingRight: '1rem',
+                        paddingInlineEnd: '1rem',
                         flexShrink: 0,
                     }}
                 >

@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import type { AnswerFile } from '../services/answer-files.service';
+import { answerFilesService } from '../services/answer-files.service';
 import type { VocabAudioType } from '../services/audio.service';
 import { audioService } from '../services/audio.service';
 import { assignmentItemsService } from '../services/assignment-items.service';
@@ -15,6 +17,7 @@ import { quizzesService } from '../services/quizzes.service';
 import type { QuizFilters } from '../services/quizzes.service';
 import type { StudentAnswerApiItem } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
+import { subjectsService } from '../services/subjects.service';
 import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
@@ -38,6 +41,12 @@ import type { AuthUser } from '../types/auth';
 import type { DashboardData } from '../types/dashboard';
 import type { QuizQuestion, QuizStudyGuide, QuizSummary } from '../types/quiz';
 import type { ReadingItem } from '../types/reading';
+import type {
+    StudentSubject,
+    Subject,
+    Topic,
+    UserPreferences,
+} from '../types/subject';
 import type {
     VocabularyTopicPreview,
     VocabularyWord,
@@ -117,6 +126,70 @@ export function useQuizzes(filters: QuizFilters = {}) {
     });
 }
 
+export function useQuiz(quizId?: string) {
+    return useQuery<QuizSummary>({
+        queryKey: ['quiz', quizId],
+        enabled: Boolean(quizId),
+        queryFn: () => quizzesService.findOne(quizId as string),
+    });
+}
+
+export function useSubjects(enabled = true) {
+    return useQuery<Subject[]>({
+        queryKey: ['subjects'],
+        queryFn: () => subjectsService.findAll(),
+        enabled,
+        staleTime: 1000 * 60 * 30,
+    });
+}
+
+export function useMyPreferences(enabled = true) {
+    return useQuery<UserPreferences>({
+        queryKey: ['my-preferences'],
+        queryFn: () => subjectsService.getMyPreferences(),
+        enabled,
+        staleTime: 1000 * 60 * 5,
+    });
+}
+
+export function useStudentSubjects(studentId?: string) {
+    return useQuery<StudentSubject[]>({
+        queryKey: ['student-subjects', studentId],
+        enabled: Boolean(studentId),
+        queryFn: () => subjectsService.findStudentSubjects(studentId as string),
+    });
+}
+
+export function useTopics(subjectId?: string) {
+    return useQuery<Topic[]>({
+        queryKey: ['topics', subjectId ?? 'all'],
+        queryFn: () => subjectsService.findTopics(subjectId),
+    });
+}
+
+// Signed links expire after 15 minutes; refetch well before that.
+const SIGNED_URL_STALE_MS = 1000 * 60 * 10;
+
+export function useAnswerFiles(attemptId?: string) {
+    return useQuery<AnswerFile[]>({
+        queryKey: ['answer-files', attemptId],
+        enabled: Boolean(attemptId),
+        queryFn: () => answerFilesService.findByAttempt(attemptId as string),
+        staleTime: SIGNED_URL_STALE_MS,
+        refetchInterval: SIGNED_URL_STALE_MS,
+    });
+}
+
+export function useQuestionImageUrl(questionId: string, enabled: boolean) {
+    return useQuery<string>({
+        queryKey: ['question-image-url', questionId],
+        enabled,
+        queryFn: () => answerFilesService.getQuestionImageUrl(questionId),
+        staleTime: SIGNED_URL_STALE_MS,
+        retry: false,
+    });
+}
+
 export function useQuizStudyGuides(quizId?: string) {
     return useQuery<QuizStudyGuide[]>({
         queryKey: ['quiz-study-guides', quizId],
@@ -135,10 +208,10 @@ export function useStudentAnswersByAttempt(attemptId?: string) {
 
 // ─── Admin queries ───────────────────────────────────────────────────────────
 
-export function useQuestions() {
+export function useQuestions(subjectId?: string) {
     return useQuery<QuestionAdminItem[]>({
-        queryKey: ['questions'],
-        queryFn: () => questionsService.listAdmin(),
+        queryKey: ['questions', subjectId ?? 'all'],
+        queryFn: () => questionsService.listAdmin(subjectId),
     });
 }
 
@@ -228,6 +301,9 @@ export function useAttemptGrading(attemptId?: string) {
         queryKey: ['attempt-grading', attemptId],
         enabled: Boolean(attemptId),
         queryFn: () => quizAttemptsService.getGrading(attemptId as string),
+        // The payload carries signed links to the student's pages.
+        staleTime: SIGNED_URL_STALE_MS,
+        refetchInterval: SIGNED_URL_STALE_MS,
     });
 }
 

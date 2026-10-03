@@ -3,7 +3,7 @@ self.addEventListener('push', (event) => {
 
     event.waitUntil(
         self.registration.showNotification(
-            data.title ?? 'English Student System',
+            data.title ?? 'Learning Hub',
             {
                 body: data.body ?? '',
                 icon: '/open-book.png',

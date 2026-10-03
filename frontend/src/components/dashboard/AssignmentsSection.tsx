@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { AssignmentSummary } from '../../types/assignment';
 import type { AssignmentTopic } from '../../types/task';
 import {
@@ -77,11 +78,12 @@ export function AssignmentsSection({
     topics,
     onOpenTopic,
 }: Props) {
+    const { t, i18n } = useTranslation();
     const topicsByAssignment = groupByAssignment(topics);
 
     return (
         <section className={styles.cardShell}>
-            <h3 className={styles.cardTitle}>Assignments</h3>
+            <h3 className={styles.cardTitle}>{t('dashboard.assignments')}</h3>
 
             {assignments.length > 0 ? (
                 <ul className={styles.assignmentList}>
@@ -98,10 +100,16 @@ export function AssignmentsSection({
                                 className={styles.assignmentRow}
                             >
                                 <div className={styles.assignmentRowMain}>
-                                    <h4 className={styles.assignmentRowTitle}>
+                                    <h4
+                                        className={styles.assignmentRowTitle}
+                                        dir="auto"
+                                    >
                                         {assignment.title}
                                     </h4>
-                                    <p className={styles.assignmentRowDesc}>
+                                    <p
+                                        className={styles.assignmentRowDesc}
+                                        dir="auto"
+                                    >
                                         {assignment.description}
                                     </p>
                                 </div>
@@ -135,7 +143,9 @@ export function AssignmentsSection({
                                                                 chipClass
                                                             }
                                                             data-static="true"
-                                                            title="This item has no content attached yet."
+                                                            title={t(
+                                                                'dashboard.noContent',
+                                                            )}
                                                         >
                                                             <ChipContent
                                                                 topic={topic}
@@ -153,8 +163,18 @@ export function AssignmentsSection({
                                     data-overdue={isOverdue}
                                 >
                                     {dueDate
-                                        ? `${isOverdue ? 'Overdue' : 'Due'} ${dueDate.toLocaleDateString(undefined, dueDateFormat)}`
-                                        : 'No due date'}
+                                        ? t(
+                                              isOverdue
+                                                  ? 'common.overdue'
+                                                  : 'common.due',
+                                              {
+                                                  date: dueDate.toLocaleDateString(
+                                                      i18n.language,
+                                                      dueDateFormat,
+                                                  ),
+                                              },
+                                          )
+                                        : t('common.noDueDate')}
                                 </span>
                             </li>
                         );
@@ -162,7 +182,7 @@ export function AssignmentsSection({
                 </ul>
             ) : (
                 <p className={styles.emptyState}>
-                    No assignments yet. New work will show up here.
+                    {t('dashboard.noAssignments')}
                 </p>
             )}
         </section>

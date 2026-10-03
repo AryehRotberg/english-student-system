@@ -55,7 +55,7 @@
 .questionCard {
     background: var(--surface-0);
     border: 1px solid var(--line);
-    border-left: 5px solid var(--warn-500);
+    border-inline-start: 5px solid var(--warn-500);
     border-radius: var(--radius-md);
     padding: var(--space-4) var(--space-5);
     display: flex;
@@ -64,7 +64,7 @@
 }
 
 .questionCard[data-graded='true'] {
-    border-left-color: var(--ok-500);
+    border-inline-start-color: var(--ok-500);
 }
 
 .questionTop {
@@ -237,4 +237,45 @@
     font-weight: 600;
     color: var(--ok-700);
     margin: 0;
+}
+
+.banner {
+    background: var(--warn-100);
+    border-radius: var(--radius-md);
+    color: var(--warn-700);
+    font-weight: 700;
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+}
+
+.gradeBlock {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.feedbackField {
+    display: grid;
+    gap: var(--space-1);
+}
+
+.feedbackInput {
+    background: var(--surface-1);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    padding: var(--space-2) var(--space-3);
+    resize: vertical;
+}
+
+.feedbackInput:focus {
+    border-color: var(--brand-400);
+    outline: none;
+}
+
+.feedbackFileRow {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
 }

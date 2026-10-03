@@ -1,7 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { adminTabs } from '../../admin/admin-tabs';
+import { useCurrentSubject } from '../../../contexts/subject-context';
 import { useAuthUser } from '../../../hooks/queries';
 import { authService } from '../../../services/auth.service';
 import {
@@ -10,14 +12,27 @@ import {
     getPushSubscriptionStatus,
     isPushSupported,
 } from '../../../utils/push-notifications';
+import { subjectName } from '../../../utils/subjects';
+import { LanguageToggle } from '../LanguageToggle';
 import styles from './Navbar.module.css';
 
-const links = [
-    { label: 'Dashboard', to: '/' },
-    { label: 'Reading', to: '/reading' },
-    { label: 'Practice', to: '/practice' },
-    { label: 'Vocab', to: '/vocab' },
-    { label: 'Quiz', to: '/quiz' },
+type NavLinkDef = { labelKey: string; to: string };
+
+// Reading, practice and vocabulary are English-only; the other subjects work
+// through quizzes and exams.
+const englishLinks: NavLinkDef[] = [
+    { labelKey: 'nav.dashboard', to: '/' },
+    { labelKey: 'nav.assignments', to: '/assignments' },
+    { labelKey: 'nav.reading', to: '/reading' },
+    { labelKey: 'nav.practice', to: '/practice' },
+    { labelKey: 'nav.vocab', to: '/vocab' },
+    { labelKey: 'nav.quiz', to: '/quiz' },
+];
+
+const subjectLinks: NavLinkDef[] = [
+    { labelKey: 'nav.dashboard', to: '/' },
+    { labelKey: 'nav.assignments', to: '/assignments' },
+    { labelKey: 'nav.exams', to: '/quiz' },
 ];
 
 type NavbarProps = {
@@ -55,6 +70,13 @@ function BellIcon({ muted }: { muted: boolean }) {
 }
 
 export function Navbar({ sticky = true }: NavbarProps) {
+    const { t, i18n } = useTranslation();
+    const {
+        availableSubjects,
+        currentSubject,
+        isEnglish,
+        setCurrentSubjectId,
+    } = useCurrentSubject();
     const navigate = useNavigate();
     const location = useLocation();
     const queryClient = useQueryClient();
@@ -62,9 +84,30 @@ export function Navbar({ sticky = true }: NavbarProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [pushEnabled, setPushEnabled] = useState(false);
     const [pushBusy, setPushBusy] = useState(false);
-    const displayName = user?.name?.trim() || 'Student';
+    const displayName = user?.name?.trim() || t('nav.defaultName');
     const isStudent = user?.role !== 'teacher';
-    const showPushToggle = isStudent && isPushSupported();
+    // Teachers get notified of new submissions to grade.
+    const showPushToggle = Boolean(user) && isPushSupported();
+    const links = isEnglish ? englishLinks : subjectLinks;
+    const showSubjectSwitcher = isStudent && availableSubjects.length > 1;
+
+    const subjectSwitcher = showSubjectSwitcher && currentSubject && (
+        <select
+            className={styles.subjectSelect}
+            value={currentSubject.id}
+            onChange={(event) => {
+                setCurrentSubjectId(event.target.value);
+                navigate('/');
+            }}
+            aria-label={t('subjects.switcher')}
+        >
+            {availableSubjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>
+                    {subjectName(subject, i18n.language)}
+                </option>
+            ))}
+        </select>
+    );
 
     const currentAdminTab =
         new URLSearchParams(location.search).get('tab') ?? 'pending-students';
@@ -133,14 +176,18 @@ export function Navbar({ sticky = true }: NavbarProps) {
                     .filter(Boolean)
                     .join(' ')}
             >
-                <NavLink to="/" className={styles.logoWrap}>
-                    <img src="/open-book.png" alt="" width="24" height="24" />
-                    <span className={styles.logoText}>
-                        English Student System
-                    </span>
-                </NavLink>
+                {/* The switcher shares the logo's grid cell so the header keeps
+                    its three columns; on small screens it moves into the drawer. */}
+                <div className={styles.brand}>
+                    <NavLink to="/" className={styles.logoWrap}>
+                        <img src="/open-book.png" alt="" width="24" height="24" />
+                        <span className={styles.logoText}>{t('app.name')}</span>
+                    </NavLink>
 
-                <nav className={styles.nav} aria-label="Primary navigation">
+                    {subjectSwitcher}
+                </div>
+
+                <nav className={styles.nav} aria-label={t('nav.primary')}>
                     {user?.role !== 'teacher' &&
                         links.map((link) => (
                             <NavLink
@@ -152,18 +199,20 @@ export function Navbar({ sticky = true }: NavbarProps) {
                                         : styles.link
                                 }
                             >
-                                {link.label}
+                                {t(link.labelKey)}
                             </NavLink>
                         ))}
                 </nav>
 
                 <div className={styles.actions}>
+                    <LanguageToggle className={styles.languageButton} />
+
                     {showPushToggle && (
                         <button
                             aria-label={
                                 pushEnabled
-                                    ? 'Disable notifications'
-                                    : 'Enable notifications'
+                                    ? t('nav.disableNotifications')
+                                    : t('nav.enableNotifications')
                             }
                             className={[
                                 styles.pushToggleButton,
@@ -175,8 +224,8 @@ export function Navbar({ sticky = true }: NavbarProps) {
                             onClick={() => void handleTogglePush()}
                             title={
                                 pushEnabled
-                                    ? 'Disable notifications'
-                                    : 'Enable notifications'
+                                    ? t('nav.disableNotifications')
+                                    : t('nav.enableNotifications')
                             }
                             type="button"
                         >
@@ -185,7 +234,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
                     )}
 
                     <button
-                        aria-label="Open menu"
+                        aria-label={t('nav.openMenu')}
                         aria-expanded={isMobileMenuOpen}
                         className={styles.menuToggle}
                         onClick={() => setIsMobileMenuOpen(true)}
@@ -201,7 +250,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
                         onClick={() => void handleLogout()}
                         type="button"
                     >
-                        Logout
+                        {t('nav.logout')}
                     </button>
 
                     <div className={styles.profileBlock}>
@@ -221,13 +270,15 @@ export function Navbar({ sticky = true }: NavbarProps) {
                 />
 
                 <aside
-                    aria-label="Mobile menu"
+                    aria-label={t('nav.menu')}
                     className={`${styles.mobileDrawer} ${isMobileMenuOpen ? styles.mobileDrawerOpen : ''}`}
                 >
                     <div className={styles.mobileDrawerHeader}>
-                        <p className={styles.mobileDrawerTitle}>Menu</p>
+                        <p className={styles.mobileDrawerTitle}>
+                            {t('nav.menu')}
+                        </p>
                         <button
-                            aria-label="Close menu"
+                            aria-label={t('nav.closeMenu')}
                             className={styles.mobileClose}
                             onClick={() => setIsMobileMenuOpen(false)}
                             type="button"
@@ -238,7 +289,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
 
                     <div className={styles.mobileProfileRow}>
                         <span className={styles.mobileAppName}>
-                            English Student System
+                            {t('app.name')}
                         </span>
                         <div className={styles.mobileProfileBlock}>
                             <span className={styles.mobileProfileName}>
@@ -253,10 +304,13 @@ export function Navbar({ sticky = true }: NavbarProps) {
                         </div>
                     </div>
 
-                    <nav
-                        className={styles.mobileNav}
-                        aria-label="Mobile navigation"
-                    >
+                    {subjectSwitcher && (
+                        <div className={styles.mobileSubjectRow}>
+                            {subjectSwitcher}
+                        </div>
+                    )}
+
+                    <nav className={styles.mobileNav} aria-label={t('nav.menu')}>
                         {user?.role !== 'teacher' &&
                             links.map((link) => (
                                 <NavLink
@@ -269,7 +323,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
                                     }
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
-                                    {link.label}
+                                    {t(link.labelKey)}
                                 </NavLink>
                             ))}
 
@@ -299,7 +353,7 @@ export function Navbar({ sticky = true }: NavbarProps) {
                         onClick={() => void handleLogout()}
                         type="button"
                     >
-                        Logout
+                        {t('nav.logout')}
                     </button>
                 </aside>
             </header>

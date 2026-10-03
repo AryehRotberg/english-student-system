@@ -266,7 +266,7 @@
     min-width: 0;
     overflow: hidden;
     padding: 0;
-    text-align: left;
+    text-align: start;
     text-overflow: ellipsis;
     transition: color var(--dur) var(--ease-out);
     white-space: nowrap;

@@ -1,14 +1,8 @@
+import i18n from '../i18n';
 import type { AssignmentItemContentType } from '../services/assignments.service';
 import type { AssignmentTopic } from '../types/task';
 
 const EMPTY_GUID = '00000000-0000-0000-0000-000000000000';
-
-const contentTypeLabels: Record<AssignmentItemContentType, string> = {
-    quiz: 'Quiz',
-    reading: 'Reading',
-    vocabulary: 'Vocabulary',
-    writing: 'Writing',
-};
 
 /**
  * Items may be created without content (the API stores an empty GUID), and the
@@ -24,16 +18,18 @@ export function isOpenableTopic(topic: AssignmentTopic): boolean {
     return hasOpenableContent(topic.contentId);
 }
 
+// Components calling this re-render on a language change through their own
+// useTranslation().
 export function contentTypeLabel(
     contentType: AssignmentItemContentType,
 ): string {
-    return contentTypeLabels[contentType];
+    return i18n.t(`contentType.${contentType}`);
 }
 
 /** Falls back to the content type so an item never renders as a blank chip. */
 export function topicLabel(topic: AssignmentTopic): string {
     const title = topic.topicTitle?.trim();
-    return title ? title : contentTypeLabels[topic.contentType];
+    return title ? title : contentTypeLabel(topic.contentType);
 }
 
 /** Where a piece of assignment content lives in the app. */

@@ -1,5 +1,6 @@
+import type { AnswerFile } from '../../services/answer-files.service';
 import type { StudentAnswerApiItem } from '../../services/student-answers.service';
-import type { GradingMode } from '../quiz';
+import type { ContentFormat, GradingMode } from '../quiz';
 import type { QuizAttemptStatus } from './quiz-attempt';
 
 export type GradingChoice = {
@@ -25,6 +26,10 @@ export type GradingQuestion = {
     choices: GradingChoice[];
     acceptedAnswers: GradingAcceptedAnswer[];
     answers: StudentAnswerApiItem[];
+    contentFormat: ContentFormat;
+    hasImage: boolean;
+    // Pages the student uploaded for a handwritten question.
+    files: AnswerFile[];
 };
 
 export type AttemptGrading = {
@@ -36,6 +41,8 @@ export type AttemptGrading = {
     points: number;
     totalMaxPoints: number;
     questions: GradingQuestion[];
+    subjectId: string;
+    questionsToAnswer: number | null;
 };
 
 export type PendingReviewAttempt = {

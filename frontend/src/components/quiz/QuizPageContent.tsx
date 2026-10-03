@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { QuizActiveView } from '../../components/quiz/QuizActiveView';
 import { QuizAttemptsViewer } from '../../components/quiz/QuizAttemptsViewer';
 import { QuizRetakeScreen } from '../../components/quiz/QuizRetakeScreen';
@@ -15,14 +16,23 @@ import {
     useStudentAnswersByAttempt,
 } from '../../hooks/queries';
 import styles from '../../pages/Quiz/QuizPage.module.css';
+import type { QuizSummary } from '../../types/quiz';
+import { isHandwritten } from '../../utils/exam';
+import { HandwrittenExamView } from '../exam/HandwrittenExamView';
 import { QuizStudyGuidesSection } from './QuizStudyGuidesSection';
 
 type QuizPageContentProps = {
     quizId: string;
     quizTitle: string;
+    quiz: QuizSummary | undefined;
 };
 
-export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
+export function QuizPageContent({
+    quizId,
+    quizTitle,
+    quiz,
+}: QuizPageContentProps) {
+    const { t } = useTranslation();
     const [isCompleted, setIsCompleted] = useState(false);
     const [viewAttemptId, setViewAttemptId] = useState<string | null>(null);
 
@@ -48,8 +58,17 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
     const isViewingResults = viewAttemptId !== null;
 
     if (!quizId || !questions || questions.length === 0 || isAttemptLoading) {
-        return <p>Loading...</p>;
+        return <p>{t('quiz.loading')}</p>;
     }
+
+    // Any handwritten question turns the attempt into an exam: all questions
+    // visible, pages uploaded per question, one submit at the end.
+    const isExam = questions.some(isHandwritten);
+
+    const examDetails =
+        isExam && quiz ? (
+            <ExamRules quiz={quiz} questionCount={questions.length} />
+        ) : undefined;
 
     const handleStartOrRetake = async () => {
         setIsCompleted(false);
@@ -57,8 +76,8 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
         await startAttemptMutation.mutateAsync({ quizId, quizTitle });
     };
 
-    const handleQuestionSubmitted = async (isLastQuestion: boolean) => {
-        if (!isLastQuestion || !attemptId) {
+    const submitAttempt = async () => {
+        if (!attemptId) {
             return;
         }
 
@@ -66,6 +85,12 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
 
         setIsCompleted(true);
         setViewAttemptId(attemptId);
+    };
+
+    const handleQuestionSubmitted = async (isLastQuestion: boolean) => {
+        if (isLastQuestion) {
+            await submitAttempt();
+        }
     };
 
     const handleViewAttempt = (id: string) => {
@@ -84,6 +109,7 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
                 <QuizSetupScreen
                     onStart={() => void handleStartOrRetake()}
                     isPending={startAttemptMutation.isPending}
+                    details={examDetails}
                 />
             );
         }
@@ -95,9 +121,14 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
                 isPending={startAttemptMutation.isPending}
                 onRetake={() => void handleStartOrRetake()}
                 onViewAttempt={handleViewAttempt}
+                details={examDetails}
             />
         );
     }
+
+    const savedAnswerQuestionIds = new Set(
+        activeAttemptAnswers.map((answer) => answer.questionId),
+    );
 
     return (
         <div className={styles.stack}>
@@ -106,23 +137,28 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
             {isViewingResults ? (
                 <QuizAttemptsViewer
                     questions={questions}
+                    quiz={quiz}
                     completedAttempts={completedAttempts}
                     isCompleted={isCompleted}
                     viewAttemptId={viewAttemptId}
                     onBack={handleBackToCurrentQuiz}
                     onViewAttempt={handleViewAttempt}
                 />
+            ) : isExam && activeAttempt ? (
+                <HandwrittenExamView
+                    attempt={activeAttempt}
+                    quiz={quiz}
+                    questions={questions}
+                    savedAnswerQuestionIds={savedAnswerQuestionIds}
+                    isSubmitting={submitAttemptMutation.isPending}
+                    submitError={submitAttemptMutation.error}
+                    onSubmit={() => void submitAttempt()}
+                />
             ) : (
                 <QuizActiveView
                     attemptId={attemptId as string}
                     questions={questions}
-                    answeredQuestionIds={
-                        new Set(
-                            activeAttemptAnswers.map(
-                                (answer) => answer.questionId,
-                            ),
-                        )
-                    }
+                    answeredQuestionIds={savedAnswerQuestionIds}
                     completedAttempts={completedAttempts}
                     onSubmitted={(isLastQuestion) =>
                         void handleQuestionSubmitted(isLastQuestion)
@@ -131,5 +167,39 @@ export function QuizPageContent({ quizId, quizTitle }: QuizPageContentProps) {
                 />
             )}
         </div>
+    );
+}
+
+function ExamRules({
+    quiz,
+    questionCount,
+}: {
+    quiz: QuizSummary;
+    questionCount: number;
+}) {
+    const { t } = useTranslation();
+
+    return (
+        <>
+            <p>{t('exam.instructions')}</p>
+            {quiz.questionsToAnswer !== null &&
+                quiz.questionsToAnswer < questionCount && (
+                    <p>
+                        <strong>
+                            {t('exam.answerNofM', {
+                                required: quiz.questionsToAnswer,
+                                total: questionCount,
+                            })}
+                        </strong>
+                    </p>
+                )}
+            {quiz.timeLimitMinutes ? (
+                <p>
+                    {t('quizList.timeLimit', {
+                        minutes: quiz.timeLimitMinutes,
+                    })}
+                </p>
+            ) : null}
+        </>
     );
 }

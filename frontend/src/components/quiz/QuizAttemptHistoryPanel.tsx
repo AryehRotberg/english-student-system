@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 import styles from '../../pages/Quiz/QuizPage.module.css';
 
@@ -7,13 +8,15 @@ type Props = {
 };
 
 export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
+    const { t, i18n } = useTranslation();
+
     if (attempts.length === 0) {
         return null;
     }
 
     return (
         <section className={styles.historyPanel}>
-            <h3>Previous attempts</h3>
+            <h3>{t('quiz.previousAttempts')}</h3>
             <ul className={styles.historyList}>
                 {attempts.map((attempt) => {
                     const completedAt = attempt.completedAt
@@ -25,13 +28,19 @@ export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
                             <div>
                                 <strong>
                                     {completedAt
-                                        ? completedAt.toLocaleString()
-                                        : 'Completed attempt'}
+                                        ? completedAt.toLocaleString(
+                                              i18n.language,
+                                          )
+                                        : t('quiz.completedAttempt')}
                                 </strong>
                                 <p>
                                     {attempt.status === 'pendingReview'
-                                        ? 'Awaiting teacher grading'
-                                        : `Score: ${Number(attempt.points ?? 0).toFixed(2)}`}
+                                        ? t('quiz.awaitingGrading')
+                                        : t('quiz.score', {
+                                              score: Number(
+                                                  attempt.points ?? 0,
+                                              ).toFixed(2),
+                                          })}
                                 </p>
                             </div>
                             <button
@@ -39,7 +48,7 @@ export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
                                 onClick={() => onViewAttempt(attempt.id)}
                                 type="button"
                             >
-                                View results
+                                {t('quiz.viewResults')}
                             </button>
                         </li>
                     );

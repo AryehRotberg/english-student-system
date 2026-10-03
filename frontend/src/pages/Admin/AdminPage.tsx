@@ -4,11 +4,10 @@ import { adminTabs } from '../../components/admin/admin-tabs';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { GradingSection } from '../../components/admin/GradingSection';
 import { PendingStudentsSection } from '../../components/admin/PendingStudentsSection';
-import { QuestionsSection } from '../../components/admin/QuestionsSection';
-import { QuizBuilderSection } from '../../components/admin/QuizBuilderSection';
 import { QuizzesSection } from '../../components/admin/QuizzesSection';
 import { ReadingsSection } from '../../components/admin/ReadingSection';
 import { StudentsSection } from '../../components/admin/StudentsSection';
+import { SubjectsSection } from '../../components/admin/SubjectsSection';
 import { VocabularySection } from '../../components/admin/VocabularySection';
 import { useAuthUser } from '../../hooks/queries';
 import styles from './AdminPage.module.css';
@@ -16,7 +15,11 @@ import styles from './AdminPage.module.css';
 export function AdminPage() {
     const { data: user } = useAuthUser();
     const [searchParams, setSearchParams] = useSearchParams();
-    const requestedTab = searchParams.get('tab') as AdminTab | null;
+    const rawTab = searchParams.get('tab');
+    // Questions and Quiz Builder were merged into Quizzes; keep old links working.
+    const requestedTab = (
+        rawTab === 'questions' || rawTab === 'quiz-builder' ? 'quizzes' : rawTab
+    ) as AdminTab | null;
     const activeTab: AdminTab = adminTabs.some((t) => t.id === requestedTab)
         ? (requestedTab as AdminTab)
         : 'pending-students';
@@ -51,9 +54,8 @@ export function AdminPage() {
                     {activeTab === 'pending-students' && (
                         <PendingStudentsSection />
                     )}
+                    {activeTab === 'subjects' && <SubjectsSection />}
                     {activeTab === 'quizzes' && <QuizzesSection />}
-                    {activeTab === 'questions' && <QuestionsSection />}
-                    {activeTab === 'quiz-builder' && <QuizBuilderSection />}
                     {activeTab === 'readings' && <ReadingsSection />}
                     {activeTab === 'vocabulary' && <VocabularySection />}
                     {activeTab === 'students' && <StudentsSection />}

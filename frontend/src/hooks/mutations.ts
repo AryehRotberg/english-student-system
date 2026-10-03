@@ -4,6 +4,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
+import { answerFilesService } from '../services/answer-files.service';
 import { assignmentItemsService } from '../services/assignment-items.service';
 import { audioService } from '../services/audio.service';
 import type { AssignmentItemContentType } from '../services/assignments.service';
@@ -11,15 +12,20 @@ import { assignmentsService } from '../services/assignments.service';
 import { authService } from '../services/auth.service';
 import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
+import type { SaveQuestionPayload } from '../services/questions.service';
 import { questionsService } from '../services/questions.service';
 import { quizAttemptsService } from '../services/quiz-attempts.service';
 import { quizQuestionsService } from '../services/quiz-questions.service';
+import type { SaveQuizPayload } from '../services/quizzes.service';
 import { quizzesService } from '../services/quizzes.service';
+import type { GradePayload } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
+import type { SaveTopicPayload } from '../services/subjects.service';
+import { subjectsService } from '../services/subjects.service';
 import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
-import type { GradingMode } from '../types/quiz';
+import type { UiLanguage } from '../types/subject';
 import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
@@ -103,14 +109,171 @@ export function useGradeStudentAnswer() {
     return useMutation({
         mutationFn: ({
             id,
-            points,
-        }: {
+            ...payload
+        }: GradePayload & {
             id: string;
             attemptId: string;
-            points: number;
-        }) => studentAnswersService.grade(id, points),
+        }) =>
+            studentAnswersService.grade(id, {
+                points: payload.points,
+                feedback: payload.feedback,
+                isCounted: payload.isCounted,
+            }),
         onSuccess: (_data, variables) =>
             invalidateGradingQueries(queryClient, variables.attemptId),
+    });
+}
+
+export function useUploadFeedbackFile() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            answerId,
+            file,
+        }: {
+            answerId: string;
+            attemptId: string;
+            file: File;
+        }) => answerFilesService.uploadFeedbackFile(answerId, file),
+        onSuccess: (_data, variables) =>
+            invalidateGradingQueries(queryClient, variables.attemptId),
+    });
+}
+
+export function useRemoveFeedbackFile() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            answerId,
+        }: {
+            answerId: string;
+            attemptId: string;
+        }) => answerFilesService.removeFeedbackFile(answerId),
+        onSuccess: (_data, variables) =>
+            invalidateGradingQueries(queryClient, variables.attemptId),
+    });
+}
+
+// ─── Handwritten answers ─────────────────────────────────────────────────────
+
+function invalidateAnswerFileQueries(
+    queryClient: QueryClient,
+    attemptId: string,
+) {
+    return Promise.all([
+        queryClient.invalidateQueries({
+            queryKey: ['answer-files', attemptId],
+        }),
+        queryClient.invalidateQueries({
+            queryKey: ['student-answers', attemptId],
+        }),
+    ]);
+}
+
+export function useRemoveAnswerFile() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id }: { id: string; attemptId: string }) =>
+            answerFilesService.remove(id),
+        onSuccess: (_data, variables) =>
+            invalidateAnswerFileQueries(queryClient, variables.attemptId),
+    });
+}
+
+export function useReorderAnswerFiles() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            attemptId,
+            questionId,
+            fileIds,
+        }: {
+            attemptId: string;
+            questionId: string;
+            fileIds: string[];
+        }) => answerFilesService.reorder(attemptId, questionId, fileIds),
+        onSuccess: (_data, variables) =>
+            invalidateAnswerFileQueries(queryClient, variables.attemptId),
+    });
+}
+
+// ─── Subjects, levels, topics, preferences ───────────────────────────────────
+
+export function useUpdateMyPreferences() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (uiLanguage: UiLanguage) =>
+            subjectsService.updateMyPreferences(uiLanguage),
+        onSuccess: (preferences) =>
+            queryClient.setQueryData(['my-preferences'], preferences),
+    });
+}
+
+export function useSetStudentSubjects() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            studentId,
+            subjects,
+        }: {
+            studentId: string;
+            subjects: { subjectId: string; levelId: string | null }[];
+        }) => subjectsService.setStudentSubjects(studentId, subjects),
+        onSuccess: (subjects, variables) =>
+            queryClient.setQueryData(
+                ['student-subjects', variables.studentId],
+                subjects,
+            ),
+    });
+}
+
+export function useCreateSubjectLevel() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            subjectId,
+            ...payload
+        }: {
+            subjectId: string;
+            code: string;
+            name: string;
+            sortOrder: number;
+        }) => subjectsService.createLevel(subjectId, payload),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['subjects'] }),
+    });
+}
+
+export function useRemoveSubjectLevel() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (levelId: string) => subjectsService.removeLevel(levelId),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['subjects'] }),
+    });
+}
+
+export function useSaveTopic() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: SaveTopicPayload & { id?: string }) =>
+            id
+                ? subjectsService.updateTopic(id, payload)
+                : subjectsService.createTopic(payload),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['topics'] }),
+    });
+}
+
+export function useRemoveTopic() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => subjectsService.removeTopic(id),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['topics'] }),
     });
 }
 
@@ -135,26 +298,83 @@ export function useFinalizeAttemptGrading() {
 export function useCreateQuiz() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: {
-            title: string;
-            description?: string;
-            gradingMode?: GradingMode;
-        }) => quizzesService.create(payload),
+        mutationFn: (payload: SaveQuizPayload) =>
+            quizzesService.create(payload),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ['quizzes'] }),
+    });
+}
+
+export function useUpdateQuiz() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...payload }: SaveQuizPayload & { id: string }) =>
+            quizzesService.update(id, payload),
+        onSuccess: (_data, variables) =>
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['quizzes'] }),
+                queryClient.invalidateQueries({
+                    queryKey: ['quiz', variables.id],
+                }),
+            ]),
     });
 }
 
 export function useCreateQuestion() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: {
-            question: string;
-            questionType: string;
-            audioUrl?: string;
-        }) => questionsService.create(payload),
+        mutationFn: (payload: SaveQuestionPayload) =>
+            questionsService.create(payload),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ['questions'] }),
+    });
+}
+
+export function useUpdateQuestion() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: SaveQuestionPayload & { id: string }) =>
+            questionsService.update(id, payload),
+        onSuccess: () =>
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['questions'] }),
+                queryClient.invalidateQueries({
+                    queryKey: ['quiz-questions'],
+                }),
+            ]),
+    });
+}
+
+export function useUploadQuestionImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ questionId, file }: { questionId: string; file: File }) =>
+            answerFilesService.uploadQuestionImage(questionId, file),
+        onSuccess: (_data, variables) =>
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['questions'] }),
+                queryClient.invalidateQueries({
+                    queryKey: ['question-image-url', variables.questionId],
+                }),
+            ]),
+    });
+}
+
+export function useRemoveQuestionImage() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (questionId: string) =>
+            answerFilesService.removeQuestionImage(questionId),
+        onSuccess: (_data, questionId) =>
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['questions'] }),
+                queryClient.removeQueries({
+                    queryKey: ['question-image-url', questionId],
+                }),
+            ]),
     });
 }
 
@@ -236,6 +456,7 @@ export function useCreateQuizQuestion() {
             quizId: string;
             questionId: string;
             maxPoints: number;
+            orderIndex?: number;
         }) => quizQuestionsService.create(payload),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
@@ -255,7 +476,20 @@ export function useUpdateQuizQuestion() {
             quizId?: string;
             questionId?: string;
             maxPoints?: number;
+            orderIndex?: number;
         }) => quizQuestionsService.update(id, payload),
+        onSuccess: (_data, variables) =>
+            queryClient.invalidateQueries({
+                queryKey: ['raw-quiz-questions', variables.quizId],
+            }),
+    });
+}
+
+export function useRemoveQuizQuestion() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id }: { id: string; quizId: string }) =>
+            quizQuestionsService.remove(id),
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
                 queryKey: ['raw-quiz-questions', variables.quizId],
@@ -399,8 +633,14 @@ export function useDeleteQuestion() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => questionsService.remove(id),
+        // Deleting a question also takes it out of every quiz.
         onSuccess: () =>
-            queryClient.invalidateQueries({ queryKey: ['questions'] }),
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['questions'] }),
+                queryClient.invalidateQueries({
+                    queryKey: ['raw-quiz-questions'],
+                }),
+            ]),
     });
 }
 

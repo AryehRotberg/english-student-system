@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { QuizAttemptHistoryPanel } from '../../components/quiz/QuizAttemptHistoryPanel';
 import styles from '../../pages/Quiz/QuizPage.module.css';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
@@ -8,6 +10,7 @@ type QuizRetakeScreenProps = {
     isPending: boolean;
     onRetake: () => void;
     onViewAttempt: (attemptId: string) => void;
+    details?: ReactNode;
 };
 
 export function QuizRetakeScreen({
@@ -16,19 +19,23 @@ export function QuizRetakeScreen({
     isPending,
     onRetake,
     onViewAttempt,
+    details,
 }: QuizRetakeScreenProps) {
+    const { t } = useTranslation();
+
     return (
         <div className={styles.stack}>
             <section className={styles.panel}>
-                <h2>Ready to try again?</h2>
-                <p>You have {questionCount} questions to answer.</p>
+                <h2>{t('quiz.readyToRetry')}</h2>
+                <p>{t('quiz.questionCount', { count: questionCount })}</p>
+                {details}
                 <button
                     className={styles.nextButton}
                     onClick={onRetake}
                     disabled={isPending}
                     type="button"
                 >
-                    {isPending ? 'Starting...' : 'Retake Quiz'}
+                    {isPending ? t('quiz.starting') : t('quiz.retake')}
                 </button>
             </section>
             <QuizAttemptHistoryPanel

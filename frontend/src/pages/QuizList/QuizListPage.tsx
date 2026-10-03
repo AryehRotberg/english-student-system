@@ -1,36 +1,35 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useCurrentSubject } from '../../contexts/subject-context';
 import { useQuizzes } from '../../hooks/queries';
-import type { QuizCategory, ProficiencyLevel } from '../../types/quiz';
+import type { QuizCategory } from '../../types/quiz';
+import { levelName } from '../../utils/subjects';
 import styles from './QuizListPage.module.css';
 
-const CATEGORY_LABELS: Record<QuizCategory, string> = {
-    grammar: 'Grammar',
-    vocabulary: 'Vocabulary',
-    reading: 'Reading',
-    listening: 'Listening',
-    custom: 'Custom',
-};
-
-const LEVEL_LABELS: Record<ProficiencyLevel, string> = {
-    A1: 'A1',
-    A2: 'A2',
-    B1: 'B1',
-    B2: 'B2',
-    C1: 'C1',
-    C2: 'C2',
-    any: 'Any',
-};
+const CATEGORIES: QuizCategory[] = [
+    'grammar',
+    'vocabulary',
+    'reading',
+    'listening',
+    'custom',
+];
 
 export function QuizListPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
+    const { currentSubject, currentLevel, isEnglish } = useCurrentSubject();
     const [filterQuery, setFilterQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState<QuizCategory | ''>('');
-    const [levelFilter, setLevelFilter] = useState<ProficiencyLevel | ''>('');
+    // Starts at the student's own level when the teacher set one.
+    const [levelFilter, setLevelFilter] = useState<string>(
+        currentLevel?.id ?? '',
+    );
 
     const { data: quizzes = [] } = useQuizzes({
-        ...(categoryFilter && { category: categoryFilter }),
-        ...(levelFilter && { level: levelFilter }),
+        ...(currentSubject && { subjectId: currentSubject.id }),
+        ...(isEnglish && categoryFilter && { category: categoryFilter }),
+        ...(levelFilter && { levelId: levelFilter }),
     });
 
     const filtered = filterQuery.trim()
@@ -46,10 +45,13 @@ export function QuizListPage() {
             <section className={styles.content}>
                 <div className={styles.introRow}>
                     <div>
-                        <h1 className={styles.heading}>Available Quizzes</h1>
+                        <h1 className={styles.heading}>
+                            {isEnglish
+                                ? t('quizList.heading')
+                                : t('quizList.headingExams')}
+                        </h1>
                         <p className={styles.subtitle}>
-                            Select a quiz to test your knowledge and track your
-                            progress.
+                            {t('quizList.subtitle')}
                         </p>
                     </div>
                     <div className={styles.filters}>
@@ -71,102 +73,138 @@ export function QuizListPage() {
                             <input
                                 className={styles.filterInput}
                                 type="search"
-                                placeholder="Filter by title…"
+                                placeholder={t('quizList.filterTitle')}
                                 value={filterQuery}
                                 onChange={(e) => setFilterQuery(e.target.value)}
-                                aria-label="Filter quizzes by title"
+                                aria-label={t('quizList.filterTitleAria')}
                             />
                         </div>
-                        <select
-                            className={styles.filterSelect}
-                            value={categoryFilter}
-                            onChange={(e) =>
-                                setCategoryFilter(
-                                    e.target.value as QuizCategory | '',
-                                )
-                            }
-                            aria-label="Filter by category"
-                        >
-                            <option value="">All categories</option>
-                            {(
-                                Object.keys(CATEGORY_LABELS) as QuizCategory[]
-                            ).map((cat) => (
-                                <option key={cat} value={cat}>
-                                    {CATEGORY_LABELS[cat]}
+                        {isEnglish && (
+                            <select
+                                className={styles.filterSelect}
+                                value={categoryFilter}
+                                onChange={(e) =>
+                                    setCategoryFilter(
+                                        e.target.value as QuizCategory | '',
+                                    )
+                                }
+                                aria-label={t('quizList.categoryAria')}
+                            >
+                                <option value="">
+                                    {t('quizList.allCategories')}
                                 </option>
-                            ))}
-                        </select>
-                        <select
-                            className={styles.filterSelect}
-                            value={levelFilter}
-                            onChange={(e) =>
-                                setLevelFilter(
-                                    e.target.value as ProficiencyLevel | '',
-                                )
-                            }
-                            aria-label="Filter by level"
-                        >
-                            <option value="">All levels</option>
-                            {(
-                                Object.keys(LEVEL_LABELS) as ProficiencyLevel[]
-                            ).map((lvl) => (
-                                <option key={lvl} value={lvl}>
-                                    {LEVEL_LABELS[lvl]}
+                                {CATEGORIES.map((category) => (
+                                    <option key={category} value={category}>
+                                        {t(`quizList.categories.${category}`)}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                        {currentSubject && currentSubject.levels.length > 0 && (
+                            <select
+                                className={styles.filterSelect}
+                                value={levelFilter}
+                                onChange={(e) => setLevelFilter(e.target.value)}
+                                aria-label={t('quizList.levelAria')}
+                            >
+                                <option value="">
+                                    {t('quizList.allLevels')}
                                 </option>
-                            ))}
-                        </select>
+                                {currentSubject.levels.map((level) => (
+                                    <option key={level.id} value={level.id}>
+                                        {level.name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
                     </div>
                 </div>
 
                 {filtered.length > 0 ? (
                     <div className={styles.grid}>
-                        {filtered.map((quiz) => (
-                            <article className={styles.card} key={quiz.id}>
-                                <div className={styles.badges}>
-                                    <span
-                                        className={`${styles.badge} ${styles[`cat_${quiz.category}`]}`}
-                                    >
-                                        {CATEGORY_LABELS[quiz.category]}
-                                    </span>
-                                    {quiz.level !== 'any' && (
-                                        <span className={styles.badge}>
-                                            {quiz.level}
-                                        </span>
-                                    )}
-                                </div>
-                                <h3 className={styles.title}>{quiz.title}</h3>
-                                <p className={styles.description}>
-                                    {quiz.description || 'No description.'}
-                                </p>
+                        {filtered.map((quiz) => {
+                            const level = levelName(
+                                currentSubject,
+                                quiz.levelId,
+                            );
 
-                                <button
-                                    className={styles.cta}
-                                    onClick={() => navigate(`/quiz/${quiz.id}`)}
-                                    type="button"
-                                >
-                                    <svg
-                                        className={styles.ctaIcon}
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        aria-hidden="true"
+                            return (
+                                <article className={styles.card} key={quiz.id}>
+                                    <div className={styles.badges}>
+                                        {isEnglish && (
+                                            <span
+                                                className={`${styles.badge} ${styles[`cat_${quiz.category}`]}`}
+                                            >
+                                                {t(
+                                                    `quizList.categories.${quiz.category}`,
+                                                )}
+                                            </span>
+                                        )}
+                                        {level && (
+                                            <span className={styles.badge}>
+                                                {level}
+                                            </span>
+                                        )}
+                                        {quiz.gradingMode === 'teacher' && (
+                                            <span className={styles.badge}>
+                                                {t('quizList.teacherGraded')}
+                                            </span>
+                                        )}
+                                        {quiz.questionsToAnswer && (
+                                            <span className={styles.badge}>
+                                                {t('quizList.answerNofM', {
+                                                    count: quiz.questionsToAnswer,
+                                                })}
+                                            </span>
+                                        )}
+                                        {quiz.timeLimitMinutes && (
+                                            <span className={styles.badge}>
+                                                {t('quizList.timeLimit', {
+                                                    minutes:
+                                                        quiz.timeLimitMinutes,
+                                                })}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <h3 className={styles.title} dir="auto">
+                                        {quiz.title}
+                                    </h3>
+                                    <p className={styles.description} dir="auto">
+                                        {quiz.description ||
+                                            t('quizList.noDescription')}
+                                    </p>
+
+                                    <button
+                                        className={styles.cta}
+                                        onClick={() =>
+                                            navigate(`/quiz/${quiz.id}`)
+                                        }
+                                        type="button"
                                     >
-                                        <path
-                                            fillRule="evenodd"
-                                            clipRule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                        />
-                                    </svg>
-                                    Start Quiz
-                                </button>
-                            </article>
-                        ))}
+                                        <svg
+                                            className={styles.ctaIcon}
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                clipRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                            />
+                                        </svg>
+                                        {t('quizList.start')}
+                                    </button>
+                                </article>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className={styles.emptyWrap}>
                         <p className={styles.empty}>
                             {hasActiveFilter
-                                ? 'No quizzes match your filters.'
-                                : 'No quizzes found.'}
+                                ? t('quizList.noMatch')
+                                : t('quizList.none')}
                         </p>
                     </div>
                 )}

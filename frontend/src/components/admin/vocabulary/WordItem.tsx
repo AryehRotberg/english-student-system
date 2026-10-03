@@ -26,7 +26,7 @@ export function WordItem({ word: w, onEdit, onDelete }: WordItemProps) {
                             style={{
                                 background: 'var(--grape-100)',
                                 color: 'var(--grape-700)',
-                                marginLeft: '0.4rem',
+                                marginInlineStart: '0.4rem',
                             }}
                         >
                             {w.translation}

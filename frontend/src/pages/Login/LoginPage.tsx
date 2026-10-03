@@ -1,10 +1,13 @@
 import type { FormEvent } from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { LanguageToggle } from '../../components/layout/LanguageToggle';
 import { useLogin } from '../../hooks/mutations';
 import styles from './LoginPage.module.css';
 
 export function LoginPage() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const loginMutation = useLogin();
@@ -25,13 +28,12 @@ export function LoginPage() {
                 className={styles.card}
                 onSubmit={(event) => void handleSubmit(event)}
             >
-                <h1 className={styles.title}>English Student System</h1>
-                <p className={styles.subtitle}>
-                    Sign in with your email and password.
-                </p>
+                <LanguageToggle className={styles.languageButton} />
+                <h1 className={styles.title}>{t('app.name')}</h1>
+                <p className={styles.subtitle}>{t('auth.signInSubtitle')}</p>
 
                 <label className={styles.label} htmlFor="email">
-                    Email
+                    {t('auth.email')}
                 </label>
                 <input
                     className={styles.input}
@@ -43,7 +45,7 @@ export function LoginPage() {
                 />
 
                 <label className={styles.label} htmlFor="password">
-                    Password
+                    {t('auth.password')}
                 </label>
                 <input
                     className={styles.input}
@@ -60,7 +62,9 @@ export function LoginPage() {
                     disabled={loginMutation.isPending}
                     type="submit"
                 >
-                    {loginMutation.isPending ? 'Signing in...' : 'Login'}
+                    {loginMutation.isPending
+                        ? t('auth.signingIn')
+                        : t('auth.login')}
                 </button>
 
                 {loginMutation.isError ? (
@@ -70,7 +74,7 @@ export function LoginPage() {
                 ) : null}
 
                 <Link className={styles.navLink} to="/register">
-                    Don't have an account? Register
+                    {t('auth.noAccount')}
                 </Link>
             </form>
         </div>

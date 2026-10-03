@@ -2,7 +2,14 @@ export type QuestionAdminItem = {
     id: string;
     question: string;
     questionType: string;
+    hints?: string | null;
     audioUrl?: string | null;
+    subjectId: string;
+    levelId: string | null;
+    contentFormat: 'plain' | 'markdown';
+    hasImage: boolean;
+    source: string | null;
+    topicIds: string[];
 };
 
 export type QuestionChoiceAdminItem = {
@@ -26,6 +33,7 @@ export type RawQuizQuestionAdminItem = {
     question: string;
     questionType: string;
     maxPoints: number;
+    orderIndex: number | null;
 };
 
 export type ReadingAdminItem = {
