@@ -1,18 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAnswerFiles } from '../../hooks/queries';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 import type { QuizQuestion, QuizSummary } from '../../types/quiz';
-import {
-    answeredQuestionIds,
-    formatDuration,
-    isHandwritten,
-    remainingTime,
-} from '../../utils/exam';
+import { answeredQuestionIds, isHandwritten } from '../../utils/exam';
 import { getApiErrorMessage } from '../../utils/getApiErrorMessage';
 import { QuestionImage } from '../content/QuestionImage';
 import { RichText } from '../content/RichText';
 import { QuizCard } from '../quiz/QuizCard';
+import { QuizCountdown } from '../quiz/QuizCountdown';
 import { AnswerUploader } from './AnswerUploader';
 import styles from './HandwrittenExamView.module.css';
 
@@ -95,7 +91,7 @@ export function HandwrittenExamView({
                               })}
                     </span>
                     {quiz?.timeLimitMinutes ? (
-                        <Countdown
+                        <QuizCountdown
                             startedAt={attempt.startedAt}
                             timeLimitMinutes={quiz.timeLimitMinutes}
                         />
@@ -258,35 +254,5 @@ export function HandwrittenExamView({
                 ) : null}
             </section>
         </div>
-    );
-}
-
-function Countdown({
-    startedAt,
-    timeLimitMinutes,
-}: {
-    startedAt: string;
-    timeLimitMinutes: number;
-}) {
-    const { t } = useTranslation();
-    const [now, setNow] = useState(() => Date.now());
-
-    useEffect(() => {
-        const timer = window.setInterval(() => setNow(Date.now()), 1000);
-        return () => window.clearInterval(timer);
-    }, []);
-
-    const left = remainingTime(startedAt, timeLimitMinutes, now);
-
-    return (
-        <span
-            className={styles.countdown}
-            data-urgent={left < 5 * 60_000}
-            role="timer"
-        >
-            {left > 0
-                ? t('exam.timeLeft', { time: formatDuration(left) })
-                : t('exam.timeUp')}
-        </span>
     );
 }

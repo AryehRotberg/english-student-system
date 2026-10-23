@@ -160,6 +160,9 @@ export const en = {
         awaitingGrading: 'Awaiting teacher grading',
         score: 'Score: {{score}}',
         viewResults: 'View results',
+        timedNotice:
+            'You have {{minutes}} min. When time runs out, your answers are submitted automatically.',
+        timeUpSubmitting: "Time's up — submitting your answers.",
     },
     exam: {
         instructions:
