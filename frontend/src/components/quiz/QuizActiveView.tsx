@@ -8,6 +8,7 @@ type QuizActiveViewProps = {
     questions: QuizQuestion[];
     answeredQuestionIds: Set<string>;
     completedAttempts: QuizAttemptApiItem[];
+    totalPossible: number;
     onSubmitted: (isLastQuestion: boolean) => void;
     onViewAttempt: (attemptId: string) => void;
 };
@@ -17,6 +18,7 @@ export function QuizActiveView({
     questions,
     answeredQuestionIds,
     completedAttempts,
+    totalPossible,
     onSubmitted,
     onViewAttempt,
 }: QuizActiveViewProps) {
@@ -42,6 +44,7 @@ export function QuizActiveView({
             />
             <QuizAttemptHistoryPanel
                 attempts={completedAttempts}
+                totalPossible={totalPossible}
                 onViewAttempt={onViewAttempt}
             />
         </>

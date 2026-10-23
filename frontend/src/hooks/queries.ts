@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import type { AnswerFile } from '../services/answer-files.service';
 import { answerFilesService } from '../services/answer-files.service';
 import type { VocabAudioType } from '../services/audio.service';
@@ -116,6 +116,17 @@ export function useQuizQuestions(quizId?: string) {
         queryKey: ['quiz-questions', quizId],
         enabled: Boolean(quizId),
         queryFn: () => quizQuestionsService.getFullQuiz(quizId),
+    });
+}
+
+export function useQuizQuestionsByQuiz(quizIds: string[]) {
+    return useQueries({
+        queries: quizIds.map((quizId) => ({
+            queryKey: ['quiz-questions', quizId],
+            queryFn: () => quizQuestionsService.getFullQuiz(quizId),
+        })),
+        combine: (results) =>
+            new Map(quizIds.map((quizId, i) => [quizId, results[i].data])),
     });
 }
 

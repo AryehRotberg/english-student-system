@@ -158,7 +158,7 @@ export const en = {
         previousAttempts: 'Previous attempts',
         completedAttempt: 'Completed attempt',
         awaitingGrading: 'Awaiting teacher grading',
-        score: 'Score: {{score}}',
+        score: 'Score: {{score}}%',
         viewResults: 'View results',
     },
     exam: {

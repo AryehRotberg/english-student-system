@@ -5,6 +5,7 @@ import {
     useAssignmentItems,
     useAssignments,
     useQuizQuestions,
+    useQuizQuestionsByQuiz,
     useQuizzes,
     useReadings,
     useStudentAnswersByAttempt,
@@ -25,7 +26,7 @@ import styles from '../../pages/Admin/AdminPage.module.css';
 import type { AssignmentItemContentType } from '../../services/assignments.service';
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
-import { isHandwritten, possiblePoints } from '../../utils/exam';
+import { isHandwritten, possiblePoints, scorePercent } from '../../utils/exam';
 import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
 import { AttemptGradingPanel } from './AttemptGradingPanel';
 import { StudentSubjectsEditor } from './StudentSubjectsEditor';
@@ -181,6 +182,20 @@ function StudentProgress({ studentId }: { studentId: string }) {
             ? selectedAttemptId || undefined
             : undefined,
     );
+    const questionsByQuiz = useQuizQuestionsByQuiz([
+        ...new Set(attempts.map((a) => a.quizId)),
+    ]);
+
+    const totalPossibleFor = (quizId: string): number | null => {
+        const quizQuestions = questionsByQuiz.get(quizId);
+        if (!quizQuestions) {
+            return null;
+        }
+        return possiblePoints(
+            quizQuestions.map((q) => q.maxPoints),
+            quizzes.find((q) => q.id === quizId)?.questionsToAnswer,
+        );
+    };
 
     if (attemptsLoading) {
         return <p>Loading progress...</p>;
@@ -244,7 +259,14 @@ function StudentProgress({ studentId }: { studentId: string }) {
                         const completedAt = attempt.completedAt
                             ? new Date(attempt.completedAt)
                             : null;
-                        const score = Number(attempt.points ?? 0);
+                        const totalPossible = totalPossibleFor(attempt.quizId);
+                        const percent =
+                            totalPossible === null
+                                ? null
+                                : scorePercent(
+                                      Number(attempt.points ?? 0),
+                                      totalPossible,
+                                  );
                         const isPendingReview =
                             attempt.status === 'pendingReview';
                         const quizTitle =
@@ -298,7 +320,7 @@ function StudentProgress({ studentId }: { studentId: string }) {
                                             <>
                                                 Score:{' '}
                                                 <strong>
-                                                    {score.toFixed(2)}
+                                                    {percent === null ? '…' : `${percent}%`}
                                                 </strong>
                                             </>
                                         )}

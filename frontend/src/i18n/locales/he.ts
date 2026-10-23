@@ -153,7 +153,7 @@ export const he: Translation = {
         previousAttempts: 'ניסיונות קודמים',
         completedAttempt: 'ניסיון שהושלם',
         awaitingGrading: 'ממתין לבדיקת המורה',
-        score: 'ציון: {{score}}',
+        score: 'ציון: {{score}}%',
         viewResults: 'לתוצאות',
     },
     exam: {

@@ -7,6 +7,7 @@ import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 type QuizRetakeScreenProps = {
     questionCount: number;
     completedAttempts: QuizAttemptApiItem[];
+    totalPossible: number;
     isPending: boolean;
     onRetake: () => void;
     onViewAttempt: (attemptId: string) => void;
@@ -16,6 +17,7 @@ type QuizRetakeScreenProps = {
 export function QuizRetakeScreen({
     questionCount,
     completedAttempts,
+    totalPossible,
     isPending,
     onRetake,
     onViewAttempt,
@@ -40,6 +42,7 @@ export function QuizRetakeScreen({
             </section>
             <QuizAttemptHistoryPanel
                 attempts={completedAttempts}
+                totalPossible={totalPossible}
                 onViewAttempt={onViewAttempt}
             />
         </div>

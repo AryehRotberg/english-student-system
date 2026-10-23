@@ -70,6 +70,7 @@ export function QuizResultsPanel({
 
             <QuizAttemptHistoryPanel
                 attempts={completedAttempts}
+                totalPossible={totalPossible}
                 onViewAttempt={onViewAttempt}
             />
         </section>

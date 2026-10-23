@@ -1,13 +1,19 @@
 import { useTranslation } from 'react-i18next';
 import type { QuizAttemptApiItem } from '../../types/api-items/quiz-attempt';
 import styles from '../../pages/Quiz/QuizPage.module.css';
+import { scorePercent } from '../../utils/exam';
 
 type Props = {
     attempts: QuizAttemptApiItem[];
+    totalPossible: number;
     onViewAttempt: (attemptId: string) => void;
 };
 
-export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
+export function QuizAttemptHistoryPanel({
+    attempts,
+    totalPossible,
+    onViewAttempt,
+}: Props) {
     const { t, i18n } = useTranslation();
 
     if (attempts.length === 0) {
@@ -37,9 +43,10 @@ export function QuizAttemptHistoryPanel({ attempts, onViewAttempt }: Props) {
                                     {attempt.status === 'pendingReview'
                                         ? t('quiz.awaitingGrading')
                                         : t('quiz.score', {
-                                              score: Number(
-                                                  attempt.points ?? 0,
-                                              ).toFixed(2),
+                                              score: scorePercent(
+                                                  Number(attempt.points ?? 0),
+                                                  totalPossible,
+                                              ),
                                           })}
                                 </p>
                             </div>

@@ -5,6 +5,7 @@ import {
     formatDuration,
     possiblePoints,
     remainingTime,
+    scorePercent,
 } from './exam';
 
 function question(
@@ -39,6 +40,20 @@ describe('possiblePoints', () => {
 
     it('treats N >= M as "all count"', () => {
         expect(possiblePoints([10, 20], 5)).toBe(30);
+    });
+});
+
+describe('scorePercent', () => {
+    it('shows full marks as 100 regardless of the point scale', () => {
+        expect(scorePercent(50, 50)).toBe(100);
+    });
+
+    it('rounds to a whole percent', () => {
+        expect(scorePercent(2, 3)).toBe(67);
+    });
+
+    it('is 0 when the quiz has no points to earn', () => {
+        expect(scorePercent(0, 0)).toBe(0);
     });
 });
 

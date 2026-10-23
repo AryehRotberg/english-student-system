@@ -17,7 +17,7 @@ import {
 } from '../../hooks/queries';
 import styles from '../../pages/Quiz/QuizPage.module.css';
 import type { QuizSummary } from '../../types/quiz';
-import { isHandwritten } from '../../utils/exam';
+import { isHandwritten, possiblePoints } from '../../utils/exam';
 import { HandwrittenExamView } from '../exam/HandwrittenExamView';
 import { QuizStudyGuidesSection } from './QuizStudyGuidesSection';
 
@@ -64,6 +64,10 @@ export function QuizPageContent({
     // Any handwritten question turns the attempt into an exam: all questions
     // visible, pages uploaded per question, one submit at the end.
     const isExam = questions.some(isHandwritten);
+    const totalPossible = possiblePoints(
+        questions.map((question) => question.maxPoints),
+        quiz?.questionsToAnswer,
+    );
 
     const examDetails =
         isExam && quiz ? (
@@ -118,6 +122,7 @@ export function QuizPageContent({
             <QuizRetakeScreen
                 questionCount={questions.length}
                 completedAttempts={completedAttempts}
+                totalPossible={totalPossible}
                 isPending={startAttemptMutation.isPending}
                 onRetake={() => void handleStartOrRetake()}
                 onViewAttempt={handleViewAttempt}
@@ -160,6 +165,7 @@ export function QuizPageContent({
                     questions={questions}
                     answeredQuestionIds={savedAnswerQuestionIds}
                     completedAttempts={completedAttempts}
+                    totalPossible={totalPossible}
                     onSubmitted={(isLastQuestion) =>
                         void handleQuestionSubmitted(isLastQuestion)
                     }

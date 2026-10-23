@@ -20,6 +20,10 @@ export function possiblePoints(
         .reduce((sum, points) => sum + points, 0);
 }
 
+export function scorePercent(points: number, totalPossible: number): number {
+    return totalPossible > 0 ? Math.round((points / totalPossible) * 100) : 0;
+}
+
 /** "1:05:09" / "05:09" for a countdown. */
 export function formatDuration(milliseconds: number): string {
     const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
