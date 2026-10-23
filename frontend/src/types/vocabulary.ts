@@ -7,6 +7,16 @@ export type VocabularyWord = {
     translation: string | null;
 };
 
+// One word for POST /vocabulary-topic-words/import, in the shape of a vocabulary
+// JSON file.
+export type VocabularyImportWord = {
+    word: string;
+    word_sound?: string;
+    meaning?: string;
+    example?: string;
+    translation?: string;
+};
+
 export type VocabularyTopicPreview = {
     id: string;
     topic: string;

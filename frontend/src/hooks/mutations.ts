@@ -26,6 +26,7 @@ import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
 import type { UiLanguage } from '../types/subject';
+import type { VocabularyImportWord } from '../types/vocabulary';
 import { isUuid } from '../utils/isUuid';
 
 export function useSubmitStudentAnswer() {
@@ -568,29 +569,35 @@ export function useUpdateVocabularyTopic() {
     });
 }
 
-export function useCreateVocabularyWord() {
+// Adds one or many words to a topic, optionally with their audio, in one request.
+export function useImportVocabularyWords() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (payload: {
+        mutationFn: async (payload: {
             topicId: string;
-            word: string;
-            meaning?: string;
-            example?: string;
-            translation?: string;
-        }) =>
-            vocabularyService
-                .createVocabularyWord({
-                    word: payload.word,
-                    meaning: payload.meaning,
-                    example: payload.example,
-                    translation: payload.translation,
-                })
-                .then((vocab) =>
-                    vocabularyService.createTopicWord({
-                        vocabularyId: vocab.id,
-                        topicId: payload.topicId,
-                    }),
-                ),
+            words: VocabularyImportWord[];
+            includeAudio: boolean;
+        }) => {
+            try {
+                await vocabularyService.importWords(
+                    payload.topicId,
+                    payload.words,
+                    payload.includeAudio,
+                );
+            } catch (error) {
+                if (isAxiosError(error)) {
+                    // Business errors carry `message`; model validation errors are
+                    // ProblemDetails with only a `title`.
+                    const data = error.response?.data as
+                        | { message?: string; title?: string }
+                        | undefined;
+                    throw new Error(
+                        data?.message ?? data?.title ?? error.message,
+                    );
+                }
+                throw error;
+            }
+        },
         onSuccess: (_data, variables) =>
             queryClient.invalidateQueries({
                 queryKey: ['vocabulary-topic-words', variables.topicId],

@@ -2,6 +2,7 @@ import type { AxiosInstance } from 'axios';
 import type { VocabularyTopicApiItem } from '../types/api-items/vocabulary-topic';
 import type { VocabularyTopicWordApiItem } from '../types/api-items/vocabulary-topic-word';
 import type {
+    VocabularyImportWord,
     VocabularyTopicPreview,
     VocabularyTopicWithWords,
     VocabularyWord,
@@ -108,17 +109,16 @@ class VocabularyService {
         return this.toTopicPreview(response.data);
     }
 
-    public async createVocabularyWord(payload: {
-        word: string;
-        meaning?: string;
-        example?: string;
-        translation?: string;
-    }): Promise<{ id: string; word: string | null }> {
-        const response = await this.httpClient.post<{
-            id: string;
-            word: string | null;
-        }>('/vocabulary', payload);
-        return response.data;
+    // Creates the words, links them to the topic and, with includeAudio, generates
+    // their word/meaning/example clips. Nothing is saved if audio generation fails.
+    public async importWords(
+        topicId: string,
+        words: VocabularyImportWord[],
+        includeAudio: boolean,
+    ): Promise<void> {
+        await this.httpClient.post('/vocabulary-topic-words/import', words, {
+            params: { topicId, includeAudio },
+        });
     }
 
     public async updateVocabularyWord(
@@ -131,13 +131,6 @@ class VocabularyService {
         },
     ): Promise<void> {
         await this.httpClient.patch(`/vocabulary/${id}`, payload);
-    }
-
-    public async createTopicWord(payload: {
-        vocabularyId: string;
-        topicId: string;
-    }): Promise<void> {
-        await this.httpClient.post('/vocabulary-topic-words', payload);
     }
 
     public async removeTopic(id: string): Promise<void> {
