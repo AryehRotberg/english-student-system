@@ -69,10 +69,11 @@ export function QuizPageContent({
         quiz?.questionsToAnswer,
     );
 
-    const examDetails =
-        isExam && quiz ? (
-            <ExamRules quiz={quiz} questionCount={questions.length} />
-        ) : undefined;
+    const startDetails = !quiz ? undefined : isExam ? (
+        <ExamRules quiz={quiz} questionCount={questions.length} />
+    ) : quiz.timeLimitMinutes ? (
+        <p>{t('quiz.timedNotice', { minutes: quiz.timeLimitMinutes })}</p>
+    ) : undefined;
 
     const handleStartOrRetake = async () => {
         setIsCompleted(false);
@@ -81,7 +82,8 @@ export function QuizPageContent({
     };
 
     const submitAttempt = async () => {
-        if (!attemptId) {
+        // The timer can fire while the last answer is still submitting.
+        if (!attemptId || submitAttemptMutation.isPending) {
             return;
         }
 
@@ -113,7 +115,7 @@ export function QuizPageContent({
                 <QuizSetupScreen
                     onStart={() => void handleStartOrRetake()}
                     isPending={startAttemptMutation.isPending}
-                    details={examDetails}
+                    details={startDetails}
                 />
             );
         }
@@ -126,7 +128,7 @@ export function QuizPageContent({
                 isPending={startAttemptMutation.isPending}
                 onRetake={() => void handleStartOrRetake()}
                 onViewAttempt={handleViewAttempt}
-                details={examDetails}
+                details={startDetails}
             />
         );
     }
@@ -162,6 +164,8 @@ export function QuizPageContent({
             ) : (
                 <QuizActiveView
                     attemptId={attemptId as string}
+                    startedAt={activeAttempt?.startedAt ?? ''}
+                    timeLimitMinutes={quiz?.timeLimitMinutes ?? null}
                     questions={questions}
                     answeredQuestionIds={savedAnswerQuestionIds}
                     completedAttempts={completedAttempts}
@@ -169,6 +173,7 @@ export function QuizPageContent({
                     onSubmitted={(isLastQuestion) =>
                         void handleQuestionSubmitted(isLastQuestion)
                     }
+                    onTimeUp={() => void submitAttempt()}
                     onViewAttempt={handleViewAttempt}
                 />
             )}

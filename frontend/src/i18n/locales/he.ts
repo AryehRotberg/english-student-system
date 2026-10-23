@@ -155,6 +155,9 @@ export const he: Translation = {
         awaitingGrading: 'ממתין לבדיקת המורה',
         score: 'ציון: {{score}}%',
         viewResults: 'לתוצאות',
+        timedNotice:
+            'עומדות לרשותך {{minutes}} דקות. בסיום הזמן התשובות יוגשו אוטומטית.',
+        timeUpSubmitting: 'הזמן נגמר — התשובות נשלחות.',
     },
     exam: {
         instructions:
