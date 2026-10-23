@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useVocabularyTopicWords } from '../../../hooks/queries';
 import {
-    useCreateVocabularyWord,
+    useImportVocabularyWords,
     useUpdateVocabularyWord,
     useDeleteVocabularyWord,
 } from '../../../hooks/mutations';
-import { audioService } from '../../../services/audio.service';
 import type {
+    VocabularyImportWord,
     VocabularyTopicPreview,
     VocabularyWord,
 } from '../../../types/vocabulary';
+import { BulkWordForm } from './BulkWordForm';
 import { WordForm, type WordFormValues } from './WordForm';
 import { WordItem } from './WordItem';
 import styles from '../../../pages/Admin/AdminPage.module.css';
@@ -40,50 +41,49 @@ export function TopicItem({
     const { data: words = [] } = useVocabularyTopicWords(
         isSelected ? topic.id : undefined,
     );
-    const createWord = useCreateVocabularyWord();
+    // Separate instances so an error in one panel does not show up in the other.
+    const addWord = useImportVocabularyWords();
+    const addWords = useImportVocabularyWords();
     const updateWord = useUpdateVocabularyWord();
     const deleteWord = useDeleteVocabularyWord();
 
-    const [showWordForm, setShowWordForm] = useState(false);
+    const [addPanel, setAddPanel] = useState<'one' | 'several' | null>(null);
     const [wordEdit, setWordEdit] = useState<WordEditState | null>(null);
 
-    const handleCreateWord = async (values: WordFormValues) => {
-        await createWord.mutateAsync({
-            topicId: topic.id,
-            word: values.word,
-            meaning: values.meaning || undefined,
-            example: values.example || undefined,
-            translation: values.translation || undefined,
-        });
-        if (values.includeAudio) {
-            const wordLower = values.word.toLowerCase();
-            const promises: Promise<void>[] = [
-                audioService.generateAndSaveTts(
-                    values.word,
-                    'vocabulary',
-                    `${wordLower}.mp3`,
-                ),
-            ];
-            if (values.meaning)
-                promises.push(
-                    audioService.generateAndSaveTts(
-                        values.meaning,
-                        'vocabulary',
-                        `${wordLower}_meaning.mp3`,
-                    ),
-                );
-            if (values.example)
-                promises.push(
-                    audioService.generateAndSaveTts(
-                        values.example,
-                        'vocabulary',
-                        `${wordLower}_example.mp3`,
-                    ),
-                );
-            await Promise.all(promises);
-        }
-        setShowWordForm(false);
+    const toggleAddPanel = (panel: 'one' | 'several') => {
+        setAddPanel((current) => (current === panel ? null : panel));
+        setWordEdit(null);
+        addWord.reset();
+        addWords.reset();
     };
+
+    // The word, its audio and the topic link are saved together: if the audio
+    // cannot be generated, nothing is added.
+    const handleCreateWord = (values: WordFormValues) =>
+        addWord.mutate(
+            {
+                topicId: topic.id,
+                words: [
+                    {
+                        word: values.word,
+                        meaning: values.meaning || undefined,
+                        example: values.example || undefined,
+                        translation: values.translation || undefined,
+                    },
+                ],
+                includeAudio: values.includeAudio,
+            },
+            { onSuccess: () => setAddPanel(null) },
+        );
+
+    const handleCreateWords = (
+        newWords: VocabularyImportWord[],
+        includeAudio: boolean,
+    ) =>
+        addWords.mutate(
+            { topicId: topic.id, words: newWords, includeAudio },
+            { onSuccess: () => setAddPanel(null) },
+        );
 
     const handleUpdateWord = async (values: WordFormValues) => {
         if (!wordEdit) return;
@@ -99,7 +99,7 @@ export function TopicItem({
     };
 
     const startEditWord = (w: VocabularyWord) => {
-        setShowWordForm(false);
+        setAddPanel(null);
         setWordEdit({
             vocabularyId: w.vocabularyId,
             word: w.word,
@@ -184,27 +184,45 @@ export function TopicItem({
                         <span className={styles.subHeading}>
                             Words in &ldquo;{topic.topic}&rdquo;
                         </span>
-                        <button
-                            type="button"
-                            className={styles.addButton}
-                            onClick={() => {
-                                setShowWordForm((v) => !v);
-                                setWordEdit(null);
-                            }}
-                        >
-                            {showWordForm ? 'Cancel' : '+ Add Word'}
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            <button
+                                type="button"
+                                className={styles.addButton}
+                                onClick={() => toggleAddPanel('one')}
+                            >
+                                {addPanel === 'one' ? 'Cancel' : '+ Add Word'}
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.addButton}
+                                onClick={() => toggleAddPanel('several')}
+                            >
+                                {addPanel === 'several'
+                                    ? 'Cancel'
+                                    : '+ Add Several'}
+                            </button>
+                        </div>
                     </div>
 
-                    {showWordForm && (
+                    {addPanel === 'one' && (
                         <WordForm
                             submitLabel="Add Word"
                             showAudioCheckbox
-                            isPending={createWord.isPending}
-                            isError={createWord.isError}
-                            errorMessage={(createWord.error as Error)?.message}
-                            onSubmit={(values) => void handleCreateWord(values)}
-                            onCancel={() => setShowWordForm(false)}
+                            isPending={addWord.isPending}
+                            isError={addWord.isError}
+                            errorMessage={addWord.error?.message}
+                            onSubmit={handleCreateWord}
+                            onCancel={() => setAddPanel(null)}
+                        />
+                    )}
+
+                    {addPanel === 'several' && (
+                        <BulkWordForm
+                            isPending={addWords.isPending}
+                            isError={addWords.isError}
+                            errorMessage={addWords.error?.message}
+                            onSubmit={handleCreateWords}
+                            onCancel={() => setAddPanel(null)}
                         />
                     )}
 
