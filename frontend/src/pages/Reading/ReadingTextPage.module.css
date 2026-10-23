@@ -77,10 +77,32 @@
     line-height: var(--leading-relaxed);
 }
 
+/* `width: auto` overrides a `width="100%"` attribute in the markdown, so the
+   height cap shrinks the whole image instead of cropping it. */
 .markdownBody img {
     border-radius: var(--radius-md);
+    display: block;
     height: auto;
+    max-height: 280px;
     max-width: 100%;
+    object-fit: contain;
+    width: auto;
+}
+
+.imageButton {
+    background: none;
+    border: none;
+    cursor: zoom-in;
+    display: block;
+    margin: var(--space-4) auto;
+    max-width: 100%;
+    padding: 0;
+}
+
+.imageButton:focus-visible {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-focus);
+    outline: none;
 }
 
 .vocabLink {

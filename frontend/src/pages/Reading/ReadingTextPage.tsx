@@ -1,8 +1,11 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
+import { ImageLightbox } from '../../components/content/ImageLightbox';
 import { TextAudioPlayer } from '../../components/reading/TextAudioButton';
 import { useReadingLibrary, useText } from '../../hooks/queries';
 import type { ReadingItem } from '../../types/reading';
@@ -32,6 +35,11 @@ export function ReadingTextPage() {
     const { textId } = useParams<{ textId: string }>();
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
+    const [enlargedImage, setEnlargedImage] = useState<{
+        src: string;
+        alt: string;
+    } | null>(null);
 
     const stateItem = (location.state as { item?: ReadingItem } | null)?.item;
 
@@ -85,6 +93,26 @@ export function ReadingTextPage() {
                         ]}
                         remarkPlugins={[remarkGfm]}
                         components={{
+                            // Images are kept small in the text; tap to see them full size.
+                            img({ src, alt }) {
+                                if (typeof src !== 'string') return null;
+                                const label = alt || item.title;
+                                return (
+                                    <button
+                                        type="button"
+                                        className={styles.imageButton}
+                                        onClick={() =>
+                                            setEnlargedImage({
+                                                src,
+                                                alt: label,
+                                            })
+                                        }
+                                        aria-label={t('richText.zoomIn')}
+                                    >
+                                        <img src={src} alt={label} />
+                                    </button>
+                                );
+                            },
                             a({ href, children, ...props }) {
                                 const isInternal = href?.startsWith('/');
                                 if (isInternal) {
@@ -119,6 +147,14 @@ export function ReadingTextPage() {
                     </ReactMarkdown>
                 </div>
             </article>
+
+            {enlargedImage && (
+                <ImageLightbox
+                    src={enlargedImage.src}
+                    alt={enlargedImage.alt}
+                    onClose={() => setEnlargedImage(null)}
+                />
+            )}
 
             {textDetail?.quiz && (
                 <button
