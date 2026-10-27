@@ -4,6 +4,7 @@ import {
     useAnswerFiles,
     useAssignmentItems,
     useAssignments,
+    useLessons,
     useQuizQuestions,
     useQuizQuestionsByQuiz,
     useQuizzes,
@@ -26,6 +27,7 @@ import styles from '../../pages/Admin/AdminPage.module.css';
 import type { AssignmentItemContentType } from '../../services/assignments.service';
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
+import { lessonTitle } from '../../types/lesson';
 import { isHandwritten, possiblePoints, scorePercent } from '../../utils/exam';
 import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
 import { AttemptGradingPanel } from './AttemptGradingPanel';
@@ -52,6 +54,7 @@ const CONTENT_TYPES: { value: AssignmentItemContentType; label: string }[] = [
     { value: 'reading', label: 'Reading' },
     { value: 'writing', label: 'Writing task' },
     { value: 'vocabulary', label: 'Vocabulary topic' },
+    { value: 'lesson', label: 'Lesson' },
 ];
 
 function BackChevron() {
@@ -375,6 +378,7 @@ function useContentOptions(): ContentOptionMap {
     const { data: readings = [] } = useReadings();
     const { data: writingTasks = [] } = useWritingTasks();
     const { data: vocabularyTopics = [] } = useVocabularyTopics();
+    const { data: lessons = [] } = useLessons();
 
     return {
         quiz: quizzes.map((q) => ({ id: q.id, label: q.title })),
@@ -383,6 +387,11 @@ function useContentOptions(): ContentOptionMap {
         vocabulary: vocabularyTopics.map((v) => ({
             id: v.id,
             label: v.topic,
+        })),
+        // The topic tells apart lessons with the same title in different topics.
+        lesson: lessons.map((l) => ({
+            id: l.id,
+            label: l.title ? `${l.title} · ${l.topicName}` : lessonTitle(l),
         })),
     };
 }
@@ -394,6 +403,7 @@ const CONTENT_ICON_CLASS: Record<AssignmentItemContentType, string> = {
     reading: 'assignmentItemIconReading',
     writing: 'assignmentItemIconWriting',
     vocabulary: 'assignmentItemIconVocabulary',
+    lesson: 'assignmentItemIconLesson',
 };
 
 const CONTENT_ICON_LETTER: Record<AssignmentItemContentType, string> = {
@@ -401,6 +411,7 @@ const CONTENT_ICON_LETTER: Record<AssignmentItemContentType, string> = {
     reading: 'R',
     writing: 'W',
     vocabulary: 'V',
+    lesson: 'L',
 };
 
 function ItemPicker({

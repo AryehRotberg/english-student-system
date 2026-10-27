@@ -1297,6 +1297,11 @@
     color: var(--teal-700);
 }
 
+.assignmentItemIconLesson {
+    background: var(--brand-100);
+    color: var(--brand-700);
+}
+
 .assignmentItemBody {
     flex: 1;
     min-width: 0;

@@ -495,6 +495,12 @@
     color: var(--sun-700);
 }
 
+.chipLesson {
+    background: var(--brand-100);
+    border-color: var(--brand-300);
+    color: var(--brand-700);
+}
+
 .assignmentDue {
     background: var(--surface-2);
     border-radius: var(--radius-pill);

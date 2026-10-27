@@ -57,6 +57,7 @@ export const he: Translation = {
         reading: 'קריאה',
         vocabulary: 'אוצר מילים',
         writing: 'כתיבה',
+        lesson: 'שיעור',
     },
     auth: {
         signInSubtitle: 'התחברות עם אימייל וסיסמה.',

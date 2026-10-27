@@ -57,6 +57,7 @@ export const en = {
         reading: 'Reading',
         vocabulary: 'Vocabulary',
         writing: 'Writing',
+        lesson: 'Lesson',
     },
     auth: {
         signInSubtitle: 'Sign in with your email and password.',

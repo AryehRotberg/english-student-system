@@ -24,6 +24,7 @@ const chipStyleByContentType: Record<AssignmentTopic['contentType'], string> = {
     reading: styles.chipReading,
     vocabulary: styles.chipVocabulary,
     writing: styles.chipWriting,
+    lesson: styles.chipLesson,
 };
 
 /** Leads with the category so students can tell a reading from a quiz of the same name. */
