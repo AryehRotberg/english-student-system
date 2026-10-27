@@ -7,6 +7,7 @@ import { assignmentItemsService } from '../services/assignment-items.service';
 import { assignmentsService } from '../services/assignments.service';
 import { authService } from '../services/auth.service';
 import { dashboardService } from '../services/dashboard.service';
+import { lessonsService } from '../services/lessons.service';
 import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
 import { questionsService } from '../services/questions.service';
@@ -39,6 +40,7 @@ import type { QuizAttemptApiItem } from '../types/api-items/quiz-attempt';
 import type { WritingTaskApiItem } from '../types/api-items/writing-task';
 import type { AuthUser } from '../types/auth';
 import type { DashboardData } from '../types/dashboard';
+import type { Lesson, LessonSummary } from '../types/lesson';
 import type { QuizQuestion, QuizStudyGuide, QuizSummary } from '../types/quiz';
 import type { ReadingItem } from '../types/reading';
 import type {
@@ -206,6 +208,38 @@ export function useQuizStudyGuides(quizId?: string) {
         queryKey: ['quiz-study-guides', quizId],
         enabled: Boolean(quizId),
         queryFn: () => quizStudyGuidesService.findByQuizId(quizId as string),
+    });
+}
+
+export function useLessons(subjectId?: string, enabled = true) {
+    return useQuery<LessonSummary[]>({
+        queryKey: ['lessons', subjectId ?? 'all'],
+        enabled,
+        queryFn: () => lessonsService.findAll(subjectId ? { subjectId } : {}),
+    });
+}
+
+// Carries signed material links, so it refreshes before they expire.
+export function useLesson(lessonId?: string) {
+    return useQuery<Lesson>({
+        queryKey: ['lesson', lessonId],
+        enabled: Boolean(lessonId),
+        queryFn: () => lessonsService.findById(lessonId as string),
+        staleTime: SIGNED_URL_STALE_MS,
+        refetchInterval: SIGNED_URL_STALE_MS,
+    });
+}
+
+// Keyed by URL: a refreshed signed link refetches the page source.
+export function useLessonHtml(url: string | null) {
+    return useQuery<string>({
+        queryKey: ['lesson-html', url],
+        enabled: Boolean(url),
+        queryFn: () => lessonsService.fetchHtml(url as string),
+        staleTime: Infinity,
+        gcTime: SIGNED_URL_STALE_MS,
+        // A refreshed link is a new key; keep showing the page meanwhile.
+        placeholderData: (previous) => previous,
     });
 }
 

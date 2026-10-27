@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
@@ -32,6 +33,7 @@ export function QuizStudyGuidesSection({
     quizId,
     studyGuides,
 }: QuizStudyGuidesSectionProps) {
+    const { t } = useTranslation();
     const [selectedStudyGuide, setSelectedStudyGuide] =
         useState<QuizStudyGuide | null>(null);
 
@@ -49,8 +51,16 @@ export function QuizStudyGuidesSection({
                             onClick={() => setSelectedStudyGuide(studyGuide)}
                             type="button"
                         >
-                            <span>{studyGuide.topic}</span>
-                            <small>Open explanation</small>
+                            <span dir="auto">
+                                {studyGuide.title || studyGuide.topic}
+                            </span>
+                            <small>
+                                {studyGuide.materialCount > 0
+                                    ? t('lessons.files', {
+                                          count: studyGuide.materialCount,
+                                      })
+                                    : 'Open explanation'}
+                            </small>
                         </button>
                     ))}
                 </div>
@@ -68,8 +78,27 @@ export function QuizStudyGuidesSection({
                         onClick={(event) => event.stopPropagation()}
                     >
                         <div className={styles.topicModalHeader}>
-                            <h3>{selectedStudyGuide.topic}</h3>
+                            <h3 dir="auto">
+                                {selectedStudyGuide.title ||
+                                    selectedStudyGuide.topic}
+                            </h3>
                             <div className={styles.topicModalButtons}>
+                                {selectedStudyGuide.materialCount > 0 && (
+                                    // Slides and interactive pages live on the
+                                    // full lesson page; a new tab keeps the quiz.
+                                    <button
+                                        className={styles.closeTopicButton}
+                                        onClick={() =>
+                                            window.open(
+                                                `/lessons/${selectedStudyGuide.id}`,
+                                                '_blank',
+                                            )
+                                        }
+                                        type="button"
+                                    >
+                                        {t('lessons.open')}
+                                    </button>
+                                )}
                                 <button
                                     aria-label="Open in new page"
                                     className={styles.closeTopicButton}

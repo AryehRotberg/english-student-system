@@ -10,6 +10,8 @@ import { audioService } from '../services/audio.service';
 import type { AssignmentItemContentType } from '../services/assignments.service';
 import { assignmentsService } from '../services/assignments.service';
 import { authService } from '../services/auth.service';
+import { lessonsService } from '../services/lessons.service';
+import { quizStudyGuidesService } from '../services/quiz-study-guides.service';
 import { questionAcceptedAnswersService } from '../services/question-accepted-answers.service';
 import { questionChoicesService } from '../services/question-choices.service';
 import type { SaveQuestionPayload } from '../services/questions.service';
@@ -25,6 +27,7 @@ import { subjectsService } from '../services/subjects.service';
 import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
 import { vocabularyService } from '../services/vocabulary.service';
+import type { SaveLessonPayload } from '../types/lesson';
 import type { UiLanguage } from '../types/subject';
 import type { VocabularyImportWord } from '../types/vocabulary';
 import { isUuid } from '../utils/isUuid';
@@ -275,6 +278,88 @@ export function useRemoveTopic() {
         mutationFn: (id: string) => subjectsService.removeTopic(id),
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ['topics'] }),
+    });
+}
+
+function invalidateLessonQueries(queryClient: QueryClient, lessonId?: string) {
+    return Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['lessons'] }),
+        lessonId
+            ? queryClient.invalidateQueries({ queryKey: ['lesson', lessonId] })
+            : undefined,
+        // Quiz pages list linked lessons with their titles and file counts.
+        queryClient.invalidateQueries({ queryKey: ['quiz-study-guides'] }),
+    ]);
+}
+
+export function useSaveLesson() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...payload }: SaveLessonPayload & { id?: string }) =>
+            id
+                ? lessonsService.update(id, payload)
+                : lessonsService.create(payload),
+        onSuccess: (lesson) => invalidateLessonQueries(queryClient, lesson.id),
+    });
+}
+
+export function useRemoveLesson() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => lessonsService.remove(id),
+        onSuccess: (_data, id) => {
+            queryClient.removeQueries({ queryKey: ['lesson', id] });
+            return invalidateLessonQueries(queryClient);
+        },
+    });
+}
+
+export function useReorderLessonMaterials() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (variables: { lessonId: string; materialIds: string[] }) =>
+            lessonsService.reorderMaterials(
+                variables.lessonId,
+                variables.materialIds,
+            ),
+        onSuccess: (_data, variables) =>
+            invalidateLessonQueries(queryClient, variables.lessonId),
+    });
+}
+
+export function useRemoveLessonMaterial() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (variables: { lessonId: string; materialId: string }) =>
+            lessonsService.removeMaterial(
+                variables.lessonId,
+                variables.materialId,
+            ),
+        onSuccess: (_data, variables) =>
+            invalidateLessonQueries(queryClient, variables.lessonId),
+    });
+}
+
+// Uploads go through lessonsService.uploadMaterial directly (they report
+// progress); call this afterwards to refresh the lesson.
+export function useInvalidateLesson() {
+    const queryClient = useQueryClient();
+    return (lessonId: string) => invalidateLessonQueries(queryClient, lessonId);
+}
+
+export function useSetQuizStudyGuides() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (variables: { quizId: string; studyGuideIds: string[] }) =>
+            quizStudyGuidesService.setForQuiz(
+                variables.quizId,
+                variables.studyGuideIds,
+            ),
+        onSuccess: (data, variables) =>
+            queryClient.setQueryData(
+                ['quiz-study-guides', variables.quizId],
+                data,
+            ),
     });
 }
 

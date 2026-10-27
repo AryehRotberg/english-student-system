@@ -3,6 +3,7 @@ import type { AdminTab } from '../../components/admin/admin-tabs';
 import { adminTabs } from '../../components/admin/admin-tabs';
 import { AdminSidebar } from '../../components/admin/AdminSidebar';
 import { GradingSection } from '../../components/admin/GradingSection';
+import { LessonsSection } from '../../components/admin/LessonsSection';
 import { PendingStudentsSection } from '../../components/admin/PendingStudentsSection';
 import { QuizzesSection } from '../../components/admin/QuizzesSection';
 import { ReadingsSection } from '../../components/admin/ReadingSection';
@@ -55,6 +56,7 @@ export function AdminPage() {
                         <PendingStudentsSection />
                     )}
                     {activeTab === 'subjects' && <SubjectsSection />}
+                    {activeTab === 'lessons' && <LessonsSection />}
                     {activeTab === 'quizzes' && <QuizzesSection />}
                     {activeTab === 'readings' && <ReadingsSection />}
                     {activeTab === 'vocabulary' && <VocabularySection />}
