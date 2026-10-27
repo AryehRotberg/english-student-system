@@ -15,6 +15,18 @@ class QuizStudyGuidesService {
         );
         return response.data;
     }
+
+    // Replaces the quiz's lessons with exactly this set.
+    public async setForQuiz(
+        quizId: string,
+        studyGuideIds: string[],
+    ): Promise<QuizStudyGuide[]> {
+        const response = await this.httpClient.put<QuizStudyGuide[]>(
+            `/quiz-study-guides/${quizId}`,
+            { studyGuideIds },
+        );
+        return response.data;
+    }
 }
 
 export const quizStudyGuidesService = new QuizStudyGuidesService();

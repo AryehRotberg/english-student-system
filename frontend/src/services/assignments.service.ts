@@ -6,6 +6,7 @@ export type AssignmentItemContentType =
     | 'quiz'
     | 'reading'
     | 'writing'
+    | 'lesson'
     | 'vocabulary';
 
 class AssignmentsService {

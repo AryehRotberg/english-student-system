@@ -2,7 +2,7 @@ export type DailyTask = {
     id: string;
     title: string;
     description: string;
-    category: 'quiz' | 'reading' | 'writing' | 'vocabulary';
+    category: 'quiz' | 'reading' | 'writing' | 'vocabulary' | 'lesson';
 };
 
 export type AssignmentTopic = {
@@ -11,7 +11,7 @@ export type AssignmentTopic = {
     assignmentTitle: string;
     assignmentDescription: string;
     topicTitle: string;
-    contentType: 'quiz' | 'reading' | 'writing' | 'vocabulary';
+    contentType: 'quiz' | 'reading' | 'writing' | 'vocabulary' | 'lesson';
     contentId: string;
     subjectId: string | null;
 };

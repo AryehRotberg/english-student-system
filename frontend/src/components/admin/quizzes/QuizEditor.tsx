@@ -17,6 +17,7 @@ import { levelName } from '../../../utils/subjects';
 import { QuestionForm } from '../QuestionForm';
 import { QuestionBankPicker } from './QuestionBankPicker';
 import { QuizForm } from './QuizForm';
+import { QuizLessons } from './QuizLessons';
 import { QuizQuestionItem } from './QuizQuestionItem';
 import styles from './QuizEditor.module.css';
 
@@ -324,6 +325,8 @@ export function QuizEditor({ quizId, justCreated = false, onBack }: Props) {
                     </div>
                 )}
             </section>
+
+            <QuizLessons quiz={quiz} />
         </div>
     );
 }

@@ -6,6 +6,8 @@ import { useAuth } from './contexts/AuthContext';
 import { AdminPage } from './pages/Admin/AdminPage';
 import { AssignmentsPage } from './pages/Assignments/AssignmentsPage';
 import { DashboardPage } from './pages/Dashboard/DashboardPage';
+import { LessonPage } from './pages/Lessons/LessonPage';
+import { LessonsPage } from './pages/Lessons/LessonsPage';
 import { LoginPage } from './pages/Login/LoginPage';
 import { PracticePage } from './pages/Practice/PracticePage';
 import { QuizPage } from './pages/Quiz/QuizPage';
@@ -91,6 +93,22 @@ function App() {
                 element={
                     <ProtectedPage>
                         <AssignmentsPage />
+                    </ProtectedPage>
+                }
+            />
+            <Route
+                path="/lessons"
+                element={
+                    <ProtectedPage>
+                        <LessonsPage />
+                    </ProtectedPage>
+                }
+            />
+            <Route
+                path="/lessons/:lessonId"
+                element={
+                    <ProtectedPage>
+                        <LessonPage />
                     </ProtectedPage>
                 }
             />

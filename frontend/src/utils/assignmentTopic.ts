@@ -45,6 +45,10 @@ export function assignmentContentRoute(
         return `/reading/${contentId}`;
     }
 
+    if (contentType === 'lesson') {
+        return `/lessons/${contentId}`;
+    }
+
     if (contentType === 'vocabulary') {
         return `/vocab?topicId=${contentId}`;
     }

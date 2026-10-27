@@ -1,5 +1,6 @@
 export type AdminTab =
     | 'subjects'
+    | 'lessons'
     | 'quizzes'
     | 'readings'
     | 'vocabulary'
@@ -89,6 +90,25 @@ function BookOpenIcon() {
     );
 }
 
+function PresentationIcon() {
+    return (
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+        </svg>
+    );
+}
+
 function BarChartIcon() {
     return (
         <svg
@@ -174,6 +194,13 @@ export const adminTabs: TabDef[] = [
         description:
             'Levels for each subject and the syllabus topic tree (e.g. Calculus › Derivatives).',
         icon: layersIcon,
+    },
+    {
+        id: 'lessons',
+        label: 'Lessons',
+        description:
+            'Lessons per topic: Markdown text, PDF slide decks and interactive HTML pages. Link them to quizzes from the quiz editor.',
+        icon: <PresentationIcon />,
     },
     {
         id: 'quizzes',

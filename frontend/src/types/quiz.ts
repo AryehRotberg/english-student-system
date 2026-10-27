@@ -46,7 +46,11 @@ export type QuizSummary = {
 export type QuizStudyGuide = {
     id: string;
     topic: string;
+    // Null for guides without their own title; show topic instead.
+    title: string | null;
     explanation: string;
+    // Uploaded PDFs and HTML pages, shown on the full lesson page.
+    materialCount: number;
 };
 
 export type QuizQuestion = {

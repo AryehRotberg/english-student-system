@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { adminTabs } from '../../admin/admin-tabs';
@@ -17,21 +17,46 @@ import { LanguageToggle } from '../LanguageToggle';
 import styles from './Navbar.module.css';
 
 type NavLinkDef = { labelKey: string; to: string };
+type NavGroupDef = { labelKey: string; links: NavLinkDef[] };
+type NavItemDef = NavLinkDef | NavGroupDef;
 
-// Reading, practice and vocabulary are English-only; the other subjects work
-// through quizzes and exams.
-const englishLinks: NavLinkDef[] = [
+function isGroup(item: NavItemDef): item is NavGroupDef {
+    return 'links' in item;
+}
+
+function isPathActive(pathname: string, to: string) {
+    return to === '/'
+        ? pathname === '/'
+        : pathname === to || pathname.startsWith(`${to}/`);
+}
+
+// Reading, exercises and vocabulary are English-only, so English gets two
+// menus to keep the header short; the other subjects work through lessons,
+// quizzes and exams.
+const englishLinks: NavItemDef[] = [
     { labelKey: 'nav.dashboard', to: '/' },
     { labelKey: 'nav.assignments', to: '/assignments' },
-    { labelKey: 'nav.reading', to: '/reading' },
-    { labelKey: 'nav.practice', to: '/practice' },
-    { labelKey: 'nav.vocab', to: '/vocab' },
-    { labelKey: 'nav.quiz', to: '/quiz' },
+    {
+        labelKey: 'nav.learn',
+        links: [
+            { labelKey: 'nav.lessons', to: '/lessons' },
+            { labelKey: 'nav.reading', to: '/reading' },
+            { labelKey: 'nav.vocab', to: '/vocab' },
+        ],
+    },
+    {
+        labelKey: 'nav.practice',
+        links: [
+            { labelKey: 'nav.exercises', to: '/practice' },
+            { labelKey: 'nav.quiz', to: '/quiz' },
+        ],
+    },
 ];
 
-const subjectLinks: NavLinkDef[] = [
+const subjectLinks: NavItemDef[] = [
     { labelKey: 'nav.dashboard', to: '/' },
     { labelKey: 'nav.assignments', to: '/assignments' },
+    { labelKey: 'nav.lessons', to: '/lessons' },
     { labelKey: 'nav.exams', to: '/quiz' },
 ];
 
@@ -66,6 +91,85 @@ function BellIcon({ muted }: { muted: boolean }) {
                 </>
             )}
         </svg>
+    );
+}
+
+function NavDropdown({ group }: { group: NavGroupDef }) {
+    const { t } = useTranslation();
+    const location = useLocation();
+    const [open, setOpen] = useState(false);
+    const rootRef = useRef<HTMLDivElement>(null);
+    const isActive = group.links.some((link) =>
+        isPathActive(location.pathname, link.to),
+    );
+
+    // Choosing an item, clicking elsewhere or pressing Escape closes the menu.
+    useEffect(() => {
+        if (!open) return;
+        const onPointerDown = (event: PointerEvent) => {
+            if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+        };
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setOpen(false);
+        };
+        document.addEventListener('pointerdown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('pointerdown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
+    }, [open]);
+
+    return (
+        <div className={styles.dropdown} ref={rootRef}>
+            <button
+                type="button"
+                className={[
+                    styles.link,
+                    styles.dropdownButton,
+                    isActive ? styles.active : '',
+                ]
+                    .filter(Boolean)
+                    .join(' ')}
+                aria-expanded={open}
+                aria-haspopup="true"
+                onClick={() => setOpen((value) => !value)}
+            >
+                {t(group.labelKey)}
+                <svg
+                    className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                >
+                    <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    />
+                </svg>
+            </button>
+            {open && (
+                <div className={styles.dropdownMenu}>
+                    {group.links.map((link) => (
+                        <NavLink
+                            key={link.to}
+                            to={link.to}
+                            className={({ isActive: linkActive }) =>
+                                linkActive
+                                    ? `${styles.dropdownItem} ${styles.dropdownItemActive}`
+                                    : styles.dropdownItem
+                            }
+                            onClick={() => setOpen(false)}
+                        >
+                            {t(link.labelKey)}
+                        </NavLink>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -189,19 +293,23 @@ export function Navbar({ sticky = true }: NavbarProps) {
 
                 <nav className={styles.nav} aria-label={t('nav.primary')}>
                     {user?.role !== 'teacher' &&
-                        links.map((link) => (
-                            <NavLink
-                                key={link.to}
-                                to={link.to}
-                                className={({ isActive }) =>
-                                    isActive
-                                        ? `${styles.link} ${styles.active}`
-                                        : styles.link
-                                }
-                            >
-                                {t(link.labelKey)}
-                            </NavLink>
-                        ))}
+                        links.map((item) =>
+                            isGroup(item) ? (
+                                <NavDropdown key={item.labelKey} group={item} />
+                            ) : (
+                                <NavLink
+                                    key={item.to}
+                                    to={item.to}
+                                    className={({ isActive }) =>
+                                        isActive
+                                            ? `${styles.link} ${styles.active}`
+                                            : styles.link
+                                    }
+                                >
+                                    {t(item.labelKey)}
+                                </NavLink>
+                            ),
+                        )}
                 </nav>
 
                 <div className={styles.actions}>
@@ -311,21 +419,41 @@ export function Navbar({ sticky = true }: NavbarProps) {
                     )}
 
                     <nav className={styles.mobileNav} aria-label={t('nav.menu')}>
+                        {/* The drawer has room, so menus become labelled sections. */}
                         {user?.role !== 'teacher' &&
-                            links.map((link) => (
-                                <NavLink
-                                    key={`mobile-${link.to}`}
-                                    to={link.to}
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? `${styles.mobileLink} ${styles.mobileActive}`
-                                            : styles.mobileLink
-                                    }
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    {t(link.labelKey)}
-                                </NavLink>
-                            ))}
+                            links.flatMap((item) =>
+                                (isGroup(item)
+                                    ? [
+                                          <p
+                                              key={`mobile-group-${item.labelKey}`}
+                                              className={styles.mobileGroupLabel}
+                                          >
+                                              {t(item.labelKey)}
+                                          </p>,
+                                          ...item.links,
+                                      ]
+                                    : [item]
+                                ).map((entry) =>
+                                    'to' in entry ? (
+                                        <NavLink
+                                            key={`mobile-${entry.to}`}
+                                            to={entry.to}
+                                            className={({ isActive }) =>
+                                                isActive
+                                                    ? `${styles.mobileLink} ${styles.mobileActive}`
+                                                    : styles.mobileLink
+                                            }
+                                            onClick={() =>
+                                                setIsMobileMenuOpen(false)
+                                            }
+                                        >
+                                            {t(entry.labelKey)}
+                                        </NavLink>
+                                    ) : (
+                                        entry
+                                    ),
+                                ),
+                            )}
 
                         {user?.role === 'teacher' &&
                             adminTabs.map((tab) => (
