@@ -1,0 +1,138 @@
+.toolbarGroup {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.modeToggle {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    overflow: hidden;
+}
+
+.modeButton {
+    background: var(--surface-0);
+    border: none;
+    color: var(--ink-700);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    padding: var(--space-2) var(--space-3);
+}
+
+.modeButtonActive {
+    background: var(--ink-900);
+    color: var(--surface-0);
+}
+
+.slides {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    outline: none;
+}
+
+.slides:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--brand-400);
+}
+
+/* The slide fills this box at its own proportions, letterboxed if needed. */
+.stage {
+    align-items: center;
+    background: var(--surface-2);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    max-height: 75vh;
+    padding: var(--space-3);
+    touch-action: pan-y;
+    width: 100%;
+}
+
+.stageFull {
+    flex: 1;
+    max-height: none;
+    min-height: 0;
+}
+
+.page {
+    background: #ffffff;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+
+.canvas {
+    display: block;
+    height: 100%;
+    width: 100%;
+}
+
+.nav {
+    align-items: center;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+    padding: var(--space-2) var(--space-4);
+}
+
+.navButton {
+    align-items: center;
+    background: var(--surface-0);
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    color: var(--ink-900);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.25rem;
+    height: 2.25rem;
+    justify-content: center;
+    line-height: 1;
+    width: 2.25rem;
+}
+
+.navButton:hover:not(:disabled) {
+    border-color: var(--brand-400);
+    color: var(--brand-700);
+}
+
+.navButton:disabled {
+    cursor: default;
+    opacity: 0.4;
+}
+
+.counter {
+    color: var(--ink-700);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    min-width: 5rem;
+    text-align: center;
+}
+
+/* Worksheets and scans: a scrolling column of pages. */
+.docScroll {
+    /* safe: a zoomed page wider than the column stays scrollable to its left edge. */
+    align-items: safe center;
+    background: var(--surface-2);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    height: min(80vh, 1000px);
+    overflow: auto;
+    padding: var(--space-4);
+}
+
+.docScrollFull {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+}
+
+.lazyPage {
+    flex-shrink: 0;
+}

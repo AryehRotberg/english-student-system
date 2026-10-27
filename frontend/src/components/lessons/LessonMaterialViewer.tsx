@@ -1,8 +1,20 @@
-import { useEffect, useState } from 'react';
+import {
+    Component,
+    lazy,
+    Suspense,
+    useCallback,
+    useEffect,
+    useState,
+    type ReactNode,
+} from 'react';
 import { useTranslation } from 'react-i18next';
+import { PDF_VIEWER } from '../../config/lessons';
 import { useLessonHtml } from '../../hooks/queries';
 import type { LessonMaterial } from '../../types/lesson';
 import styles from './LessonMaterialViewer.module.css';
+
+// Split into its own chunk with pdf.js; nothing is downloaded until a PDF opens.
+const PdfDeckViewer = lazy(() => import('./pdf/PdfDeckViewer'));
 
 // Teacher-authored pages run their own scripts. Without allow-same-origin the
 // frame gets an opaque origin: its scripts work, but it cannot read the app's
@@ -24,10 +36,53 @@ export function LessonMaterialViewer({ material }: Props) {
     return material.kind === 'html' ? (
         <HtmlMaterial material={material} url={material.url} />
     ) : (
-        <NativePdf material={material} url={material.url} />
+        <PdfMaterial material={material} url={material.url} />
     );
 }
 
+// Slides/pages viewer (pdf.js) by default. Any failure, from the chunk not
+// loading to a file pdf.js cannot open, drops back to the browser's viewer.
+function PdfMaterial({ material, url }: { material: LessonMaterial; url: string }) {
+    const { t } = useTranslation();
+    const [failed, setFailed] = useState(PDF_VIEWER === 'native');
+    const fail = useCallback((error: unknown) => {
+        console.warn('PDF slides viewer failed; using the browser viewer.', error);
+        setFailed(true);
+    }, []);
+
+    if (failed) {
+        return <NativePdf material={material} url={url} />;
+    }
+
+    return (
+        <FallbackBoundary onError={fail}>
+            <Suspense fallback={<p className={styles.notice}>{t('lessons.loadingFile')}</p>}>
+                <PdfDeckViewer url={url} title={material.title} onFail={fail} />
+            </Suspense>
+        </FallbackBoundary>
+    );
+}
+
+class FallbackBoundary extends Component<
+    { onError: (error: unknown) => void; children: ReactNode },
+    { hasError: boolean }
+> {
+    state = { hasError: false };
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: unknown) {
+        this.props.onError(error);
+    }
+
+    render() {
+        return this.state.hasError ? null : this.props.children;
+    }
+}
+
+// The browser's own PDF viewer in a frame: the original viewer, and the fallback.
 function NativePdf({ material, url }: { material: LessonMaterial; url: string }) {
     const { t } = useTranslation();
 
