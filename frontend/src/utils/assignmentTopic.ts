@@ -53,5 +53,6 @@ export function assignmentContentRoute(
         return `/vocab?topicId=${contentId}`;
     }
 
-    return '/practice';
+    // Writing tasks have no page of their own; they live with the assignment.
+    return '/assignments';
 }

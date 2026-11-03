@@ -111,7 +111,8 @@
     border-radius: var(--radius-sm);
     color: var(--brand-700);
     cursor: pointer;
-    font-weight: 700;
+    /* Same weight as the text around it; the tint and underline mark it. */
+    font-weight: inherit;
     padding: 0 3px;
     text-decoration: none;
     transition: background var(--dur) var(--ease-out);

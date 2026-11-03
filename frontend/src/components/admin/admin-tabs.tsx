@@ -8,8 +8,17 @@ export type AdminTab =
     | 'grading'
     | 'pending-students';
 
+// Sidebar sections: who you teach, and what you teach with.
+export type AdminTabGroup = 'people' | 'content';
+
+export const adminTabGroups: { id: AdminTabGroup; label: string }[] = [
+    { id: 'people', label: 'People' },
+    { id: 'content', label: 'Content' },
+];
+
 export interface TabDef {
     id: AdminTab;
+    group: AdminTabGroup;
     label: string;
     description: string;
     icon: React.ReactNode;
@@ -169,13 +178,15 @@ function PenIcon() {
 export const adminTabs: TabDef[] = [
     {
         id: 'pending-students',
-        label: 'Pending Approvals',
+        group: 'people',
+        label: 'Pending approvals',
         description:
             'Review and approve students who have registered and are waiting for access.',
         icon: <UserCheckIcon />,
     },
     {
         id: 'students',
+        group: 'people',
         label: 'Students',
         description:
             'Manage individual students — view progress, assignments, and account details.',
@@ -183,6 +194,7 @@ export const adminTabs: TabDef[] = [
     },
     {
         id: 'grading',
+        group: 'people',
         label: 'Grading',
         description:
             'Grade submitted attempts on teacher-graded quizzes and finalize scores.',
@@ -190,13 +202,15 @@ export const adminTabs: TabDef[] = [
     },
     {
         id: 'subjects',
-        label: 'Subjects & Topics',
+        group: 'content',
+        label: 'Subjects & topics',
         description:
             'Levels for each subject and the syllabus topic tree (e.g. Calculus › Derivatives).',
         icon: layersIcon,
     },
     {
         id: 'lessons',
+        group: 'content',
         label: 'Lessons',
         description:
             'Lessons per topic: Markdown text, PDF slide decks and interactive HTML pages. Link them to quizzes from the quiz editor.',
@@ -204,6 +218,7 @@ export const adminTabs: TabDef[] = [
     },
     {
         id: 'quizzes',
+        group: 'content',
         label: 'Quizzes',
         description:
             'Create quizzes and exams and write their questions in one place: formulas, diagrams, "answer N of M" exams and a reusable question bank.',
@@ -211,14 +226,24 @@ export const adminTabs: TabDef[] = [
     },
     {
         id: 'readings',
+        group: 'content',
         label: 'Readings',
         description: 'Manage reading texts used across lessons and quizzes.',
         icon: <FileTextIcon />,
     },
     {
         id: 'vocabulary',
+        group: 'content',
         label: 'Vocabulary',
         description: 'Manage vocabulary topics and words with audio support.',
         icon: <BookOpenIcon />,
     },
 ];
+
+/** The tab a `?tab=` value opens; unknown and missing values fall back. */
+export function resolveAdminTab(rawTab: string | null): AdminTab {
+    // Questions and Quiz Builder were merged into Quizzes; keep old links working.
+    const requested =
+        rawTab === 'questions' || rawTab === 'quiz-builder' ? 'quizzes' : rawTab;
+    return adminTabs.find((tab) => tab.id === requested)?.id ?? 'pending-students';
+}

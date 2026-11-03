@@ -1,127 +1,244 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import {
+    CatalogEmpty,
+    CatalogGroup,
+    CatalogHero,
+    DuePill,
+    SearchField,
+} from '../../components/hub/Catalog';
+import styles from '../../components/hub/Catalog.module.css';
+import { ContentTypeTile } from '../../components/hub/ContentTile';
+import {
+    ArrowForwardIcon,
+    ChevronForwardIcon,
+    ListIcon,
+} from '../../components/hub/icons';
+import { toneClass } from '../../components/hub/tones';
 import { useCurrentSubject } from '../../contexts/subject-context';
 import { useLessons } from '../../hooks/queries';
+import { byAssignedDue, useAssignedContent } from '../../hooks/useAssignedContent';
+import type { LessonSummary } from '../../types/lesson';
 import { lessonTitle } from '../../types/lesson';
-// Same cards, search box and button as the quiz list.
-import styles from '../QuizList/QuizListPage.module.css';
+import { isPastDue } from '../../utils/assignments';
+import { subjectName } from '../../utils/subjects';
+
+function FileCount({ lesson }: { lesson: LessonSummary }) {
+    const { t } = useTranslation();
+
+    if (lesson.materialCount === 0) return <span />;
+
+    return (
+        <div className={styles.facts}>
+            <span className={styles.fact}>
+                <ListIcon size={15} />
+                {t('lessons.files', { count: lesson.materialCount })}
+            </span>
+        </div>
+    );
+}
 
 export function LessonsPage() {
-    const { t } = useTranslation();
-    const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const { currentSubject } = useCurrentSubject();
     const [filterQuery, setFilterQuery] = useState('');
+    const [topicFilter, setTopicFilter] = useState('');
     const { data: lessons = [], isLoading } = useLessons(
         currentSubject?.id,
         Boolean(currentSubject),
     );
+    const dueByLesson = useAssignedContent('lesson');
 
-    // The API sorts by topic in syllabus order, then by the lesson's own order.
+    // The API sorts by topic in syllabus order, then by the lesson's own
+    // order, so first appearance keeps the syllabus order here too.
+    const topics = [
+        ...new Map(lessons.map((l) => [l.topicId, l.topicName])).entries(),
+    ];
+
     const query = filterQuery.trim().toLowerCase();
-    const filtered = query
-        ? lessons.filter(
-              (lesson) =>
-                  lessonTitle(lesson).toLowerCase().includes(query) ||
-                  lesson.topicName.toLowerCase().includes(query),
-          )
-        : lessons;
+    const shown = lessons.filter(
+        (lesson) =>
+            (!topicFilter || lesson.topicId === topicFilter) &&
+            (!query ||
+                lessonTitle(lesson).toLowerCase().includes(query) ||
+                lesson.topicName.toLowerCase().includes(query)),
+    );
+    const assigned = shown
+        .filter((lesson) => dueByLesson.has(lesson.id))
+        .sort(byAssignedDue(dueByLesson));
+    const library = shown.filter((lesson) => !dueByLesson.has(lesson.id));
+    const totalAssigned = lessons.filter((lesson) =>
+        dueByLesson.has(lesson.id),
+    ).length;
+    const isFiltered = Boolean(query || topicFilter);
+
+    const clearFilters = () => {
+        setFilterQuery('');
+        setTopicFilter('');
+    };
 
     return (
         <div className={styles.page}>
-            <section className={styles.content}>
-                <div className={styles.introRow}>
-                    <div>
-                        <h1 className={styles.heading}>{t('lessons.heading')}</h1>
-                        <p className={styles.subtitle}>{t('lessons.subtitle')}</p>
-                    </div>
-                    <div className={styles.filters}>
-                        <div className={styles.filterWrap}>
-                            <svg
-                                className={styles.filterIcon}
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                width="18"
-                                height="18"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                />
-                            </svg>
-                            <input
-                                className={styles.filterInput}
-                                type="search"
-                                placeholder={t('lessons.filterTitle')}
-                                value={filterQuery}
-                                onChange={(e) => setFilterQuery(e.target.value)}
-                                aria-label={t('lessons.filterTitleAria')}
-                            />
-                        </div>
-                    </div>
-                </div>
+            <CatalogHero
+                id="lessons-heading"
+                breadcrumb={
+                    currentSubject && (
+                        <>
+                            {t('nav.learn')} <span aria-hidden="true">/</span>{' '}
+                            {subjectName(currentSubject, i18n.language)}
+                        </>
+                    )
+                }
+                title={t('lessons.heading')}
+                subtitle={t('lessons.subtitle')}
+                stats={[
+                    { label: t('catalog.statAssigned'), value: totalAssigned },
+                    { label: t('lessons.statLessons'), value: lessons.length },
+                ]}
+            />
 
-                {filtered.length > 0 ? (
-                    <div className={styles.grid}>
-                        {filtered.map((lesson) => (
-                            <article className={styles.card} key={lesson.id}>
-                                <div className={styles.badges}>
-                                    <span
-                                        className={`${styles.badge} ${styles.cat_custom}`}
-                                        dir="auto"
-                                    >
-                                        {lesson.topicName}
-                                    </span>
-                                    {lesson.materialCount > 0 && (
-                                        <span className={styles.badge}>
-                                            {t('lessons.files', {
-                                                count: lesson.materialCount,
-                                            })}
-                                        </span>
-                                    )}
-                                </div>
-                                <h3 className={styles.title} dir="auto">
-                                    {lessonTitle(lesson)}
-                                </h3>
-                                <p className={styles.description} />
-
-                                <button
-                                    className={styles.cta}
-                                    onClick={() => navigate(`/lessons/${lesson.id}`)}
-                                    type="button"
-                                >
-                                    <svg
-                                        className={styles.ctaIcon}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        viewBox="0 0 24 24"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                                    </svg>
-                                    {t('lessons.open')}
-                                </button>
-                            </article>
-                        ))}
-                    </div>
-                ) : (
-                    <div className={styles.emptyWrap}>
-                        <p className={styles.empty}>
-                            {isLoading
-                                ? t('common.loading')
-                                : query
-                                  ? t('lessons.noMatch')
-                                  : t('lessons.none')}
-                        </p>
+            <div className={styles.filterBar} role="search">
+                <SearchField
+                    value={filterQuery}
+                    onChange={setFilterQuery}
+                    placeholder={t('lessons.filterTitle')}
+                    ariaLabel={t('lessons.filterTitleAria')}
+                />
+                {topics.length > 1 && (
+                    <div className={styles.selectField}>
+                        <label htmlFor="lesson-topic" className={styles.selectLabel}>
+                            {t('lessons.topic')}
+                        </label>
+                        <select
+                            id="lesson-topic"
+                            className={styles.select}
+                            value={topicFilter}
+                            onChange={(e) => setTopicFilter(e.target.value)}
+                        >
+                            <option value="">{t('lessons.allTopics')}</option>
+                            {topics.map(([id, name]) => (
+                                <option key={id} value={id}>
+                                    {name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 )}
-            </section>
+            </div>
+
+            {assigned.length > 0 && (
+                <CatalogGroup
+                    id="assigned-lessons-heading"
+                    title={t('catalog.assignedHeading')}
+                    countLabel={t('lessons.count', { count: assigned.length })}
+                >
+                    <div className={styles.assignedGrid}>
+                        {assigned.map((lesson) => {
+                            const due = dueByLesson.get(lesson.id) ?? null;
+                            const title = lessonTitle(lesson);
+
+                            return (
+                                <article key={lesson.id} className={styles.assignedCard}>
+                                    <div className={styles.cardTop}>
+                                        <div className={styles.homework}>
+                                            <ContentTypeTile type="lesson" size="sm" />
+                                            <span className={styles.homeworkLabel}>
+                                                {t('catalog.homework')}
+                                            </span>
+                                        </div>
+                                        {due && (
+                                            <DuePill due={due} overdue={isPastDue(due)} />
+                                        )}
+                                    </div>
+                                    <div className={styles.cardText}>
+                                        <h3 className={styles.assignedTitle} dir="auto">
+                                            {title}
+                                        </h3>
+                                        {title !== lesson.topicName && (
+                                            <p className={styles.description} dir="auto">
+                                                {lesson.topicName}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className={styles.assignedFoot}>
+                                        <FileCount lesson={lesson} />
+                                        <Link
+                                            to={`/lessons/${lesson.id}`}
+                                            className={styles.primaryButton}
+                                            aria-label={t('lessons.openAria', { title })}
+                                        >
+                                            {t('lessons.open')}
+                                            <ArrowForwardIcon className={styles.flipRtl} />
+                                        </Link>
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                </CatalogGroup>
+            )}
+
+            <CatalogGroup
+                id="all-lessons-heading"
+                title={t('lessons.libraryHeading')}
+                countLabel={t('lessons.count', { count: library.length })}
+            >
+                {library.length > 0 ? (
+                    <div className={styles.libraryGrid}>
+                        {library.map((lesson) => {
+                            const title = lessonTitle(lesson);
+
+                            return (
+                                <article key={lesson.id} className={styles.libraryCard}>
+                                    <div className={styles.cardTop}>
+                                        <ContentTypeTile type="lesson" />
+                                        <div className={styles.badges}>
+                                            <span
+                                                className={`${styles.badge} ${toneClass.rose}`}
+                                                dir="auto"
+                                            >
+                                                {lesson.topicName}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className={styles.cardText}>
+                                        <h3 className={styles.libraryTitle} dir="auto">
+                                            {title}
+                                        </h3>
+                                    </div>
+                                    <div className={styles.libraryFoot}>
+                                        <FileCount lesson={lesson} />
+                                        <Link
+                                            to={`/lessons/${lesson.id}`}
+                                            className={styles.softButton}
+                                            aria-label={t('lessons.openAria', { title })}
+                                        >
+                                            {t('lessons.openShort')}
+                                            <ChevronForwardIcon
+                                                size={16}
+                                                className={styles.flipRtl}
+                                            />
+                                        </Link>
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                ) : assigned.length > 0 ? (
+                    <p className={styles.groupEmpty}>{t('lessons.allAssigned')}</p>
+                ) : isLoading ? (
+                    <p className={styles.groupEmpty} role="status">
+                        {t('common.loading')}
+                    </p>
+                ) : (
+                    <CatalogEmpty
+                        title={isFiltered ? t('lessons.noMatch') : t('lessons.none')}
+                        hint={isFiltered ? t('lessons.noMatchHint') : undefined}
+                        onClear={isFiltered ? clearFilters : undefined}
+                    />
+                )}
+            </CatalogGroup>
         </div>
     );
 }

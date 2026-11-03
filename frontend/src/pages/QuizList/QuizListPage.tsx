@@ -1,11 +1,29 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import {
+    CatalogEmpty,
+    CatalogGroup,
+    CatalogHero,
+    DuePill,
+    SearchField,
+} from '../../components/hub/Catalog';
+import styles from '../../components/hub/Catalog.module.css';
+import { QuizCategoryTile } from '../../components/hub/ContentTile';
+import {
+    ArrowForwardIcon,
+    ChecklistIcon,
+    ChevronForwardIcon,
+    ClockIcon,
+    UserIcon,
+} from '../../components/hub/icons';
+import { quizCategoryTone, toneClass } from '../../components/hub/tones';
 import { useCurrentSubject } from '../../contexts/subject-context';
 import { useQuizzes } from '../../hooks/queries';
-import type { QuizCategory } from '../../types/quiz';
-import { levelName } from '../../utils/subjects';
-import styles from './QuizListPage.module.css';
+import { byAssignedDue, useAssignedContent } from '../../hooks/useAssignedContent';
+import type { QuizCategory, QuizSummary } from '../../types/quiz';
+import { isPastDue } from '../../utils/assignments';
+import { levelName, subjectName } from '../../utils/subjects';
 
 const CATEGORIES: QuizCategory[] = [
     'grammar',
@@ -15,9 +33,41 @@ const CATEGORIES: QuizCategory[] = [
     'custom',
 ];
 
-export function QuizListPage() {
+function QuizFacts({ quiz }: { quiz: QuizSummary }) {
     const { t } = useTranslation();
-    const navigate = useNavigate();
+
+    return (
+        <div className={styles.facts}>
+            {quiz.timeLimitMinutes && (
+                <span className={styles.fact}>
+                    <ClockIcon size={15} />
+                    {t('quizList.timeLimit', {
+                        minutes: quiz.timeLimitMinutes,
+                    })}
+                </span>
+            )}
+            {quiz.questionsToAnswer && (
+                <span className={styles.fact}>
+                    <ChecklistIcon size={15} />
+                    {t('quizList.answerNofM', {
+                        count: quiz.questionsToAnswer,
+                    })}
+                </span>
+            )}
+            {quiz.gradingMode === 'teacher' ? (
+                <span className={styles.fact}>
+                    <UserIcon size={15} />
+                    {t('quizList.teacherGraded')}
+                </span>
+            ) : (
+                <span className={styles.fact}>{t('quizList.selfChecked')}</span>
+            )}
+        </div>
+    );
+}
+
+export function QuizListPage() {
+    const { t, i18n } = useTranslation();
     const { currentSubject, currentLevel, isEnglish } = useCurrentSubject();
     const [filterQuery, setFilterQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState<QuizCategory | ''>('');
@@ -26,189 +76,253 @@ export function QuizListPage() {
         currentLevel?.id ?? '',
     );
 
-    const { data: quizzes = [] } = useQuizzes({
-        ...(currentSubject && { subjectId: currentSubject.id }),
+    const subjectFilter = currentSubject ? { subjectId: currentSubject.id } : {};
+    const { data: allQuizzes = [] } = useQuizzes(subjectFilter);
+    const { data: quizzes = [], isLoading } = useQuizzes({
+        ...subjectFilter,
         ...(isEnglish && categoryFilter && { category: categoryFilter }),
         ...(levelFilter && { levelId: levelFilter }),
     });
+    const dueByQuiz = useAssignedContent('quiz');
 
-    const filtered = filterQuery.trim()
-        ? quizzes.filter((q) =>
-              q.title.toLowerCase().includes(filterQuery.toLowerCase()),
-          )
+    const term = filterQuery.trim().toLowerCase();
+    const shown = term
+        ? quizzes.filter((q) => q.title.toLowerCase().includes(term))
         : quizzes;
+    const assigned = shown
+        .filter((quiz) => dueByQuiz.has(quiz.id))
+        .sort(byAssignedDue(dueByQuiz));
+    const library = shown.filter((quiz) => !dueByQuiz.has(quiz.id));
+    const totalAssigned = allQuizzes.filter((quiz) =>
+        dueByQuiz.has(quiz.id),
+    ).length;
+    const isFiltered = Boolean(term || categoryFilter || levelFilter);
+    const levels = currentSubject?.levels ?? [];
 
-    const hasActiveFilter = filterQuery.trim() || categoryFilter || levelFilter;
+    const clearFilters = () => {
+        setFilterQuery('');
+        setCategoryFilter('');
+        setLevelFilter('');
+    };
 
     return (
         <div className={styles.page}>
-            <section className={styles.content}>
-                <div className={styles.introRow}>
-                    <div>
-                        <h1 className={styles.heading}>
-                            {isEnglish
-                                ? t('quizList.heading')
-                                : t('quizList.headingExams')}
-                        </h1>
-                        <p className={styles.subtitle}>
-                            {t('quizList.subtitle')}
-                        </p>
-                    </div>
-                    <div className={styles.filters}>
-                        <div className={styles.filterWrap}>
-                            <svg
-                                className={styles.filterIcon}
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                width="18"
-                                height="18"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                />
-                            </svg>
-                            <input
-                                className={styles.filterInput}
-                                type="search"
-                                placeholder={t('quizList.filterTitle')}
-                                value={filterQuery}
-                                onChange={(e) => setFilterQuery(e.target.value)}
-                                aria-label={t('quizList.filterTitleAria')}
-                            />
-                        </div>
-                        {isEnglish && (
-                            <select
-                                className={styles.filterSelect}
-                                value={categoryFilter}
-                                onChange={(e) =>
-                                    setCategoryFilter(
-                                        e.target.value as QuizCategory | '',
-                                    )
-                                }
-                                aria-label={t('quizList.categoryAria')}
-                            >
-                                <option value="">
-                                    {t('quizList.allCategories')}
-                                </option>
-                                {CATEGORIES.map((category) => (
-                                    <option key={category} value={category}>
-                                        {t(`quizList.categories.${category}`)}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                        {currentSubject && currentSubject.levels.length > 0 && (
-                            <select
-                                className={styles.filterSelect}
-                                value={levelFilter}
-                                onChange={(e) => setLevelFilter(e.target.value)}
-                                aria-label={t('quizList.levelAria')}
-                            >
-                                <option value="">
-                                    {t('quizList.allLevels')}
-                                </option>
-                                {currentSubject.levels.map((level) => (
-                                    <option key={level.id} value={level.id}>
-                                        {level.name}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </div>
-                </div>
+            <CatalogHero
+                id="quiz-page-heading"
+                breadcrumb={
+                    currentSubject && (
+                        <>
+                            {t('nav.practice')} <span aria-hidden="true">/</span>{' '}
+                            {subjectName(currentSubject, i18n.language)}
+                        </>
+                    )
+                }
+                title={
+                    isEnglish
+                        ? t('quizList.heading')
+                        : t('quizList.headingExams')
+                }
+                subtitle={t('quizList.subtitle')}
+                stats={[
+                    { label: t('catalog.statAssigned'), value: totalAssigned },
+                    {
+                        label: t('quizList.statAvailable'),
+                        value: allQuizzes.length,
+                    },
+                ]}
+            />
 
-                {filtered.length > 0 ? (
-                    <div className={styles.grid}>
-                        {filtered.map((quiz) => {
-                            const level = levelName(
-                                currentSubject,
-                                quiz.levelId,
-                            );
+            <div className={styles.filterBar} role="search">
+                <SearchField
+                    value={filterQuery}
+                    onChange={setFilterQuery}
+                    placeholder={t('quizList.filterTitle')}
+                    ariaLabel={t('quizList.filterTitleAria')}
+                />
+
+                {isEnglish && (
+                    <div
+                        className={styles.chips}
+                        role="group"
+                        aria-label={t('quizList.categoryAria')}
+                    >
+                        {(['', ...CATEGORIES] as const).map((category) => (
+                            <button
+                                key={category || 'all'}
+                                type="button"
+                                className={styles.chip}
+                                aria-pressed={categoryFilter === category}
+                                onClick={() => setCategoryFilter(category)}
+                            >
+                                {category && (
+                                    <span
+                                        aria-hidden="true"
+                                        className={`${styles.chipDot} ${styles[`dot_${quizCategoryTone[category]}`]}`}
+                                    />
+                                )}
+                                {category
+                                    ? t(`quizList.categories.${category}`)
+                                    : t('quizList.allCategories')}
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {levels.length > 0 && (
+                    <div className={styles.selectField}>
+                        <label htmlFor="quiz-level" className={styles.selectLabel}>
+                            {t('quizList.level')}
+                        </label>
+                        <select
+                            id="quiz-level"
+                            className={styles.select}
+                            value={levelFilter}
+                            onChange={(e) => setLevelFilter(e.target.value)}
+                        >
+                            <option value="">{t('quizList.allLevels')}</option>
+                            {levels.map((level) => (
+                                <option key={level.id} value={level.id}>
+                                    {level.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+            </div>
+
+            {assigned.length > 0 && (
+                <CatalogGroup
+                    id="assigned-heading"
+                    title={t('catalog.assignedHeading')}
+                    countLabel={t('quizList.count', { count: assigned.length })}
+                >
+                    <div className={styles.assignedGrid}>
+                        {assigned.map((quiz) => {
+                            const due = dueByQuiz.get(quiz.id) ?? null;
 
                             return (
-                                <article className={styles.card} key={quiz.id}>
-                                    <div className={styles.badges}>
-                                        {isEnglish && (
-                                            <span
-                                                className={`${styles.badge} ${styles[`cat_${quiz.category}`]}`}
-                                            >
-                                                {t(
-                                                    `quizList.categories.${quiz.category}`,
-                                                )}
+                                <article key={quiz.id} className={styles.assignedCard}>
+                                    <div className={styles.cardTop}>
+                                        <div className={styles.homework}>
+                                            <QuizCategoryTile
+                                                category={isEnglish ? quiz.category : null}
+                                                size="sm"
+                                            />
+                                            <span className={styles.homeworkLabel}>
+                                                {t('catalog.homework')}
                                             </span>
-                                        )}
-                                        {level && (
-                                            <span className={styles.badge}>
-                                                {level}
-                                            </span>
-                                        )}
-                                        {quiz.gradingMode === 'teacher' && (
-                                            <span className={styles.badge}>
-                                                {t('quizList.teacherGraded')}
-                                            </span>
-                                        )}
-                                        {quiz.questionsToAnswer && (
-                                            <span className={styles.badge}>
-                                                {t('quizList.answerNofM', {
-                                                    count: quiz.questionsToAnswer,
-                                                })}
-                                            </span>
-                                        )}
-                                        {quiz.timeLimitMinutes && (
-                                            <span className={styles.badge}>
-                                                {t('quizList.timeLimit', {
-                                                    minutes:
-                                                        quiz.timeLimitMinutes,
-                                                })}
-                                            </span>
+                                        </div>
+                                        {due && (
+                                            <DuePill due={due} overdue={isPastDue(due)} />
                                         )}
                                     </div>
-                                    <h3 className={styles.title} dir="auto">
-                                        {quiz.title}
-                                    </h3>
-                                    <p className={styles.description} dir="auto">
-                                        {quiz.description ||
-                                            t('quizList.noDescription')}
-                                    </p>
-
-                                    <button
-                                        className={styles.cta}
-                                        onClick={() =>
-                                            navigate(`/quiz/${quiz.id}`)
-                                        }
-                                        type="button"
-                                    >
-                                        <svg
-                                            className={styles.ctaIcon}
-                                            fill="currentColor"
-                                            viewBox="0 0 20 20"
-                                            aria-hidden="true"
+                                    <div className={styles.cardText}>
+                                        <h3 className={styles.assignedTitle} dir="auto">
+                                            {quiz.title}
+                                        </h3>
+                                        {quiz.description && (
+                                            <p className={styles.description} dir="auto">
+                                                {quiz.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className={styles.assignedFoot}>
+                                        <QuizFacts quiz={quiz} />
+                                        <Link
+                                            to={`/quiz/${quiz.id}`}
+                                            className={styles.primaryButton}
+                                            aria-label={t('quizList.startAria', {
+                                                title: quiz.title,
+                                            })}
                                         >
-                                            <path
-                                                fillRule="evenodd"
-                                                clipRule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                                            />
-                                        </svg>
-                                        {t('quizList.start')}
-                                    </button>
+                                            {t('quizList.start')}
+                                            <ArrowForwardIcon className={styles.flipRtl} />
+                                        </Link>
+                                    </div>
                                 </article>
                             );
                         })}
                     </div>
-                ) : (
-                    <div className={styles.emptyWrap}>
-                        <p className={styles.empty}>
-                            {hasActiveFilter
-                                ? t('quizList.noMatch')
-                                : t('quizList.none')}
-                        </p>
+                </CatalogGroup>
+            )}
+
+            <CatalogGroup
+                id="library-heading"
+                title={t('quizList.practiceHeading')}
+                countLabel={t('quizList.count', { count: library.length })}
+            >
+                {library.length > 0 ? (
+                    <div className={styles.libraryGrid}>
+                        {library.map((quiz) => {
+                            const level = levelName(currentSubject, quiz.levelId);
+
+                            return (
+                                <article key={quiz.id} className={styles.libraryCard}>
+                                    <div className={styles.cardTop}>
+                                        <QuizCategoryTile
+                                            category={isEnglish ? quiz.category : null}
+                                        />
+                                        <div className={styles.badges}>
+                                            {isEnglish && (
+                                                <span
+                                                    className={`${styles.badge} ${toneClass[quizCategoryTone[quiz.category]]}`}
+                                                >
+                                                    {t(`quizList.categories.${quiz.category}`)}
+                                                </span>
+                                            )}
+                                            {level && (
+                                                <span className={styles.levelBadge}>
+                                                    {level}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className={styles.cardText}>
+                                        <h3 className={styles.libraryTitle} dir="auto">
+                                            {quiz.title}
+                                        </h3>
+                                        {quiz.description && (
+                                            <p className={styles.descriptionSm} dir="auto">
+                                                {quiz.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className={styles.libraryFoot}>
+                                        <QuizFacts quiz={quiz} />
+                                        <Link
+                                            to={`/quiz/${quiz.id}`}
+                                            className={styles.softButton}
+                                            aria-label={t('quizList.startAria', {
+                                                title: quiz.title,
+                                            })}
+                                        >
+                                            {t('quizList.startShort')}
+                                            <ChevronForwardIcon
+                                                size={16}
+                                                className={styles.flipRtl}
+                                            />
+                                        </Link>
+                                    </div>
+                                </article>
+                            );
+                        })}
                     </div>
+                ) : assigned.length > 0 ? (
+                    <p className={styles.groupEmpty}>{t('quizList.allAssigned')}</p>
+                ) : isLoading ? (
+                    <p className={styles.groupEmpty} role="status">
+                        {t('common.loading')}
+                    </p>
+                ) : (
+                    <CatalogEmpty
+                        title={
+                            isFiltered ? t('quizList.noMatch') : t('quizList.none')
+                        }
+                        hint={isFiltered ? t('quizList.noMatchHint') : undefined}
+                        onClear={isFiltered ? clearFilters : undefined}
+                    />
                 )}
-            </section>
+            </CatalogGroup>
         </div>
     );
 }

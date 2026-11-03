@@ -1,27 +1,30 @@
-.appShell {
-    margin: 0 auto;
-    max-width: 1150px;
-    min-height: 100vh;
-    padding: 0 1rem 1.2rem;
+:root {
+    /* Height of the top bar; the sidebar sticks just below it. */
+    --topbar-h: 64px;
 }
 
-.adminShell {
+.appFrame {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding: 0 1rem;
 }
 
-.adminBody {
+.appBody {
     display: flex;
     flex: 1;
-    margin: 0 -1rem; /* bleed back to full width below the navbar */
+    min-width: 0;
 }
 
+/* Full width: the sidebar replaces the old centered column. */
 .appMain {
+    align-content: start;
     display: grid;
+    flex: 1;
     gap: 1rem;
-    padding: 1rem 0;
+    /* minmax(0, …): long one-line text (ellipsis) must not widen the column. */
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    padding: 16px clamp(16px, 2.5vw, 32px) 24px;
 }
 
 .loadingState {
@@ -39,12 +42,12 @@
     width: 100%;
 }
 
-@media (max-width: 740px) {
-    .appShell {
-        padding: 0 0.8rem 0.8rem;
+@media (max-width: 640px) {
+    :root {
+        --topbar-h: 60px;
     }
 
-    .adminShell {
-        padding: 0 0.8rem;
+    .appMain {
+        padding: 12px;
     }
 }

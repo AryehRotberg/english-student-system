@@ -123,7 +123,7 @@
     color: #ffffff;
     border: none;
     border-radius: var(--radius-pill);
-    box-shadow: 0 4px 0 0 var(--brand-700);
+    box-shadow: none;
     font-family: var(--font-display);
     font-size: var(--text-base);
     font-weight: 600;
@@ -134,12 +134,12 @@
 }
 
 .nextButton:hover:not(:disabled) {
-    box-shadow: 0 6px 0 0 var(--brand-700);
+    box-shadow: none;
     transform: translateY(-2px);
 }
 
 .nextButton:active:not(:disabled) {
-    box-shadow: 0 1px 0 0 var(--brand-700);
+    box-shadow: none;
     transform: translateY(3px);
 }
 

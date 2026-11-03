@@ -2,9 +2,10 @@ import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { LanguageToggle } from '../../components/layout/LanguageToggle';
+import styles from '../../components/auth/Auth.module.css';
+import { AuthField, AuthLayout } from '../../components/auth/AuthLayout';
+import { LockIcon, MailIcon } from '../../components/hub/icons';
 import { useLogin } from '../../hooks/mutations';
-import styles from './LoginPage.module.css';
 
 export function LoginPage() {
     const { t } = useTranslation();
@@ -23,42 +24,44 @@ export function LoginPage() {
     };
 
     return (
-        <div className={styles.page}>
+        <AuthLayout
+            title={t('auth.loginTitle')}
+            subtitle={t('auth.signInSubtitle')}
+        >
             <form
-                className={styles.card}
+                className={styles.form}
                 onSubmit={(event) => void handleSubmit(event)}
             >
-                <LanguageToggle className={styles.languageButton} />
-                <h1 className={styles.title}>{t('app.name')}</h1>
-                <p className={styles.subtitle}>{t('auth.signInSubtitle')}</p>
-
-                <label className={styles.label} htmlFor="email">
-                    {t('auth.email')}
-                </label>
-                <input
-                    className={styles.input}
+                <AuthField
                     id="email"
-                    onChange={(event) => setEmail(event.target.value)}
-                    required
+                    label={t('auth.email')}
+                    icon={<MailIcon />}
                     type="email"
+                    autoComplete="email"
+                    required
                     value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                />
+                <AuthField
+                    id="password"
+                    label={t('auth.password')}
+                    icon={<LockIcon />}
+                    type="password"
+                    autoComplete="current-password"
+                    minLength={6}
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                 />
 
-                <label className={styles.label} htmlFor="password">
-                    {t('auth.password')}
-                </label>
-                <input
-                    className={styles.input}
-                    id="password"
-                    minLength={6}
-                    onChange={(event) => setPassword(event.target.value)}
-                    required
-                    type="password"
-                    value={password}
-                />
+                {loginMutation.isError ? (
+                    <p className={styles.error} role="alert">
+                        {(loginMutation.error as Error).message}
+                    </p>
+                ) : null}
 
                 <button
-                    className={styles.button}
+                    className={styles.submit}
                     disabled={loginMutation.isPending}
                     type="submit"
                 >
@@ -66,17 +69,12 @@ export function LoginPage() {
                         ? t('auth.signingIn')
                         : t('auth.login')}
                 </button>
-
-                {loginMutation.isError ? (
-                    <p className={styles.error}>
-                        {(loginMutation.error as Error).message}
-                    </p>
-                ) : null}
-
-                <Link className={styles.navLink} to="/register">
-                    {t('auth.noAccount')}
-                </Link>
             </form>
-        </div>
+
+            <p className={styles.footer}>
+                {t('auth.noAccountPrompt')}{' '}
+                <Link to="/register">{t('auth.register')}</Link>
+            </p>
+        </AuthLayout>
     );
 }

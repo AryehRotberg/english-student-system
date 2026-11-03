@@ -104,20 +104,14 @@ export function StudentDetailPanel({ studentId, onBack, onDeleted }: Props) {
                         <div className={styles.studentAvatar}>
                             {getInitials(student.name || '?')}
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div className={styles.studentDetailInfo}>
                             <h3 className={styles.studentDetailName}>
                                 {student.name}
                             </h3>
                             <p className={styles.meta}>{student.email}</p>
                         </div>
                         {confirmingDelete ? (
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                }}
-                            >
+                            <div className={styles.studentDeleteConfirm}>
                                 <span className={styles.meta}>
                                     Delete student and all their data?
                                 </span>

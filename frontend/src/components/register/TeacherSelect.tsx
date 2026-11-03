@@ -1,5 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import type { AuthUser } from '../../types/auth';
-import styles from '../../pages/Register/RegisterPage.module.css';
+import { AuthSelect } from '../auth/AuthLayout';
 
 interface TeacherSelectProps {
     teachers: AuthUser[];
@@ -14,28 +15,25 @@ export function TeacherSelect({
     value,
     onChange,
 }: TeacherSelectProps) {
+    const { t } = useTranslation();
+
     return (
-        <>
-            <label className={styles.label} htmlFor="teacher">
-                Teacher
-            </label>
-            <select
-                className={styles.select}
-                id="teacher"
-                onChange={(event) => onChange(event.target.value)}
-                required
-                value={value}
-                disabled={isLoading}
-            >
-                <option value="" disabled>
-                    {isLoading ? 'Loading...' : 'Select your teacher'}
+        <AuthSelect
+            id="teacher"
+            label={t('auth.teacher')}
+            onChange={(event) => onChange(event.target.value)}
+            required
+            value={value}
+            disabled={isLoading}
+        >
+            <option value="" disabled>
+                {isLoading ? t('common.loading') : t('auth.selectTeacher')}
+            </option>
+            {teachers.map((teacher) => (
+                <option key={teacher.id} value={teacher.id}>
+                    {teacher.name} — {teacher.email}
                 </option>
-                {teachers.map((teacher) => (
-                    <option key={teacher.id} value={teacher.id}>
-                        {teacher.name} — {teacher.email}
-                    </option>
-                ))}
-            </select>
-        </>
+            ))}
+        </AuthSelect>
     );
 }

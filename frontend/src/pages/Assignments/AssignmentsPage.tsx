@@ -6,6 +6,12 @@ import { useAssignmentItems, useAssignments } from '../../hooks/queries';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
 import {
+    groupByAssignment,
+    isAssignmentComplete,
+    parseDueDate,
+    startOfToday,
+} from '../../utils/assignments';
+import {
     assignmentContentRoute,
     contentTypeLabel,
     hasOpenableContent,
@@ -22,52 +28,6 @@ const dueDateFormat: Intl.DateTimeFormatOptions = {
     day: 'numeric',
     year: 'numeric',
 };
-
-function parseDueDate(dueDate: string | null) {
-    if (!dueDate) {
-        return null;
-    }
-
-    const parsed = new Date(dueDate);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
-function startOfToday() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
-}
-
-/**
- * `isCompleted` on the assignment is a flag only a teacher sets. Students
- * complete an assignment by finishing its items, which never flips that flag,
- * so treat "every item done" as complete too.
- */
-function isAssignmentComplete(
-    assignment: AssignmentApiItem,
-    items: AssignmentItemApiItem[],
-): boolean {
-    if (assignment.isCompleted) {
-        return true;
-    }
-
-    return items.length > 0 && items.every((item) => item.isCompleted);
-}
-
-function groupByAssignment(items: AssignmentItemApiItem[]) {
-    const grouped = new Map<string, AssignmentItemApiItem[]>();
-
-    for (const item of items) {
-        const existing = grouped.get(item.assignmentId);
-        if (existing) {
-            existing.push(item);
-        } else {
-            grouped.set(item.assignmentId, [item]);
-        }
-    }
-
-    return grouped;
-}
 
 function AssignmentCard({
     assignment,

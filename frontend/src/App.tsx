@@ -1,7 +1,9 @@
+import { useCallback, useState } from 'react';
 import { Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
 import './App.css';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Navbar } from './components/layout/Navbar/Navbar';
+import { Sidebar } from './components/layout/Sidebar/Sidebar';
 import { useAuth } from './contexts/AuthContext';
 import { AdminPage } from './pages/Admin/AdminPage';
 import { AssignmentsPage } from './pages/Assignments/AssignmentsPage';
@@ -9,7 +11,6 @@ import { DashboardPage } from './pages/Dashboard/DashboardPage';
 import { LessonPage } from './pages/Lessons/LessonPage';
 import { LessonsPage } from './pages/Lessons/LessonsPage';
 import { LoginPage } from './pages/Login/LoginPage';
-import { PracticePage } from './pages/Practice/PracticePage';
 import { QuizPage } from './pages/Quiz/QuizPage';
 import { QuizListPage } from './pages/QuizList/QuizListPage';
 import { ReadingPage } from './pages/Reading/ReadingPage';
@@ -18,6 +19,23 @@ import { RegisterPage } from './pages/Register/RegisterPage';
 import { VocabPage } from './pages/Vocab/VocabPage';
 import { StudyGuidePage } from './pages/StudyGuide/StudyGuidePage';
 
+/** Top bar across the page; navigation on the start edge; content fills the rest. */
+function AppFrame({ children }: { children: React.ReactNode }) {
+    // On phones the sidebar is a slide-out drawer that the top bar opens.
+    const [menuOpen, setMenuOpen] = useState(false);
+    const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+    return (
+        <div className="appFrame">
+            <Navbar menuOpen={menuOpen} onOpenMenu={() => setMenuOpen(true)} />
+            <div className="appBody">
+                <Sidebar open={menuOpen} onClose={closeMenu} />
+                <main className="appMain">{children}</main>
+            </div>
+        </div>
+    );
+}
+
 function ProtectedPage({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
     if (user?.role === 'teacher') {
@@ -25,11 +43,7 @@ function ProtectedPage({ children }: { children: React.ReactNode }) {
     }
     return (
         <ProtectedRoute>
-            <div className="appShell">
-                <Navbar />
-
-                <main className="appMain">{children}</main>
-            </div>
+            <AppFrame>{children}</AppFrame>
         </ProtectedRoute>
     );
 }
@@ -37,12 +51,9 @@ function ProtectedPage({ children }: { children: React.ReactNode }) {
 function AdminProtectedPage() {
     return (
         <ProtectedRoute>
-            <div className="adminShell">
-                <Navbar />
-                <div className="adminBody">
-                    <AdminPage />
-                </div>
-            </div>
+            <AppFrame>
+                <AdminPage />
+            </AppFrame>
         </ProtectedRoute>
     );
 }
@@ -125,14 +136,6 @@ function App() {
                 element={
                     <ProtectedPage>
                         <ReadingTextPage />
-                    </ProtectedPage>
-                }
-            />
-            <Route
-                path="/practice"
-                element={
-                    <ProtectedPage>
-                        <PracticePage />
                     </ProtectedPage>
                 }
             />

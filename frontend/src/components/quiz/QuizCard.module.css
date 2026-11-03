@@ -92,7 +92,7 @@
     background: var(--brand-500);
     border: none;
     border-radius: var(--radius-pill);
-    box-shadow: 0 4px 0 0 var(--brand-700);
+    box-shadow: none;
     color: #fff;
     cursor: pointer;
     font-family: var(--font-display);
@@ -106,12 +106,12 @@
 }
 
 .nextButton:hover {
-    box-shadow: 0 6px 0 0 var(--brand-700);
+    box-shadow: none;
     transform: translateY(-2px);
 }
 
 .nextButton:active {
-    box-shadow: 0 1px 0 0 var(--brand-700);
+    box-shadow: none;
     transform: translateY(3px);
 }
 
