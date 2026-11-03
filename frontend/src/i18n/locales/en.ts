@@ -2,7 +2,7 @@
 // key added here fails the build until it is translated.
 export const en = {
     app: {
-        name: 'Learning Hub',
+        name: 'waypoint',
     },
     common: {
         clearFilters: 'Clear filters',

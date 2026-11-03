@@ -4,7 +4,7 @@ type IconProps = Omit<SVGProps<SVGSVGElement>, 'children'> & {
     size?: number;
 };
 
-/** Stroke icons for the Learning Hub surfaces; decorative unless labelled. */
+/** Stroke icons for the app's surfaces; decorative unless labelled. */
 function Icon({
     size = 18,
     strokeWidth = 1.75,
@@ -294,6 +294,44 @@ export function EyeOffIcon(props: IconProps) {
             <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
             <path d="m3 3 18 18" />
         </Icon>
+    );
+}
+
+/**
+ * The Waypoint logo: the four-pointed star that marks a waypoint on flight
+ * charts, inside a ring. Drawn in currentColor; the centre is cut out.
+ */
+export function WaypointMark({
+    size = 24,
+    className,
+}: {
+    size?: number;
+    className?: string;
+}) {
+    return (
+        <svg
+            aria-hidden="true"
+            focusable="false"
+            className={className}
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+        >
+            <circle
+                cx="12"
+                cy="12"
+                r="6.6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                opacity="0.55"
+            />
+            <path
+                fill="currentColor"
+                fillRule="evenodd"
+                d="M12 2.5Q13.1 10.9 21.5 12Q13.1 13.1 12 21.5Q10.9 13.1 2.5 12Q10.9 10.9 12 2.5ZM12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3Z"
+            />
+        </svg>
     );
 }
 

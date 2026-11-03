@@ -123,7 +123,7 @@
     --ease-out: cubic-bezier(0.2, 0.8, 0.3, 1);
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    /* --- Learning Hub UI: dashboard, quizzes, navbar, admin shell ---
+    /* --- App UI: dashboard, quizzes, navbar, admin shell ---
        A cooler, quieter palette (indigo accent on slate neutrals) used by
        the redesigned surfaces. */
     --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Rubik', Arial,
@@ -200,7 +200,7 @@ body {
 }
 
 body {
-    /* A cool wash from the top, as in the Learning Hub designs. */
+    /* A cool wash from the top, as in the redesign mockups. */
     background:
         radial-gradient(
             1100px 560px at 88% -8%,
