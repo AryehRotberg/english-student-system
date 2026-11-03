@@ -15,7 +15,7 @@ import {
     ChevronDownIcon,
     MenuIcon,
     ShieldIcon,
-    WaypointMark,
+    WaypointWordmark,
 } from '../../hub/icons';
 import { LanguageToggle } from '../LanguageToggle';
 import styles from './Navbar.module.css';
@@ -193,7 +193,7 @@ export function Navbar({
     return (
         <header className={styles.shell}>
             <div className={styles.brand}>
-                {/* Phones only: the sidebar is hidden in a drawer. */}
+                {/* Phones and tablets: the sidebar is hidden in a drawer. */}
                 <button
                     type="button"
                     className={styles.menuButton}
@@ -205,10 +205,12 @@ export function Navbar({
                     <MenuIcon size={22} />
                 </button>
                 <NavLink to={isStudent ? '/' : '/admin'} className={styles.logoWrap}>
-                    <span className={styles.logoMark} aria-hidden="true">
-                        <WaypointMark size={26} />
-                    </span>
-                    <span className={styles.logoText}>{t('app.name')}</span>
+                    <WaypointWordmark
+                        width={132}
+                        className={styles.logo}
+                        tone="light"
+                        title={t('app.name')}
+                    />
                 </NavLink>
 
                 {!isStudent && (

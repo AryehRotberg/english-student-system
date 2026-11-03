@@ -22,7 +22,10 @@ import type { SaveQuizPayload } from '../services/quizzes.service';
 import { quizzesService } from '../services/quizzes.service';
 import type { GradePayload } from '../services/student-answers.service';
 import { studentAnswersService } from '../services/student-answers.service';
-import type { SaveTopicPayload } from '../services/subjects.service';
+import type {
+    SaveSubjectPayload,
+    SaveTopicPayload,
+} from '../services/subjects.service';
 import { subjectsService } from '../services/subjects.service';
 import { readingsService } from '../services/readings.service';
 import { usersService } from '../services/users.service';
@@ -228,6 +231,30 @@ export function useSetStudentSubjects() {
                 ['student-subjects', variables.studentId],
                 subjects,
             ),
+    });
+}
+
+export function useSaveSubject() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            id,
+            ...payload
+        }: SaveSubjectPayload & { id?: string }) =>
+            id
+                ? subjectsService.update(id, payload)
+                : subjectsService.create(payload),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['subjects'] }),
+    });
+}
+
+export function useRemoveSubject() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => subjectsService.remove(id),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['subjects'] }),
     });
 }
 

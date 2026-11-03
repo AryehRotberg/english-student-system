@@ -1,5 +1,6 @@
 export type AdminTab =
     | 'subjects'
+    | 'topics'
     | 'lessons'
     | 'quizzes'
     | 'readings'
@@ -40,6 +41,27 @@ const layersIcon = (
         <polyline points="2 12 12 17 22 12" />
     </svg>
 );
+
+function TreeIcon() {
+    return (
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <rect x="3" y="3" width="6" height="6" rx="1" />
+            <rect x="15" y="10" width="6" height="5" rx="1" />
+            <rect x="15" y="17" width="6" height="4" rx="1" />
+            <path d="M6 9v10a1 1 0 0 0 1 1h8" />
+            <path d="M6 12.5h9" />
+        </svg>
+    );
+}
 
 function ClipboardIcon() {
     return (
@@ -203,10 +225,18 @@ export const adminTabs: TabDef[] = [
     {
         id: 'subjects',
         group: 'content',
-        label: 'Subjects & topics',
+        label: 'Subjects',
         description:
-            'Levels for each subject and the syllabus topic tree (e.g. Calculus › Derivatives).',
+            'The subjects you teach, their Hebrew and English names, and the levels students study them at.',
         icon: layersIcon,
+    },
+    {
+        id: 'topics',
+        group: 'content',
+        label: 'Topics',
+        description:
+            'The syllabus topic tree for each subject (e.g. Calculus › Derivatives), used to tag lessons and questions.',
+        icon: <TreeIcon />,
     },
     {
         id: 'lessons',
@@ -245,5 +275,5 @@ export function resolveAdminTab(rawTab: string | null): AdminTab {
     // Questions and Quiz Builder were merged into Quizzes; keep old links working.
     const requested =
         rawTab === 'questions' || rawTab === 'quiz-builder' ? 'quizzes' : rawTab;
-    return adminTabs.find((tab) => tab.id === requested)?.id ?? 'pending-students';
+    return adminTabs.find((tab) => tab.id === requested)?.id ?? 'students';
 }

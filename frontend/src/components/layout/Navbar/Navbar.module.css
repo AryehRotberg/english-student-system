@@ -47,29 +47,8 @@
     color: var(--hub-ink);
     display: inline-flex;
     flex: none;
-    gap: 10px;
     min-height: 44px;
     text-decoration: none;
-}
-
-.logoMark {
-    align-items: center;
-    background: var(--hub-accent);
-    border-radius: 8px;
-    color: #ffffff;
-    display: inline-flex;
-    flex: none;
-    height: 32px;
-    justify-content: center;
-    width: 32px;
-}
-
-.logoText {
-    color: var(--hub-ink);
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    white-space: nowrap;
 }
 
 .adminBadge {
@@ -257,12 +236,14 @@
     }
 }
 
-/* Phones: the sidebar moves into a drawer behind the menu button. */
-@media (max-width: 767px) {
+/* Phones and tablets: the sidebar moves into a drawer behind the menu button. */
+@media (max-width: 1099px) {
     .menuButton {
         display: inline-flex;
     }
+}
 
+@media (max-width: 767px) {
     /* Pinned to the bar's end edge so it can't run off a narrow screen,
        wherever the account button sits. The bar's backdrop-filter makes it
        the containing block. */
@@ -284,14 +265,6 @@
         gap: 6px;
     }
 
-    .logoWrap {
-        gap: 8px;
-    }
-
-    .logoText {
-        font-size: 16px;
-    }
-
     .languageButton {
         padding: 0 10px;
     }
@@ -300,12 +273,10 @@
     .adminBadge {
         display: none;
     }
-}
 
-/* The menu button takes the logo mark's place on the smallest phones,
-   so the full app name still fits. */
-@media (max-width: 420px) {
-    .logoMark {
-        display: none;
+    /* Leaves room between the wordmark and the account button. */
+    .logo {
+        height: auto;
+        width: 96px;
     }
 }

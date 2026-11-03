@@ -156,6 +156,15 @@ export function useSubjects(enabled = true) {
     });
 }
 
+// Under ['subjects'], so anything that refreshes the list refreshes this too.
+export function useSubject(subjectId?: string) {
+    return useQuery<Subject>({
+        queryKey: ['subjects', subjectId],
+        enabled: Boolean(subjectId),
+        queryFn: () => subjectsService.findById(subjectId as string),
+    });
+}
+
 export function useMyPreferences(enabled = true) {
     return useQuery<UserPreferences>({
         queryKey: ['my-preferences'],

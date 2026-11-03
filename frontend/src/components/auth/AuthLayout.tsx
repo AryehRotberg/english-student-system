@@ -7,7 +7,7 @@ import {
     EyeIcon,
     EyeOffIcon,
     HeroRings,
-    WaypointMark,
+    WaypointWordmark,
 } from '../hub/icons';
 import { LanguageToggle } from '../layout/LanguageToggle';
 import styles from './Auth.module.css';
@@ -36,10 +36,11 @@ export function AuthLayout({
             <main className={styles.formSide}>
                 <header className={styles.top}>
                     <Link to="/login" className={styles.smallBrand}>
-                        <span className={styles.smallMark} aria-hidden="true">
-                            <WaypointMark size={26} />
-                        </span>
-                        {t('app.name')}
+                        <WaypointWordmark
+                            width={132}
+                            tone="light"
+                            title={t('app.name')}
+                        />
                     </Link>
                     <div className={styles.topActions}>
                         <LanguageToggle className={styles.language} withIcon />
@@ -63,14 +64,12 @@ export function AuthLayout({
 
             <aside className={styles.brandSide}>
                 <HeroRings className={styles.rings} />
-                <span className={styles.brandName}>
-                    <WaypointMark size={24} />
-                    {t('app.name')}
-                </span>
                 <div className={styles.brandCenter}>
-                    <span className={styles.bigMark} aria-hidden="true">
-                        <WaypointMark size={92} />
-                    </span>
+                    <WaypointWordmark
+                        width={360}
+                        className={styles.wordmark}
+                        title={t('app.name')}
+                    />
                     <p className={styles.headline}>
                         {t('auth.brandHeadline')}{' '}
                         <span className={styles.highlight}>
