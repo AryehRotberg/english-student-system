@@ -2,7 +2,7 @@ import type { Translation } from './en';
 
 export const he: Translation = {
     app: {
-        name: 'מרחב הלמידה',
+        name: 'waypoint',
     },
     common: {
         clearFilters: 'ניקוי הסינון',

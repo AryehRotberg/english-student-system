@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink } from 'react-router-dom';
 import {
-    BookIcon,
     ChevronDownIcon,
     EyeIcon,
     EyeOffIcon,
     HeroRings,
+    WaypointMark,
 } from '../hub/icons';
 import { LanguageToggle } from '../layout/LanguageToggle';
 import styles from './Auth.module.css';
@@ -37,7 +37,7 @@ export function AuthLayout({
                 <header className={styles.top}>
                     <Link to="/login" className={styles.smallBrand}>
                         <span className={styles.smallMark} aria-hidden="true">
-                            <BookIcon size={18} strokeWidth={2} />
+                            <WaypointMark size={26} />
                         </span>
                         {t('app.name')}
                     </Link>
@@ -64,12 +64,12 @@ export function AuthLayout({
             <aside className={styles.brandSide}>
                 <HeroRings className={styles.rings} />
                 <span className={styles.brandName}>
-                    <BookIcon size={20} strokeWidth={2} />
+                    <WaypointMark size={24} />
                     {t('app.name')}
                 </span>
                 <div className={styles.brandCenter}>
                     <span className={styles.bigMark} aria-hidden="true">
-                        <BookIcon size={64} strokeWidth={1.75} />
+                        <WaypointMark size={92} />
                     </span>
                     <p className={styles.headline}>
                         {t('auth.brandHeadline')}{' '}

@@ -3,10 +3,10 @@ self.addEventListener('push', (event) => {
 
     event.waitUntil(
         self.registration.showNotification(
-            data.title ?? 'Learning Hub',
+            data.title ?? 'waypoint',
             {
                 body: data.body ?? '',
-                icon: '/open-book.png',
+                icon: '/icon-192.png',
             },
         ),
     );

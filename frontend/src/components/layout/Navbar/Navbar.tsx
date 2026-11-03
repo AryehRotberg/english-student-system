@@ -11,7 +11,12 @@ import {
     getPushSubscriptionStatus,
     isPushSupported,
 } from '../../../utils/push-notifications';
-import { BookIcon, ChevronDownIcon, MenuIcon, ShieldIcon } from '../../hub/icons';
+import {
+    ChevronDownIcon,
+    MenuIcon,
+    ShieldIcon,
+    WaypointMark,
+} from '../../hub/icons';
 import { LanguageToggle } from '../LanguageToggle';
 import styles from './Navbar.module.css';
 
@@ -201,7 +206,7 @@ export function Navbar({
                 </button>
                 <NavLink to={isStudent ? '/' : '/admin'} className={styles.logoWrap}>
                     <span className={styles.logoMark} aria-hidden="true">
-                        <BookIcon size={18} strokeWidth={2} />
+                        <WaypointMark size={26} />
                     </span>
                     <span className={styles.logoText}>{t('app.name')}</span>
                 </NavLink>
