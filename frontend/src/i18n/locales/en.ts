@@ -393,6 +393,167 @@ export const en = {
         imageFailed: 'The image could not be loaded.',
         zoomIn: 'Enlarge image',
     },
+    landing: {
+        pageTitle:
+            'Waypoint · Private tutoring in English, Math, CS, Software Engineering, AI and Cyber Security',
+        nav: {
+            label: 'Sections',
+            subjects: 'Subjects',
+            platform: 'The platform',
+            steps: 'How it works',
+            contact: 'Contact',
+            signIn: 'Sign in',
+            register: 'Register',
+        },
+        hero: {
+            eyebrow: 'Private tutoring · 6 subjects',
+            title: 'From Bagrut prep',
+            titleHighlight: 'to real-world tech skills.',
+            subtitle:
+                'One-on-one lessons in English, Mathematics, Computer Science, Software Engineering, Artificial Intelligence and Cyber Security. Between sessions, your lessons, quizzes and feedback are waiting on Waypoint.',
+            register: 'Register to start',
+            email: 'Email me',
+            haveAccount: 'Already a student?',
+            signIn: 'Sign in',
+        },
+        subjects: {
+            eyebrow: 'Subjects',
+            title: 'Six subjects, one teacher',
+            subtitle:
+                'From the high-school Bagrut to the skills used every day in the tech industry.',
+            english: {
+                name: 'English',
+                tag: '5-unit Bagrut',
+                description: 'Focused preparation for the 5-unit English Bagrut.',
+                p1: 'Reading comprehension, with audio',
+                p2: 'Vocabulary practice and flashcards',
+                p3: 'Writing tasks with personal feedback',
+            },
+            math: {
+                name: 'Mathematics',
+                tag: '5-unit Bagrut',
+                description:
+                    'Preparation for the 5-unit Mathematics Bagrut, built around exam-style questions.',
+                p1: 'Lessons and worked examples for every topic',
+                p2: 'Bagrut-style practice exams',
+                p3: 'Handwritten solutions, checked and annotated',
+            },
+            cs: {
+                name: 'Computer Science',
+                tag: 'Foundations',
+                description:
+                    'Programming from the ground up: learning to think like a programmer and write code that works.',
+                p1: 'Programming fundamentals',
+                p2: 'Algorithms and data structures',
+                p3: 'Practice questions with feedback',
+            },
+            se: {
+                name: 'Software Engineering',
+                tag: 'Production systems',
+                description:
+                    'How real production systems are built, and the system design concepts behind them.',
+                p1: 'Building real production systems',
+                p2: 'System design concepts',
+                p3: 'APIs, databases, scaling and deployment',
+            },
+            ai: {
+                name: 'Artificial Intelligence',
+                tag: 'AI agents',
+                description:
+                    'AI agents from theory to practical applications, using models such as Claude, ChatGPT and Gemini.',
+                p1: 'AI agents, from theory to practice',
+                p2: 'Working with Claude, ChatGPT and Gemini',
+                p3: 'Claude Code, Codex and Gemini Canvas',
+                p4: 'Building applications with AI',
+            },
+            cyber: {
+                name: 'Cyber Security',
+                tag: 'Core concepts',
+                description:
+                    'The core ideas every security conversation is built on.',
+                p1: 'The CIA triad: confidentiality, integrity, availability',
+                p2: 'Identity and Access Management (IAM)',
+                p3: 'Key risk and defense terms',
+                p4: 'Common cyber threats',
+            },
+        },
+        platform: {
+            eyebrow: 'The platform',
+            title: "Learning doesn't stop when the session ends",
+            subtitle:
+                "Every student gets a Waypoint account. Between sessions you'll find your lessons, assignments and quizzes there, and see my feedback as soon as I've checked your work.",
+            tabsLabel: 'Platform preview',
+            illustration: 'Illustration of the Waypoint app',
+            dashboard: {
+                tab: 'Dashboard',
+                description:
+                    "See what's due today and how far along you are in each subject.",
+            },
+            quiz: {
+                tab: 'Quizzes',
+                description:
+                    'Multiple-choice, fill-in and handwritten questions, with math notation, images and optional time limits.',
+            },
+            lesson: {
+                tab: 'Lessons',
+                description:
+                    'The notes and slides from every lesson, there whenever you want to review.',
+            },
+            features: {
+                handwrittenTitle: 'Handwritten answers',
+                handwritten:
+                    'Photograph your work, upload it, and get it back checked with comments.',
+                notifyTitle: 'Notifications',
+                notify: 'Get notified as soon as a new assignment is posted.',
+                bilingualTitle: 'English and Hebrew',
+                bilingual: 'The whole app works in both languages.',
+            },
+        },
+        preview: {
+            dueToday: 'Due today',
+            progress: 'Progress',
+            task1: 'Derivatives: practice quiz',
+            task2: 'Reading comprehension, unit 4',
+            task3: 'System design: caching',
+            subjectMath: 'Math',
+            subjectEnglish: 'English',
+            subjectSe: 'Software Eng.',
+            subjectAi: 'AI',
+            questionOf: 'Question 3 of 10',
+            question: 'Which part of the CIA triad does encryption protect?',
+            choice1: 'Confidentiality',
+            choice2: 'Integrity',
+            choice3: 'Availability',
+            next: 'Next',
+            lessonTitle: 'AI agents: tools and memory',
+            slideOf: 'Slide 4 / 18',
+            model: 'Model',
+            tools: 'Tools',
+            memory: 'Memory',
+            answer: 'Answer',
+        },
+        steps: {
+            eyebrow: 'How it works',
+            title: 'Getting started takes three steps',
+            s1Title: 'Register',
+            s1: 'Create a Waypoint account and choose me as your teacher.',
+            s2Title: 'Get approved',
+            s2: 'Your account is approved and enrolled in your subjects, at your level.',
+            s3Title: 'Start learning',
+            s3: 'We meet for lessons, and everything else is waiting on Waypoint: lessons, quizzes and feedback.',
+        },
+        contact: {
+            title: 'Have a question before you start?',
+            subtitle: "Email me and I'll get back to you.",
+            register: 'Register',
+            copy: 'Copy email address',
+            copied: 'Copied',
+        },
+        footer: {
+            tagline: 'Private tutoring, with everything in one place.',
+            rights: '© {{year}} Waypoint',
+        },
+    },
 } as const;
 
 type Widen<T> = T extends string ? string : { [K in keyof T]: Widen<T[K]> };

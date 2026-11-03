@@ -9,6 +9,7 @@ import { AdminPage } from './pages/Admin/AdminPage';
 import { AssignmentsPage } from './pages/Assignments/AssignmentsPage';
 import { DashboardPage } from './pages/Dashboard/DashboardPage';
 import { LessonPage } from './pages/Lessons/LessonPage';
+import { LandingPage } from './pages/Landing/LandingPage';
 import { LessonsPage } from './pages/Lessons/LessonsPage';
 import { LoginPage } from './pages/Login/LoginPage';
 import { QuizPage } from './pages/Quiz/QuizPage';
@@ -172,6 +173,7 @@ function App() {
                 }
             />
             <Route path="/admin" element={<AdminProtectedPage />} />
+            <Route path="/landing-page" element={<LandingPage />} />
             <Route
                 path="*"
                 element={

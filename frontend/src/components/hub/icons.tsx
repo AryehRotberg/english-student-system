@@ -298,6 +298,61 @@ export function EyeOffIcon(props: IconProps) {
     );
 }
 
+export function SigmaIcon(props: IconProps) {
+    return (
+        <Icon {...props}>
+            <path d="M18 7V4H6l6 8-6 8h12v-3" />
+        </Icon>
+    );
+}
+
+export function CodeIcon(props: IconProps) {
+    return (
+        <Icon {...props}>
+            <path d="m8 7-5 5 5 5" />
+            <path d="m16 7 5 5-5 5" />
+            <path d="m14 4-4 16" />
+        </Icon>
+    );
+}
+
+export function LayersIcon(props: IconProps) {
+    return (
+        <Icon {...props}>
+            <path d="m12 3 9 5-9 5-9-5z" />
+            <path d="m3 12 9 5 9-5" />
+            <path d="m3 16 9 5 9-5" />
+        </Icon>
+    );
+}
+
+export function SparkIcon(props: IconProps) {
+    return (
+        <Icon {...props}>
+            <path d="M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z" />
+            <path d="M19 15c.3 1.7.9 2.4 2.5 2.5-1.6.3-2.2.9-2.5 2.5-.3-1.6-.9-2.2-2.5-2.5 1.6-.1 2.2-.8 2.5-2.5z" />
+        </Icon>
+    );
+}
+
+export function BellIcon(props: IconProps) {
+    return (
+        <Icon {...props}>
+            <path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z" />
+            <path d="M10 20a2 2 0 0 0 4 0" />
+        </Icon>
+    );
+}
+
+export function CopyIcon(props: IconProps) {
+    return (
+        <Icon {...props}>
+            <rect x="8" y="8" width="12" height="12" rx="2" />
+            <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+        </Icon>
+    );
+}
+
 /**
  * The Waypoint logo: the four-pointed star that marks a waypoint on flight
  * charts, inside a ring. Drawn in currentColor; the centre is cut out.

@@ -170,6 +170,20 @@
     --hub-rose-fg: #be185d;
     --hub-rose-dot: #db2777;
 
+    /* --- Waypoint night: the wordmark's deep-blue gradient ---- */
+    --wp-night: #00002a;
+    --wp-deep: #000046;
+    --wp-blue: #0008b8;
+    --wp-glow: #0414e0;
+    --wp-glow-soft: #0a12a0;
+    --wp-shade: #000010;
+    --wp-ring: #a9b2f2;
+    --wp-gradient:
+        radial-gradient(60% 70% at 100% 100%, rgba(4, 20, 224, 0.9), transparent 70%),
+        radial-gradient(40% 50% at 92% 0%, rgba(0, 0, 16, 0.8), transparent 70%),
+        radial-gradient(35% 45% at 38% 8%, rgba(10, 18, 160, 0.55), transparent 70%),
+        linear-gradient(135deg, var(--wp-night) 0%, var(--wp-deep) 55%, var(--wp-blue) 100%);
+
     --hub-radius-sm: 10px;
     --hub-radius: 16px;
     --hub-radius-lg: 20px;
