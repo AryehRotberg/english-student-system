@@ -1,18 +1,18 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import styles from '../../pages/Register/RegisterPage.module.css';
+import styles from '../auth/Auth.module.css';
+import { AuthLayout } from '../auth/AuthLayout';
 
 export function RegisterSuccessCard() {
     const { t } = useTranslation();
     return (
-        <div className={styles.page}>
-            <div className={styles.card}>
-                <h1 className={styles.title}>{t('app.name')}</h1>
-                <p className={styles.success}>{t('auth.registered')}</p>
-                <Link className={styles.navLink} to="/login">
-                    {t('auth.backToLogin')}
-                </Link>
-            </div>
-        </div>
+        <AuthLayout title={t('auth.registeredTitle')}>
+            <p className={styles.success} role="status">
+                {t('auth.registered')}
+            </p>
+            <Link className={styles.submit} to="/login">
+                {t('auth.backToLogin')}
+            </Link>
+        </AuthLayout>
     );
 }

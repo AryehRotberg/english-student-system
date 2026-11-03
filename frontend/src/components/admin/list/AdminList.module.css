@@ -1,0 +1,769 @@
+/* The list sits in a narrow column next to the sidebar on tablets, so the
+   layout follows the panel's own width rather than the viewport. */
+.tableWrap {
+    container: admin-table / inline-size;
+}
+
+.table {
+    border-collapse: collapse;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    width: 100%;
+}
+
+.table thead tr {
+    background: var(--hub-subtle);
+    text-align: start;
+}
+
+.table th {
+    border-bottom: 1px solid var(--hub-divider);
+    color: var(--hub-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 10px 12px;
+    text-align: start;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.table th:first-child,
+.table td:first-child {
+    padding-inline-start: 20px;
+}
+
+.table th:last-child,
+.table td:last-child {
+    padding-inline-end: 20px;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--hub-divider);
+    transition: background var(--dur-fast) ease;
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background: #f8f9fc;
+}
+
+.table td {
+    padding: 12px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.primaryCell {
+    max-width: 420px;
+    white-space: normal !important;
+}
+
+.rowTitle {
+    background: none;
+    border: none;
+    color: var(--hub-ink);
+    cursor: pointer;
+    display: block;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    padding: 0;
+    text-align: start;
+}
+
+.rowTitle:hover {
+    color: var(--hub-accent);
+}
+
+.rowDesc {
+    color: var(--hub-muted);
+    display: block;
+    font-size: 13px;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rowNote {
+    color: var(--hub-accent-text);
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.pill {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 600;
+    gap: 6px;
+    padding: 3px 10px;
+}
+
+.pillDot {
+    background: currentColor;
+    border-radius: 50%;
+    height: 7px;
+    opacity: 0.85;
+    width: 7px;
+}
+
+.outlinePill {
+    border: 1px solid var(--hub-border-strong);
+    border-radius: 999px;
+    color: var(--hub-ink-2);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 9px;
+}
+
+.none {
+    color: var(--hub-muted);
+}
+
+.time {
+    color: var(--hub-ink-2);
+}
+
+.actionsCell {
+    text-align: end;
+}
+
+.actions {
+    align-items: center;
+    display: inline-flex;
+    gap: 6px;
+}
+
+.editButton {
+    align-items: center;
+    background: var(--hub-accent-soft);
+    border: none;
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-accent-text);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 12px;
+    transition: background var(--dur-fast) ease;
+}
+
+.editButton:hover {
+    background: var(--hub-accent-line);
+}
+
+.iconButton {
+    align-items: center;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink-2);
+    cursor: pointer;
+    display: inline-flex;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+}
+
+.iconButton:hover {
+    background: var(--hub-hover);
+}
+
+.menuRoot {
+    position: relative;
+}
+
+.menu {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: 12px;
+    box-shadow: var(--hub-shadow-pop);
+    display: flex;
+    flex-direction: column;
+    inset-inline-end: 0;
+    min-width: 170px;
+    padding: 6px;
+    position: absolute;
+    top: calc(100% + 6px);
+    z-index: 20;
+}
+
+.menuDanger {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--hub-danger-fg);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 40px;
+    padding: 0 12px;
+    text-align: start;
+}
+
+.menuDanger:hover:not(:disabled) {
+    background: var(--hub-hover);
+}
+
+.srOnly {
+    clip: rect(0 0 0 0);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+/* ─── Narrow panel: each row becomes a card ─────────────── */
+
+@container admin-table (max-width: 760px) {
+    .table thead {
+        display: none;
+    }
+
+    /* As a table it can't be narrower than its longest unbreakable value
+       (a URL in an excerpt), so the cards would run off the panel. */
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+    }
+
+    .table tbody tr {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 16px;
+    }
+
+    /* Cells wrap and may shrink, or long values push the card off screen. */
+    .table td,
+    .table td:first-child,
+    .table td:last-child {
+        max-width: 100%;
+        min-width: 0;
+        padding: 0;
+        white-space: normal;
+    }
+
+    .primaryCell {
+        flex-basis: 100%;
+        margin-bottom: 4px;
+        max-width: none;
+        width: 100%;
+    }
+
+    .pill,
+    .outlinePill {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .rowTitle {
+        width: 100%;
+    }
+
+    .rowDesc {
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        white-space: normal;
+    }
+
+    .rowDesc,
+    .excerpt {
+        overflow-wrap: anywhere;
+    }
+
+    /* Bare values need their column name once the header is gone. */
+    .labelled::before {
+        color: var(--hub-muted);
+        content: attr(data-label) ': ';
+    }
+
+    .time {
+        font-size: 13px;
+    }
+
+    .actionsCell {
+        flex-basis: 100%;
+        margin-top: 6px;
+    }
+
+    /* A lone ⋯ button sits at the end of the row instead of its own line. */
+    .actionsCell:not(:has(.editButton)) {
+        flex-basis: auto;
+        margin-inline-start: auto;
+        margin-top: 0;
+    }
+
+    .actions {
+        display: flex;
+    }
+
+    .editButton {
+        flex: 1;
+        justify-content: center;
+        min-height: 44px;
+    }
+
+    .iconButton {
+        height: 44px;
+        width: 44px;
+    }
+}
+
+/* ─── List panel (QuizzesSection) ──────────────────────── */
+
+.panel {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+}
+
+.toolbar {
+    align-items: center;
+    border-bottom: 1px solid var(--hub-divider);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 14px;
+    padding: 16px clamp(14px, 2vw, 20px);
+}
+
+.panelTitle {
+    font-family: var(--font-ui);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0;
+    margin: 0;
+    margin-inline-end: 8px;
+}
+
+.panelCount {
+    color: var(--hub-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.searchWrap {
+    align-items: center;
+    display: flex;
+    flex: 1 1 220px;
+    min-width: 0;
+    position: relative;
+}
+
+.searchIcon {
+    color: var(--hub-muted);
+    inset-inline-start: 14px;
+    pointer-events: none;
+    position: absolute;
+}
+
+.searchInput,
+.select {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    min-height: 44px;
+}
+
+.searchInput {
+    font-size: 15px;
+    padding-block: 0;
+    padding-inline: 42px 14px;
+    width: 100%;
+}
+
+.searchInput::placeholder {
+    color: var(--hub-placeholder);
+}
+
+.select {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 100%;
+    /* A select is as wide as its longest option unless allowed to shrink. */
+    min-width: 0;
+    padding: 0 12px;
+    text-overflow: ellipsis;
+}
+
+.searchInput:focus,
+.select:focus {
+    border-color: var(--hub-accent);
+    box-shadow: var(--hub-focus);
+    outline: none;
+}
+
+.field {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    min-width: 0;
+}
+
+.fieldLabel {
+    color: var(--hub-ink-3);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.emptyState {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.emptyTitle {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.emptyHint {
+    color: var(--hub-ink-3);
+    font-size: 15px;
+}
+
+.ghostButton {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 44px;
+    padding: 0 16px;
+}
+
+.ghostButton:hover {
+    background: var(--hub-hover);
+}
+
+.loading {
+    color: var(--hub-muted);
+    padding: 32px 20px;
+}
+
+@media (max-width: 640px) {
+    .panelTitle {
+        flex-basis: 100%;
+    }
+
+    .field {
+        flex: 1 1 100%;
+    }
+
+    .field .select {
+        flex: 1;
+        width: 100%;
+    }
+
+    .searchWrap {
+        flex-basis: 100%;
+    }
+
+}
+
+/* ─── Shared list extras ───────────────────────────────── */
+
+.menuItem {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--hub-ink);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 40px;
+    padding: 0 12px;
+    text-align: start;
+}
+
+.menuItem:hover:not(:disabled) {
+    background: var(--hub-hover);
+}
+
+.menuItem:disabled,
+.menuDanger:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.backLink {
+    align-items: center;
+    align-self: flex-start;
+    background: none;
+    border: none;
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-accent);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 4px;
+}
+
+.backLink:hover {
+    color: var(--hub-accent-hover);
+    text-decoration: underline;
+}
+
+:global([dir='rtl']) .backArrow {
+    transform: scaleX(-1);
+}
+
+/* An editor page: back link, then one or more white cards. */
+.editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.editorCard {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-ui);
+    gap: 16px;
+    padding: clamp(16px, 2.5vw, 24px);
+}
+
+.editorTitle {
+    font-family: var(--font-ui);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.editorHint {
+    color: var(--hub-muted);
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Forms inside an editor card already sit on white; drop their own box. */
+.editorCard form {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.editorHead {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    justify-content: space-between;
+}
+
+.editorActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.primaryButton,
+.secondaryButton {
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 16px;
+    transition: background var(--dur-fast) ease;
+}
+
+.primaryButton {
+    background: var(--hub-accent);
+    border: none;
+    color: #ffffff;
+}
+
+.primaryButton:hover:not(:disabled) {
+    background: var(--hub-accent-hover);
+}
+
+.secondaryButton {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    color: var(--hub-ink);
+}
+
+.secondaryButton:hover:not(:disabled) {
+    background: var(--hub-hover);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+/* A one-line add/edit form at the foot of a list panel. */
+.addRow {
+    align-items: center;
+    border-top: 1px solid var(--hub-divider);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px clamp(14px, 2vw, 20px);
+}
+
+.addRow input,
+.addRow select {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    flex: 1 1 180px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    min-height: 44px;
+    min-width: 0;
+    padding: 0 12px;
+}
+
+.addRow input:focus,
+.addRow select:focus {
+    border-color: var(--hub-accent);
+    box-shadow: var(--hub-focus);
+    outline: none;
+}
+
+.panelHint {
+    color: var(--hub-muted);
+    font-size: 14px;
+    margin: 0;
+    padding: 12px clamp(14px, 2vw, 20px) 0;
+}
+
+.panelError {
+    color: var(--hub-danger-fg);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    padding: 0 clamp(14px, 2vw, 20px) 14px;
+}
+
+.mutedCell {
+    color: var(--hub-muted);
+}
+
+.excerpt {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    color: var(--hub-muted);
+    display: -webkit-box;
+    font-size: 13px;
+    margin-top: 2px;
+    overflow: hidden;
+    white-space: normal;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.toolbarEnd {
+    margin-inline-start: auto;
+}
+
+.treeMark {
+    color: var(--hub-placeholder);
+}
+
+.rowError {
+    color: var(--hub-danger-fg);
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.rowExample {
+    color: var(--hub-muted);
+    display: block;
+    font-size: 13px;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.pillStack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* The row whose details are in the edit form below. */
+.table tbody tr[aria-current='true'] {
+    background: var(--hub-accent-soft);
+}
+
+.secondaryButton[aria-pressed='true'] {
+    background: var(--hub-accent-soft);
+    border-color: var(--hub-accent-line);
+    color: var(--hub-accent-text);
+}
+
+@media (max-width: 640px) {
+    .toolbarEnd {
+        flex-basis: 100%;
+        margin-inline-start: 0;
+    }
+
+    /* One field per line; after the .addRow rules so it wins. */
+    .addRow input,
+    .addRow select {
+        flex-basis: 100%;
+    }
+
+    .addRow > button {
+        flex: 1 1 auto;
+    }
+}

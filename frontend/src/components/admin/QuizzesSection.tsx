@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuizzes, useSubjects } from '../../hooks/queries';
-import styles from '../../pages/Admin/AdminPage.module.css';
 import { ENGLISH_SUBJECT_ID } from '../../types/subject';
-import { levelName } from '../../utils/subjects';
+import { SearchIcon } from '../hub/icons';
 import { QuizEditor } from './quizzes/QuizEditor';
-import editorStyles from './quizzes/QuizEditor.module.css';
 import { QuizForm } from './quizzes/QuizForm';
-import { SubjectFilter } from './SubjectLevelFields';
+import { QuizTable } from './quizzes/QuizTable';
+import { BackLink } from './list/AdminList';
+import listStyles from './list/AdminList.module.css';
+import { NEW_ITEM as NEW_QUIZ } from './list/useEditorParam';
 
-const NEW_QUIZ = 'new';
+
 
 /**
  * Quizzes and their questions in one place: the list, a new-quiz form, and a
@@ -22,11 +23,16 @@ export function QuizzesSection() {
     const openQuiz = searchParams.get('quiz');
     const justCreated = searchParams.get('created') === '1';
     const [subjectFilter, setSubjectFilter] = useState('');
+    const [levelFilter, setLevelFilter] = useState('');
     const [search, setSearch] = useState('');
-    const { data: quizzes = [], isLoading } = useQuizzes(
-        subjectFilter ? { subjectId: subjectFilter } : {},
-    );
+    const { data: allQuizzes = [] } = useQuizzes();
+    const { data: quizzes = [], isLoading } = useQuizzes({
+        ...(subjectFilter && { subjectId: subjectFilter }),
+        ...(levelFilter && { levelId: levelFilter }),
+    });
     const { data: subjects = [] } = useSubjects();
+    const levels =
+        subjects.find((subject) => subject.id === subjectFilter)?.levels ?? [];
 
     // "created" only opens the new-question form on the first visit; drop it
     // so a reload doesn't open it again (the editor has already read it).
@@ -37,7 +43,7 @@ export function QuizzesSection() {
         setSearchParams(next, { replace: true });
     }, [justCreated, searchParams, setSearchParams]);
 
-    const navigate =(quiz: string | null, created = false) => {
+    const navigate = (quiz: string | null, created = false) => {
         const next = new URLSearchParams(searchParams);
         next.delete('created');
         if (quiz) {
@@ -51,25 +57,20 @@ export function QuizzesSection() {
 
     if (openQuiz === NEW_QUIZ) {
         return (
-            <div className={styles.section}>
-                <button
-                    type="button"
-                    className={editorStyles.backLink}
-                    onClick={() => navigate(null)}
-                >
-                    ← All quizzes
-                </button>
-                <div className={styles.sectionHeader}>
-                    <h3>New quiz</h3>
-                </div>
-                <p className={styles.hintText}>
-                    Start with the settings; the next step is adding questions.
-                </p>
-                <QuizForm
-                    defaultSubjectId={subjectFilter || ENGLISH_SUBJECT_ID}
-                    onSaved={(quiz) => navigate(quiz.id, true)}
-                    onCancel={() => navigate(null)}
-                />
+            <div className={listStyles.editor}>
+                <BackLink onClick={() => navigate(null)}>All quizzes</BackLink>
+                <section className={listStyles.editorCard}>
+                    <h2 className={listStyles.editorTitle}>New quiz</h2>
+                    <p className={listStyles.editorHint}>
+                        Start with the settings; the next step is adding
+                        questions.
+                    </p>
+                    <QuizForm
+                        defaultSubjectId={subjectFilter || ENGLISH_SUBJECT_ID}
+                        onSaved={(quiz) => navigate(quiz.id, true)}
+                        onCancel={() => navigate(null)}
+                    />
+                </section>
             </div>
         );
     }
@@ -93,96 +94,114 @@ export function QuizzesSection() {
                   (quiz.description ?? '').toLowerCase().includes(term),
           )
         : quizzes;
+    const isFiltered = Boolean(term || subjectFilter || levelFilter);
+
+    const clearFilters = () => {
+        setSearch('');
+        setSubjectFilter('');
+        setLevelFilter('');
+    };
 
     return (
-        <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-                <h3>Quizzes</h3>
-                <div className={editorStyles.listTools}>
+        <section className={listStyles.panel} aria-labelledby="quiz-list-heading">
+            <div className={listStyles.toolbar} role="search">
+                <h2 id="quiz-list-heading" className={listStyles.panelTitle}>
+                    All quizzes{' '}
+                    <span className={listStyles.panelCount}>
+                        ·{' '}
+                        {isFiltered
+                            ? `${visible.length} of ${allQuizzes.length}`
+                            : `${allQuizzes.length} total`}
+                    </span>
+                </h2>
+                <div className={listStyles.searchWrap}>
+                    <SearchIcon className={listStyles.searchIcon} />
                     <input
                         type="search"
                         dir="auto"
-                        className={editorStyles.listSearch}
+                        className={listStyles.searchInput}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Search quizzes…"
+                        placeholder="Search by title"
                         aria-label="Search quizzes"
                     />
-                    <SubjectFilter
-                        value={subjectFilter}
-                        onChange={setSubjectFilter}
-                    />
-                    <button
-                        type="button"
-                        className={styles.addButton}
-                        onClick={() => navigate(NEW_QUIZ)}
-                    >
-                        + New quiz
-                    </button>
                 </div>
+                <div className={listStyles.field}>
+                    <label htmlFor="admin-quiz-subject" className={listStyles.fieldLabel}>
+                        Subject
+                    </label>
+                    <select
+                        id="admin-quiz-subject"
+                        className={listStyles.select}
+                        value={subjectFilter}
+                        onChange={(e) => {
+                            setSubjectFilter(e.target.value);
+                            setLevelFilter('');
+                        }}
+                    >
+                        <option value="">All subjects</option>
+                        {subjects.map((subject) => (
+                            <option key={subject.id} value={subject.id}>
+                                {subject.nameEn}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {levels.length > 0 && (
+                    <div className={listStyles.field}>
+                        <label htmlFor="admin-quiz-level" className={listStyles.fieldLabel}>
+                            Level
+                        </label>
+                        <select
+                            id="admin-quiz-level"
+                            className={listStyles.select}
+                            value={levelFilter}
+                            onChange={(e) => setLevelFilter(e.target.value)}
+                        >
+                            <option value="">All levels</option>
+                            {levels.map((level) => (
+                                <option key={level.id} value={level.id}>
+                                    {level.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
             </div>
 
-            <ul className={editorStyles.quizList}>
-                {visible.map((quiz) => {
-                    const subject = subjects.find(
-                        (s) => s.id === quiz.subjectId,
-                    );
-                    const level = levelName(subject, quiz.levelId);
-
-                    return (
-                        <li key={quiz.id}>
-                            <button
-                                type="button"
-                                className={editorStyles.quizCard}
-                                onClick={() => navigate(quiz.id)}
-                            >
-                                <strong dir="auto">{quiz.title}</strong>
-                                {quiz.description && (
-                                    <span
-                                        className={editorStyles.quizCardDesc}
-                                        dir="auto"
-                                    >
-                                        {quiz.description}
-                                    </span>
-                                )}
-                                <span className={editorStyles.badges}>
-                                    {subject && (
-                                        <span className={editorStyles.badge}>
-                                            {subject.nameEn}
-                                            {level ? ` · ${level}` : ''}
-                                        </span>
-                                    )}
-                                    {quiz.gradingMode === 'teacher' && (
-                                        <span className={editorStyles.badge}>
-                                            Teacher graded
-                                        </span>
-                                    )}
-                                    {quiz.questionsToAnswer && (
-                                        <span className={editorStyles.badge}>
-                                            Answer {quiz.questionsToAnswer}
-                                        </span>
-                                    )}
-                                    {quiz.timeLimitMinutes && (
-                                        <span className={editorStyles.badge}>
-                                            {quiz.timeLimitMinutes} min
-                                        </span>
-                                    )}
-                                </span>
-                                <span className={editorStyles.openHint}>
-                                    Open →
-                                </span>
-                            </button>
-                        </li>
-                    );
-                })}
-                {!isLoading && visible.length === 0 && (
-                    <li className={styles.empty}>
-                        {quizzes.length === 0
-                            ? 'No quizzes yet. Create the first one.'
-                            : 'No quizzes match the search.'}
-                    </li>
-                )}
-            </ul>
-        </div>
+            {isLoading ? (
+                <p className={listStyles.loading} role="status">
+                    Loading quizzes…
+                </p>
+            ) : visible.length > 0 ? (
+                <QuizTable
+                    quizzes={visible}
+                    subjects={subjects}
+                    onOpen={(quizId) => navigate(quizId)}
+                />
+            ) : (
+                <div className={listStyles.emptyState}>
+                    <p className={listStyles.emptyTitle}>
+                        {isFiltered
+                            ? 'No quizzes match these filters'
+                            : 'No quizzes yet'}
+                    </p>
+                    <p className={listStyles.emptyHint}>
+                        {isFiltered
+                            ? 'Try a different word, subject or level — or create a new quiz.'
+                            : 'Create the first one with “New quiz” above.'}
+                    </p>
+                    {isFiltered && (
+                        <button
+                            type="button"
+                            className={listStyles.ghostButton}
+                            onClick={clearFilters}
+                        >
+                            Clear filters
+                        </button>
+                    )}
+                </div>
+            )}
+        </section>
     );
 }

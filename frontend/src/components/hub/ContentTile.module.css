@@ -1,0 +1,48 @@
+.tile {
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
+    display: inline-flex;
+    flex: none;
+    justify-content: center;
+}
+
+.sm {
+    height: 36px;
+    width: 36px;
+}
+
+.md,
+.lg {
+    height: 40px;
+    width: 40px;
+}
+
+.accent {
+    background: var(--hub-accent-soft);
+    color: var(--hub-accent-text);
+}
+
+.blue {
+    background: var(--hub-blue-bg);
+    color: var(--hub-blue-fg);
+}
+
+.teal {
+    background: var(--hub-teal-bg);
+    color: var(--hub-teal-fg);
+}
+
+.amber {
+    background: var(--hub-amber-bg);
+    color: var(--hub-amber-fg);
+}
+
+.violet {
+    background: var(--hub-violet-bg);
+    color: var(--hub-violet-fg);
+}
+
+.rose {
+    background: var(--hub-rose-bg);
+    color: var(--hub-rose-fg);
+}

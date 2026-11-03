@@ -1,0 +1,599 @@
+/* ─── Up next hero ─────────────────────────────────────── */
+
+.hero {
+    background: var(--hub-accent-deep);
+    border-radius: var(--hub-radius-lg);
+    color: #ffffff;
+    overflow: hidden;
+    padding: clamp(20px, 3vw, 32px);
+    position: relative;
+}
+
+.heroRings {
+    inset-inline-end: -90px;
+    opacity: 0.16;
+    pointer-events: none;
+    position: absolute;
+    top: -110px;
+}
+
+.heroBody {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+}
+
+.heroTopRow {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.heroEyebrow {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.heroDue,
+.heroDueOverdue {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: 13px;
+    font-weight: 600;
+    gap: 6px;
+    padding: 4px 10px;
+}
+
+.heroDue {
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: #ffffff;
+}
+
+.heroDueOverdue {
+    background: var(--hub-danger-bg);
+    color: var(--hub-danger-fg);
+}
+
+.heroHeading {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.heroTitle {
+    font-family: var(--font-ui);
+    font-size: clamp(22px, 2.4vw, 26px);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.heroText {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+}
+
+.heroText strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.steps {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(var(--step-count, 4), minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.stepBar {
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 3px;
+    height: 6px;
+}
+
+.step[data-state='next'] .stepBar {
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.step[data-state='done'] .stepBar {
+    background: #ffffff;
+}
+
+.stepLabel {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.step[data-state='next'] .stepLabel,
+.step[data-state='done'] .stepLabel {
+    color: #ffffff;
+}
+
+.step[data-state='next'] .stepLabel {
+    font-weight: 600;
+}
+
+.heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.heroPrimary,
+.heroSecondary {
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 600;
+    gap: 8px;
+    justify-content: center;
+    min-height: 48px;
+    transition:
+        background var(--dur-fast) ease,
+        opacity var(--dur-fast) ease;
+}
+
+.heroPrimary {
+    background: #ffffff;
+    border: none;
+    color: var(--hub-accent-deep);
+    padding: 0 22px;
+}
+
+.heroPrimary:hover:not(:disabled) {
+    background: var(--hub-accent-soft);
+}
+
+.heroPrimary:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.heroSecondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+    padding: 0 18px;
+}
+
+.heroSecondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hero :focus-visible {
+    outline-color: #ffffff;
+}
+
+/* ─── Cards ────────────────────────────────────────────── */
+
+.card {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    overflow: hidden;
+}
+
+.cardPadded {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+}
+
+.cardHead {
+    align-items: center;
+    border-bottom: 1px solid var(--hub-divider);
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 14px clamp(16px, 3vw, 24px);
+}
+
+.cardHeadTitle {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+
+.cardTitle {
+    font-family: var(--font-ui);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.cardCount {
+    color: var(--hub-muted);
+    font-size: 14px;
+}
+
+.textLink {
+    align-items: center;
+    color: var(--hub-accent);
+    display: inline-flex;
+    flex: none;
+    font-size: 15px;
+    font-weight: 600;
+    min-height: 44px;
+    text-decoration: none;
+}
+
+.textLink:hover {
+    color: var(--hub-accent-hover);
+    text-decoration: underline;
+}
+
+.empty {
+    color: var(--hub-muted);
+    padding: 20px 24px;
+}
+
+/* ─── Task list ────────────────────────────────────────── */
+
+.taskList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.taskRow {
+    align-items: center;
+    border-bottom: 1px solid var(--hub-divider);
+    display: flex;
+    gap: 14px;
+    padding: 12px clamp(14px, 3vw, 20px);
+    transition: background var(--dur-fast) ease;
+}
+
+.taskRow:last-child {
+    border-bottom: none;
+}
+
+.taskRow:hover {
+    background: var(--hub-subtle);
+}
+
+.taskText {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.taskTitle {
+    font-size: 16px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.taskRow[data-done='true'] .taskTitle {
+    color: var(--hub-muted);
+    text-decoration: line-through;
+}
+
+.taskMeta {
+    color: var(--hub-muted);
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.taskEnd {
+    align-items: center;
+    display: flex;
+    flex: none;
+    gap: 10px;
+}
+
+.pillDone,
+.pillOverdue,
+.pillDue {
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+
+.pillDone {
+    background: var(--hub-ok-bg);
+    color: var(--hub-ok-fg);
+}
+
+.pillOverdue {
+    background: var(--hub-danger-bg);
+    color: var(--hub-danger-fg);
+}
+
+.pillDue {
+    background: var(--hub-hover);
+    color: var(--hub-ink-2);
+}
+
+.openButton {
+    align-items: center;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 12px;
+    transition: background var(--dur-fast) ease;
+}
+
+.openButton:hover:not(:disabled) {
+    background: var(--hub-hover);
+}
+
+.openButton:disabled {
+    color: var(--hub-placeholder);
+    cursor: not-allowed;
+}
+
+/* ─── Progress ─────────────────────────────────────────── */
+
+.progressRow {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+}
+
+.ring {
+    flex: none;
+    height: 112px;
+    position: relative;
+    width: 112px;
+}
+
+.ringTrack,
+.ringFill {
+    fill: none;
+    stroke-width: 10;
+}
+
+.ringTrack {
+    stroke: var(--hub-divider);
+}
+
+.ringFill {
+    stroke: var(--hub-accent);
+    stroke-linecap: round;
+    transition: stroke-dasharray var(--dur-slow) var(--ease-out);
+}
+
+.ringValue {
+    align-items: center;
+    display: flex;
+    font-size: 26px;
+    font-weight: 700;
+    inset: 0;
+    justify-content: center;
+    letter-spacing: -0.02em;
+    position: absolute;
+}
+
+.progressText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.progressHeadline {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.progressNote {
+    color: var(--hub-ink-3);
+    font-size: 14px;
+}
+
+.stats {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+}
+
+.statAccent,
+.statAmber {
+    border-radius: 12px;
+    padding: 12px 14px;
+}
+
+.statAccent {
+    background: var(--hub-accent-soft);
+}
+
+.statAmber {
+    background: var(--hub-amber-bg);
+}
+
+.stats dt {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.statAccent dt {
+    color: var(--hub-accent-text);
+}
+
+.statAmber dt {
+    color: var(--hub-amber-fg);
+}
+
+.stats dd {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ─── Subjects ─────────────────────────────────────────── */
+
+.subjectsTitle {
+    padding: 20px 24px 8px;
+}
+
+.subjectList {
+    list-style: none;
+    margin: 0;
+    padding: 0 8px 8px;
+}
+
+.subjectRow {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--font-ui);
+    gap: 14px;
+    min-height: 56px;
+    padding: 6px 12px;
+    text-align: start;
+    transition: background var(--dur-fast) ease;
+    width: 100%;
+}
+
+.subjectRow:hover {
+    background: var(--hub-hover);
+}
+
+.subjectRow[aria-pressed='true'] {
+    background: var(--hub-accent-soft);
+}
+
+.subjectBadge {
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
+    display: inline-flex;
+    flex: none;
+    font-size: 14px;
+    font-weight: 700;
+    height: 36px;
+    justify-content: center;
+    text-transform: capitalize;
+    width: 36px;
+}
+
+.subjectText {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.subjectName {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.subjectMeta {
+    color: var(--hub-muted);
+    font-size: 13px;
+}
+
+.subjectChevron {
+    color: var(--hub-muted);
+    flex: none;
+}
+
+.currentTag {
+    color: var(--hub-accent-text);
+    flex: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Arrows point toward the end of the line in either direction. */
+:global([dir='rtl']) .flipRtl {
+    transform: scaleX(-1);
+}
+
+/* ─── Narrow screens ───────────────────────────────────── */
+
+@media (max-width: 640px) {
+    .heroActions {
+        flex-direction: column;
+    }
+
+    .heroPrimary,
+    .heroSecondary {
+        width: 100%;
+    }
+
+    /* Labels don't fit side by side; the bars remain, and the hero text
+       already names the next step. */
+    .steps {
+        gap: 6px;
+    }
+
+    .stepLabel {
+        display: none;
+    }
+
+    .taskRow {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .taskText {
+        flex-basis: calc(100% - 54px);
+    }
+
+    /* Status and button move under the title, aligned with it. */
+    .taskEnd {
+        justify-content: space-between;
+        padding-inline-start: 54px;
+        width: 100%;
+    }
+
+    .taskEnd:has(> :only-child) {
+        justify-content: flex-end;
+    }
+
+    .cardPadded {
+        padding: 20px;
+    }
+
+    .subjectsTitle {
+        padding: 18px 20px 6px;
+    }
+}

@@ -1,21 +1,38 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Link, useSearchParams } from 'react-router-dom';
+import {
+    CatalogEmpty,
+    CatalogGroup,
+    CatalogHero,
+    DuePill,
+    SearchField,
+} from '../../components/hub/Catalog';
+import styles from '../../components/hub/Catalog.module.css';
+import { ContentTypeTile } from '../../components/hub/ContentTile';
+import { ArrowForwardIcon, ChevronForwardIcon } from '../../components/hub/icons';
 import { VocabStudyPanel } from '../../components/vocab/VocabStudyPanel';
-import { VocabularyTopicGrid } from '../../components/vocab/VocabularyTopicGrid';
+import { useCurrentSubject } from '../../contexts/subject-context';
 import {
     useVocabularyTopicWords,
     useVocabularyTopics,
 } from '../../hooks/queries';
-import type {
-    VocabularyTopicPreview,
-    VocabularyTopicWithWords,
-} from '../../types/vocabulary';
-import styles from './VocabPage.module.css';
+import { byAssignedDue, useAssignedContent } from '../../hooks/useAssignedContent';
+import type { VocabularyTopicWithWords } from '../../types/vocabulary';
+import { isPastDue } from '../../utils/assignments';
+import { subjectName } from '../../utils/subjects';
+
+function topicLink(topicId: string) {
+    return `/vocab?topicId=${topicId}`;
+}
 
 export function VocabPage() {
+    const { t, i18n } = useTranslation();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { data: topics = [] } = useVocabularyTopics();
+    const { currentSubject } = useCurrentSubject();
+    const { data: topics = [], isLoading } = useVocabularyTopics();
     const [filterQuery, setFilterQuery] = useState('');
+    const dueByTopic = useAssignedContent('vocabulary');
 
     const activeTopicId = searchParams.get('topicId');
     const activeWord = searchParams.get('word') ?? undefined;
@@ -27,92 +44,178 @@ export function VocabPage() {
         ? (topics.find((topic) => topic.id === activeTopicId) ?? null)
         : null;
 
-    const activeTopic: VocabularyTopicWithWords | null =
-        activeTopicMeta === null
-            ? null
-            : {
-                  id: activeTopicMeta.id,
-                  topic: activeTopicMeta.topic,
-                  description: activeTopicMeta.description,
-                  createdAt: activeTopicMeta.createdAt,
-                  words,
-              };
+    if (activeTopicMeta) {
+        const activeTopic: VocabularyTopicWithWords = {
+            id: activeTopicMeta.id,
+            topic: activeTopicMeta.topic,
+            description: activeTopicMeta.description,
+            createdAt: activeTopicMeta.createdAt,
+            words,
+        };
 
-    const filteredTopics = filterQuery.trim()
-        ? topics.filter((t) =>
-              t.topic.toLowerCase().includes(filterQuery.toLowerCase()),
+        return (
+            <VocabStudyPanel
+                topic={activeTopic}
+                isLoadingWords={isWordsLoading}
+                initialWord={activeWord}
+                onBack={() => setSearchParams({})}
+            />
+        );
+    }
+
+    const query = filterQuery.trim().toLowerCase();
+    const shown = query
+        ? topics.filter(
+              (topic) =>
+                  topic.topic.toLowerCase().includes(query) ||
+                  (topic.description ?? '').toLowerCase().includes(query),
           )
         : topics;
-
-    const handleSelectTopic = (topic: VocabularyTopicPreview) => {
-        setSearchParams({ topicId: topic.id });
-    };
-
-    const handleBackToTopics = () => {
-        setSearchParams({});
-    };
+    const assigned = shown
+        .filter((topic) => dueByTopic.has(topic.id))
+        .sort(byAssignedDue(dueByTopic));
+    const library = shown.filter((topic) => !dueByTopic.has(topic.id));
+    const totalAssigned = topics.filter((topic) =>
+        dueByTopic.has(topic.id),
+    ).length;
 
     return (
-        <div className={styles.stack}>
-            {activeTopic ? (
-                <VocabStudyPanel
-                    topic={activeTopic}
-                    isLoadingWords={isWordsLoading}
-                    initialWord={activeWord}
-                    onBack={handleBackToTopics}
-                />
-            ) : (
-                <section className={styles.topicSection}>
-                    <div className={styles.sectionHeader}>
-                        <div>
-                            <h1 className={styles.heading}>
-                                Vocabulary Studio
-                            </h1>
-                            <p className={styles.subtitle}>
-                                Select a topic to study and expand your
-                                vocabulary.
-                            </p>
-                        </div>
-                        <div className={styles.filterWrap}>
-                            <svg
-                                className={styles.filterIcon}
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                width="18"
-                                height="18"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                />
-                            </svg>
-                            <input
-                                className={styles.filterInput}
-                                type="search"
-                                placeholder="Filter by topic…"
-                                value={filterQuery}
-                                onChange={(e) => setFilterQuery(e.target.value)}
-                                aria-label="Filter vocabulary topics"
-                            />
-                        </div>
-                    </div>
+        <div className={styles.page}>
+            <CatalogHero
+                id="vocab-heading"
+                breadcrumb={
+                    currentSubject && (
+                        <>
+                            {t('nav.learn')} <span aria-hidden="true">/</span>{' '}
+                            {subjectName(currentSubject, i18n.language)}
+                        </>
+                    )
+                }
+                title={t('vocabList.heading')}
+                subtitle={t('vocabList.subtitle')}
+                stats={[
+                    { label: t('catalog.statAssigned'), value: totalAssigned },
+                    { label: t('vocabList.statTopics'), value: topics.length },
+                ]}
+            />
 
-                    {filteredTopics.length > 0 ? (
-                        <VocabularyTopicGrid
-                            topics={filteredTopics}
-                            onSelectTopic={handleSelectTopic}
-                        />
-                    ) : (
-                        <p className={styles.emptyState}>
-                            {filterQuery.trim()
-                                ? 'No topics match your search.'
-                                : 'No vocabulary topics found yet.'}
-                        </p>
-                    )}
-                </section>
+            <div className={styles.filterBar} role="search">
+                <SearchField
+                    value={filterQuery}
+                    onChange={setFilterQuery}
+                    placeholder={t('vocabList.filterTitle')}
+                    ariaLabel={t('vocabList.filterTitleAria')}
+                />
+            </div>
+
+            {assigned.length > 0 && (
+                <CatalogGroup
+                    id="assigned-vocab-heading"
+                    title={t('catalog.assignedHeading')}
+                    countLabel={t('vocabList.count', { count: assigned.length })}
+                >
+                    <div className={styles.assignedGrid}>
+                        {assigned.map((topic) => {
+                            const due = dueByTopic.get(topic.id) ?? null;
+
+                            return (
+                                <article key={topic.id} className={styles.assignedCard}>
+                                    <div className={styles.cardTop}>
+                                        <div className={styles.homework}>
+                                            <ContentTypeTile type="vocabulary" size="sm" />
+                                            <span className={styles.homeworkLabel}>
+                                                {t('catalog.homework')}
+                                            </span>
+                                        </div>
+                                        {due && (
+                                            <DuePill due={due} overdue={isPastDue(due)} />
+                                        )}
+                                    </div>
+                                    <div className={styles.cardText}>
+                                        <h3 className={styles.assignedTitle} dir="auto">
+                                            {topic.topic}
+                                        </h3>
+                                        {topic.description && (
+                                            <p className={styles.description} dir="auto">
+                                                {topic.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className={styles.assignedFoot}>
+                                        <span />
+                                        <Link
+                                            to={topicLink(topic.id)}
+                                            className={styles.primaryButton}
+                                            aria-label={t('vocabList.studyAria', {
+                                                title: topic.topic,
+                                            })}
+                                        >
+                                            {t('vocabList.study')}
+                                            <ArrowForwardIcon className={styles.flipRtl} />
+                                        </Link>
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                </CatalogGroup>
             )}
+
+            <CatalogGroup
+                id="all-vocab-heading"
+                title={t('vocabList.libraryHeading')}
+                countLabel={t('vocabList.count', { count: library.length })}
+            >
+                {library.length > 0 ? (
+                    <div className={styles.libraryGrid}>
+                        {library.map((topic) => (
+                            <article key={topic.id} className={styles.libraryCard}>
+                                <div className={styles.cardTop}>
+                                    <ContentTypeTile type="vocabulary" />
+                                </div>
+                                <div className={styles.cardText}>
+                                    <h3 className={styles.libraryTitle} dir="auto">
+                                        {topic.topic}
+                                    </h3>
+                                    {topic.description && (
+                                        <p className={styles.descriptionSm} dir="auto">
+                                            {topic.description}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className={styles.libraryFoot}>
+                                    <span />
+                                    <Link
+                                        to={topicLink(topic.id)}
+                                        className={styles.softButton}
+                                        aria-label={t('vocabList.studyAria', {
+                                            title: topic.topic,
+                                        })}
+                                    >
+                                        {t('vocabList.studyShort')}
+                                        <ChevronForwardIcon
+                                            size={16}
+                                            className={styles.flipRtl}
+                                        />
+                                    </Link>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                ) : assigned.length > 0 ? (
+                    <p className={styles.groupEmpty}>{t('vocabList.allAssigned')}</p>
+                ) : isLoading ? (
+                    <p className={styles.groupEmpty} role="status">
+                        {t('common.loading')}
+                    </p>
+                ) : (
+                    <CatalogEmpty
+                        title={query ? t('vocabList.noMatch') : t('vocabList.none')}
+                        hint={query ? t('vocabList.noMatchHint') : undefined}
+                        onClear={query ? () => setFilterQuery('') : undefined}
+                    />
+                )}
+            </CatalogGroup>
         </div>
     );
 }

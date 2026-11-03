@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import {
     useCreateSubjectLevel,
@@ -6,10 +7,20 @@ import {
     useSaveTopic,
 } from '../../hooks/mutations';
 import { useSubjects, useTopics } from '../../hooks/queries';
-import styles from '../../pages/Admin/AdminPage.module.css';
 import type { Subject, Topic } from '../../types/subject';
 import { getApiErrorMessage } from '../../utils/getApiErrorMessage';
 import { descendantIds, flattenTopicTree } from '../../utils/topics';
+import { PlusIcon } from '../hub/icons';
+import {
+    AdminEmpty,
+    AdminListPanel,
+    AdminSearch,
+    AdminSelect,
+    EditButton,
+    RowMenu,
+} from './list/AdminList';
+import styles from './list/AdminList.module.css';
+import { countLabel } from './list/countLabel';
 
 export function SubjectsSection() {
     const { data: subjects = [] } = useSubjects();
@@ -17,38 +28,43 @@ export function SubjectsSection() {
     const subject = subjects.find((s) => s.id === subjectId) ?? subjects[0];
 
     if (!subject) {
-        return (
-            <div className={styles.section}>
-                <p className={styles.empty}>Loading subjects…</p>
-            </div>
-        );
+        return <p className={styles.loading}>Loading subjects…</p>;
     }
 
-    return (
-        <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-                <h3>Subjects</h3>
-                <select
-                    className={styles.subjectFilter}
-                    value={subject.id}
-                    onChange={(e) => setSubjectId(e.target.value)}
-                    aria-label="Subject"
-                >
-                    {subjects.map((s) => (
-                        <option key={s.id} value={s.id}>
-                            {s.nameEn} · {s.nameHe}
-                        </option>
-                    ))}
-                </select>
-            </div>
+    const subjectPicker = (
+        <AdminSelect
+            id="admin-subject"
+            label="Subject"
+            value={subject.id}
+            onChange={setSubjectId}
+        >
+            {subjects.map((s) => (
+                <option key={s.id} value={s.id}>
+                    {s.nameEn} · {s.nameHe}
+                </option>
+            ))}
+        </AdminSelect>
+    );
 
-            <LevelsEditor key={`levels-${subject.id}`} subject={subject} />
-            <TopicTreeEditor key={`topics-${subject.id}`} subject={subject} />
+    return (
+        <div className={styles.stack}>
+            <LevelsPanel
+                key={`levels-${subject.id}`}
+                subject={subject}
+                subjectPicker={subjectPicker}
+            />
+            <TopicsPanel key={`topics-${subject.id}`} subject={subject} />
         </div>
     );
 }
 
-function LevelsEditor({ subject }: { subject: Subject }) {
+function LevelsPanel({
+    subject,
+    subjectPicker,
+}: {
+    subject: Subject;
+    subjectPicker: ReactNode;
+}) {
     const createLevel = useCreateSubjectLevel();
     const removeLevel = useRemoveSubjectLevel();
     const [code, setCode] = useState('');
@@ -56,40 +72,78 @@ function LevelsEditor({ subject }: { subject: Subject }) {
     const error = createLevel.error ?? removeLevel.error;
 
     return (
-        <div className={styles.subSection}>
-            <h4>Levels</h4>
-            <p className={styles.hintText}>
+        <AdminListPanel
+            id="admin-levels-heading"
+            title={`Levels · ${subject.nameEn}`}
+            count={`${subject.levels.length} total`}
+            toolbar={<div className={styles.toolbarEnd}>{subjectPicker}</div>}
+        >
+            <p className={styles.panelHint}>
                 CEFR for English; study units (יח״ל) for Math and Computer
                 Science.
             </p>
-            <ul className={styles.subList}>
-                {subject.levels.map((level) => (
-                    <li key={level.id} className={styles.subItem}>
-                        <div className={styles.subItemRow}>
-                            <span dir="auto">
-                                <strong>{level.name}</strong> ({level.code})
-                            </span>
-                            <button
-                                type="button"
-                                className={styles.deleteBtn}
-                                disabled={removeLevel.isPending}
-                                onClick={() => {
-                                    if (!confirm(`Remove level "${level.name}"?`))
-                                        return;
-                                    removeLevel.mutate(level.id);
-                                }}
-                            >
-                                Remove
-                            </button>
-                        </div>
-                    </li>
-                ))}
-                {subject.levels.length === 0 && (
-                    <li className={styles.empty}>No levels yet.</li>
-                )}
-            </ul>
+            {subject.levels.length > 0 ? (
+                <div className={styles.tableWrap}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th scope="col">Level</th>
+                                <th scope="col">Code</th>
+                                <th scope="col">
+                                    <span className={styles.srOnly}>Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {subject.levels.map((level) => (
+                                <tr key={level.id}>
+                                    <td className={styles.primaryCell}>
+                                        <span className={styles.rowTitle} dir="auto">
+                                            {level.name}
+                                        </span>
+                                    </td>
+                                    <td data-label="Code">
+                                        <span className={styles.outlinePill}>
+                                            {level.code}
+                                        </span>
+                                    </td>
+                                    <td className={styles.actionsCell}>
+                                        <div className={styles.actions}>
+                                            <RowMenu
+                                                label={`More actions for ${level.name}`}
+                                                items={[
+                                                    {
+                                                        label: 'Remove level',
+                                                        danger: true,
+                                                        disabled: removeLevel.isPending,
+                                                        onSelect: () => {
+                                                            if (
+                                                                !confirm(
+                                                                    `Remove level "${level.name}"?`,
+                                                                )
+                                                            )
+                                                                return;
+                                                            removeLevel.mutate(level.id);
+                                                        },
+                                                    },
+                                                ]}
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                <AdminEmpty
+                    title="No levels yet"
+                    hint="Add the first one below."
+                />
+            )}
             <form
-                className={styles.inlineForm}
+                className={styles.addRow}
+                aria-label="Add a level"
                 onSubmit={async (e) => {
                     e.preventDefault();
                     await createLevel.mutateAsync({
@@ -106,6 +160,7 @@ function LevelsEditor({ subject }: { subject: Subject }) {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="Code (e.g. 4u)"
+                    aria-label="Level code"
                     pattern="[a-zA-Z0-9_\-]+"
                     required
                 />
@@ -114,34 +169,45 @@ function LevelsEditor({ subject }: { subject: Subject }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder='Name (e.g. 4 יח"ל)'
+                    aria-label="Level name"
                     required
                 />
                 <button
                     type="submit"
-                    className={styles.addOptionBtn}
+                    className={styles.primaryButton}
                     disabled={createLevel.isPending}
                 >
+                    <PlusIcon size={16} />
                     Add level
                 </button>
             </form>
-            {error && <p className={styles.error}>{getApiErrorMessage(error)}</p>}
-        </div>
+            {error && (
+                <p className={styles.panelError}>{getApiErrorMessage(error)}</p>
+            )}
+        </AdminListPanel>
     );
 }
 
-function TopicTreeEditor({ subject }: { subject: Subject }) {
-    const { data: topics = [] } = useTopics(subject.id);
+function TopicsPanel({ subject }: { subject: Subject }) {
+    const { data: topics = [], isLoading } = useTopics(subject.id);
     const saveTopic = useSaveTopic();
     const removeTopic = useRemoveTopic();
     const [editing, setEditing] = useState<Topic | null>(null);
     const [name, setName] = useState('');
     const [parentId, setParentId] = useState('');
+    const [search, setSearch] = useState('');
     const error = saveTopic.error ?? removeTopic.error;
     const rows = flattenTopicTree(topics);
     // A topic can't move under itself or its own subtopics.
     const blockedParents = editing
         ? descendantIds(topics, editing.id)
         : new Set<string>();
+    const term = search.trim().toLowerCase();
+    const visible = term
+        ? rows.filter(({ topic }) => topic.name.toLowerCase().includes(term))
+        : rows;
+    const parentName = (id: string | null) =>
+        topics.find((t) => t.id === id)?.name ?? null;
 
     const reset = () => {
         setEditing(null);
@@ -150,55 +216,119 @@ function TopicTreeEditor({ subject }: { subject: Subject }) {
     };
 
     return (
-        <div className={styles.subSection}>
-            <h4>Syllabus topics</h4>
-            <p className={styles.hintText}>
+        <AdminListPanel
+            id="admin-topics-heading"
+            title="Syllabus topics"
+            count={countLabel(visible.length, rows.length, Boolean(term))}
+            toolbar={
+                <AdminSearch
+                    value={search}
+                    onChange={setSearch}
+                    placeholder="Search topics"
+                    label="Search syllabus topics"
+                />
+            }
+        >
+            <p className={styles.panelHint}>
                 Build the syllabus as a tree, e.g. Calculus › Derivatives, and
-                tag questions with it.
+                tag questions and lessons with it.
             </p>
-            <ul className={styles.subList}>
-                {rows.map(({ topic, depth }) => (
-                    <li key={topic.id} className={styles.subItem}>
-                        <div
-                            className={styles.subItemRow}
-                            style={{ paddingInlineStart: `${depth * 1.5}rem` }}
-                        >
-                            <span dir="auto">
-                                {depth > 0 ? '└ ' : ''}
-                                {topic.name}
-                            </span>
-                            <button
-                                type="button"
-                                className={styles.editBtn}
-                                onClick={() => {
-                                    setEditing(topic);
-                                    setName(topic.name);
-                                    setParentId(topic.parentId ?? '');
-                                }}
-                            >
-                                Edit
-                            </button>
-                            <button
-                                type="button"
-                                className={styles.deleteBtn}
-                                disabled={removeTopic.isPending}
-                                onClick={() => {
-                                    if (!confirm(`Delete topic "${topic.name}"?`))
-                                        return;
-                                    removeTopic.mutate(topic.id);
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </li>
-                ))}
-                {rows.length === 0 && (
-                    <li className={styles.empty}>No topics yet.</li>
-                )}
-            </ul>
+            {isLoading ? (
+                <p className={styles.loading} role="status">
+                    Loading topics…
+                </p>
+            ) : visible.length > 0 ? (
+                <div className={styles.tableWrap}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th scope="col">Topic</th>
+                                <th scope="col">Parent</th>
+                                <th scope="col">
+                                    <span className={styles.srOnly}>Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {visible.map(({ topic, depth }) => (
+                                <tr
+                                    key={topic.id}
+                                    aria-current={
+                                        editing?.id === topic.id ? 'true' : undefined
+                                    }
+                                >
+                                    <td className={styles.primaryCell}>
+                                        <span
+                                            className={styles.rowTitle}
+                                            dir="auto"
+                                            style={{
+                                                paddingInlineStart: term
+                                                    ? 0
+                                                    : `${depth * 1.25}rem`,
+                                            }}
+                                        >
+                                            {depth > 0 && !term && (
+                                                <span
+                                                    aria-hidden="true"
+                                                    className={styles.treeMark}
+                                                >
+                                                    └{' '}
+                                                </span>
+                                            )}
+                                            {topic.name}
+                                        </span>
+                                    </td>
+                                    <td data-label="Parent" className={`${styles.mutedCell} ${styles.labelled}`}>
+                                        {parentName(topic.parentId) ?? 'Top level'}
+                                    </td>
+                                    <td className={styles.actionsCell}>
+                                        <div className={styles.actions}>
+                                            <EditButton
+                                                label={`Edit ${topic.name}`}
+                                                onClick={() => {
+                                                    setEditing(topic);
+                                                    setName(topic.name);
+                                                    setParentId(topic.parentId ?? '');
+                                                }}
+                                            />
+                                            <RowMenu
+                                                label={`More actions for ${topic.name}`}
+                                                items={[
+                                                    {
+                                                        label: 'Delete topic',
+                                                        danger: true,
+                                                        disabled: removeTopic.isPending,
+                                                        onSelect: () => {
+                                                            if (
+                                                                !confirm(
+                                                                    `Delete topic "${topic.name}"?`,
+                                                                )
+                                                            )
+                                                                return;
+                                                            if (editing?.id === topic.id)
+                                                                reset();
+                                                            removeTopic.mutate(topic.id);
+                                                        },
+                                                    },
+                                                ]}
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                <AdminEmpty
+                    title={term ? 'No topics match your search' : 'No topics yet'}
+                    hint={term ? 'Try a different word.' : 'Add the first one below.'}
+                    onClear={term ? () => setSearch('') : undefined}
+                />
+            )}
             <form
-                className={styles.inlineForm}
+                className={styles.addRow}
+                aria-label={editing ? `Edit topic ${editing.name}` : 'Add a topic'}
                 onSubmit={async (e) => {
                     e.preventDefault();
                     const siblings = topics.filter(
@@ -221,6 +351,7 @@ function TopicTreeEditor({ subject }: { subject: Subject }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Topic name (e.g. נגזרות)"
+                    aria-label="Topic name"
                     required
                 />
                 <select
@@ -240,22 +371,31 @@ function TopicTreeEditor({ subject }: { subject: Subject }) {
                 </select>
                 <button
                     type="submit"
-                    className={styles.addOptionBtn}
+                    className={styles.primaryButton}
                     disabled={saveTopic.isPending}
                 >
-                    {editing ? 'Save topic' : 'Add topic'}
+                    {editing ? (
+                        'Save topic'
+                    ) : (
+                        <>
+                            <PlusIcon size={16} />
+                            Add topic
+                        </>
+                    )}
                 </button>
                 {editing && (
                     <button
                         type="button"
-                        className={styles.cancelBtn}
+                        className={styles.secondaryButton}
                         onClick={reset}
                     >
                         Cancel
                     </button>
                 )}
             </form>
-            {error && <p className={styles.error}>{getApiErrorMessage(error)}</p>}
-        </div>
+            {error && (
+                <p className={styles.panelError}>{getApiErrorMessage(error)}</p>
+            )}
+        </AdminListPanel>
     );
 }

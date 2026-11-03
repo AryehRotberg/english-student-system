@@ -1,551 +1,117 @@
-.dashboard {
-    font-family: var(--font-body);
-}
-
-.grid {
-    display: grid;
-    gap: var(--space-8);
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-}
-
-.leftColumn,
-.rightColumn {
-    display: grid;
-    gap: var(--space-8);
-    align-content: start;
-}
-
-.hero {
-    background:
-        radial-gradient(120% 140% at 0% 0%, var(--brand-400), transparent 55%),
-        linear-gradient(135deg, var(--brand-500), var(--brand-700));
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    padding: var(--space-10);
-    position: relative;
-}
-
-.heroGlowA {
-    background: rgba(255, 255, 255, 0.16);
-    border-radius: var(--radius-pill);
-    height: 18rem;
-    position: absolute;
-    inset-inline-end: -5rem;
-    top: -5rem;
-    width: 18rem;
-}
-
-.heroGlowB {
-    background: rgba(110, 39, 7, 0.32);
-    border-radius: var(--radius-pill);
-    bottom: -4rem;
-    height: 14rem;
-    inset-inline-start: -3rem;
-    position: absolute;
-    width: 14rem;
-}
-
-.heroInner {
+.page {
+    color: var(--hub-ink);
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    position: relative;
-    z-index: 1;
+    font-family: var(--font-ui);
+    gap: 28px;
+    padding: 8px 0 32px;
 }
 
-.heroTitle {
-    color: #ffffff;
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 3.6vw, var(--text-4xl));
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: var(--leading-tight);
-    margin: 0;
-    text-shadow: 0 2px 12px rgba(110, 39, 7, 0.28);
-}
-
-.heroSubtitle {
-    color: var(--brand-50);
-    font-size: var(--text-lg);
-    line-height: var(--leading-normal);
-    margin: 0;
-    max-width: 34rem;
-}
-
-.heroAction {
-    background: #ffffff;
-    border: none;
-    border-radius: var(--radius-pill);
-    box-shadow: 0 6px 0 0 rgba(110, 39, 7, 0.35);
-    color: var(--brand-700);
-    cursor: pointer;
-    font-family: var(--font-display);
-    font-size: var(--text-base);
-    font-weight: 600;
-    margin-top: var(--space-2);
-    min-height: 3rem;
-    padding: var(--space-3) var(--space-8);
-    transition:
-        transform var(--dur) var(--ease-bounce),
-        box-shadow var(--dur) var(--ease-out);
-    width: fit-content;
-}
-
-.heroAction:hover {
-    box-shadow: 0 8px 0 0 rgba(110, 39, 7, 0.35);
-    transform: translateY(-2px);
-}
-
-.heroAction:active {
-    box-shadow: 0 2px 0 0 rgba(110, 39, 7, 0.35);
-    transform: translateY(3px);
-}
-
-.sectionBar {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--space-4);
-}
-
-.sectionTitle {
-    color: var(--ink-900);
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    margin: 0;
-}
-
-.viewAll {
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-pill);
-    color: var(--brand-600);
-    cursor: pointer;
-    font-size: var(--text-sm);
-    font-weight: 700;
-    padding: var(--space-1) var(--space-3);
-    transition: background var(--dur) var(--ease-out);
-}
-
-.viewAll:hover {
-    background: var(--brand-50);
-}
-
-.cardShell,
-.taskCard {
-    background: var(--surface-0);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-}
-
-.taskCard {
-    display: flex;
-    gap: var(--space-6);
-    justify-content: space-between;
-    padding: var(--space-6);
-    transition:
-        transform var(--dur) var(--ease-out),
-        box-shadow var(--dur) var(--ease-out);
-}
-
-.taskCard:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-3px);
-}
-
-.taskMain {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: var(--space-3);
-}
-
-.taskHead {
-    align-items: center;
-    display: inline-flex;
-    gap: var(--space-2);
-}
-
-.taskDot {
-    background: var(--danger-500);
-    border-radius: var(--radius-pill);
-    box-shadow: 0 0 0 4px var(--danger-100);
-    height: 0.5rem;
-    width: 0.5rem;
-}
-
-.taskDue {
-    color: var(--ink-500);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    margin: 0;
-    text-transform: uppercase;
-}
-
-.taskTitle {
-    color: var(--ink-900);
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    font-weight: 600;
-    line-height: var(--leading-snug);
-    margin: 0;
-}
-
-.taskMeta {
-    color: var(--ink-500);
-    display: flex;
-    flex-wrap: wrap;
-    font-size: var(--text-sm);
-    gap: var(--space-4);
-}
-
-.metaItem {
-    align-items: center;
-    display: inline-flex;
-    gap: var(--space-1);
-}
-
-.startButton {
-    align-items: center;
-    background: var(--brand-500);
-    border: none;
-    border-radius: var(--radius-pill);
-    box-shadow: 0 4px 0 0 var(--brand-700);
-    color: #ffffff;
-    cursor: pointer;
-    display: inline-flex;
-    font-family: var(--font-display);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    justify-content: center;
-    min-height: 2.8rem;
-    padding: var(--space-2) var(--space-6);
-    transition:
-        transform var(--dur) var(--ease-bounce),
-        box-shadow var(--dur) var(--ease-out);
-    width: fit-content;
-}
-
-.startButton:hover:not(:disabled) {
-    box-shadow: 0 6px 0 0 var(--brand-700);
-    transform: translateY(-2px);
-}
-
-.startButton:active:not(:disabled) {
-    box-shadow: 0 1px 0 0 var(--brand-700);
-    transform: translateY(3px);
-}
-
-.startButton:disabled {
-    box-shadow: none;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.taskVisual {
-    align-items: center;
-    background: linear-gradient(
-        140deg,
-        var(--sun-100),
-        var(--brand-100) 55%,
-        var(--grape-100)
-    );
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    display: flex;
-    justify-content: center;
-    min-height: 10rem;
-    min-width: 15rem;
-    overflow: hidden;
-    padding: var(--space-3);
-}
-
-.taskVisualArt {
-    height: auto;
-    max-height: 100%;
-    width: 100%;
-}
-
-.cardShell {
-    padding: var(--space-6);
-}
-
-.cardTitle {
-    color: var(--ink-900);
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    margin: 0 0 var(--space-5);
-}
-
-.progressBlock {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-}
-
-.progressRing {
-    align-self: center;
-    display: grid;
-    place-items: center;
-    position: relative;
-}
-
-.progressSvg {
-    height: 8.5rem;
-    transform: rotate(-90deg);
-    width: 8.5rem;
-}
-
-.progressTrack {
-    fill: transparent;
-    stroke: var(--surface-3);
-    stroke-width: 10;
-}
-
-.progressFill {
-    fill: transparent;
-    stroke: var(--brand-500);
-    stroke-linecap: round;
-    stroke-width: 10;
-    transition: stroke-dashoffset var(--dur-slow) var(--ease-out);
-}
-
-.progressValue {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    inset: 0;
-    justify-content: center;
-    position: absolute;
-}
-
-.progressPercent {
-    color: var(--ink-900);
-    font-family: var(--font-display);
-    font-size: var(--text-3xl);
-    font-weight: 700;
-    line-height: 1;
-}
-
-.progressText {
-    color: var(--ink-400);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-.progressNote {
-    color: var(--ink-500);
-    font-size: var(--text-sm);
-    line-height: var(--leading-snug);
-    margin: 0;
+.loading {
+    color: var(--hub-muted);
+    font-family: var(--font-ui);
+    padding: 32px 0;
     text-align: center;
 }
 
-.emptyState {
-    color: var(--ink-500);
-    margin: 0;
-}
-
-.assignmentList {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.assignmentRow {
-    align-items: flex-start;
-    background: var(--surface-1);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-4);
-    transition:
-        background var(--dur) var(--ease-out),
-        border-color var(--dur) var(--ease-out);
-}
-
-.assignmentRow:hover {
-    background: var(--brand-50);
-    border-color: var(--brand-200);
-}
-
-.assignmentRowMain {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    min-width: 0;
-    width: 100%;
-}
-
-.assignmentRowTitle {
-    color: var(--ink-900);
-    font-family: var(--font-display);
-    font-size: var(--text-base);
-    font-weight: 600;
-    margin: 0;
-    overflow-wrap: break-word;
-}
-
-/* Long descriptions would blow out the narrow column, so cap at two lines. */
-.assignmentRowDesc {
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    color: var(--ink-500);
-    display: -webkit-box;
-    font-size: var(--text-sm);
-    line-height: var(--leading-snug);
-    margin: 0;
-    overflow: hidden;
-}
-
-.assignmentChipRow {
+.pageHead {
+    align-items: flex-end;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    gap: 16px;
+    justify-content: space-between;
 }
 
-.assignmentChip {
-    border: 1px solid transparent;
-    border-radius: var(--radius-pill);
+.greeting {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.date {
+    color: var(--hub-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.title {
+    font-family: var(--font-ui);
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.summary {
+    color: var(--hub-ink-3);
+    font-size: 16px;
+}
+
+.secondaryButton {
+    align-items: center;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
     cursor: pointer;
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    max-width: 100%;
-    overflow: hidden;
-    padding: var(--space-1) var(--space-3);
-    text-overflow: ellipsis;
-    transition:
-        filter var(--dur) var(--ease-out),
-        transform var(--dur) var(--ease-bounce);
-    white-space: nowrap;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 16px;
+    transition: background var(--dur-fast) ease;
 }
 
-.assignmentChip:hover {
-    filter: brightness(0.96);
-    transform: translateY(-1px);
+.secondaryButton:hover {
+    background: var(--hub-hover);
 }
 
-/* Items with no content attached: listed, but nothing to open. */
-.assignmentChip[data-static='true'] {
-    background: var(--surface-2);
-    border-color: var(--line-strong);
-    border-style: dashed;
-    color: var(--ink-400);
-    cursor: default;
-    display: inline-block;
+/* Main column first; the overview drops under it when the row runs out of room. */
+.columns {
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
 }
 
-.assignmentChip[data-static='true']:hover {
-    filter: none;
-    transform: none;
+.mainColumn {
+    display: flex;
+    flex: 999 1 540px;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
 }
 
-/* Kept before the title so truncation clips the title, never the category. */
-.chipCategory {
-    font-size: 0.85em;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    opacity: 0.8;
-    text-transform: uppercase;
+.sideColumn {
+    display: flex;
+    flex: 1 1 300px;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
 }
 
-.chipCategory::after {
-    content: '·';
-    margin-inline: 0.4em;
-}
-
-.chipQuiz {
-    background: var(--grape-100);
-    border-color: var(--grape-300);
-    color: var(--grape-700);
-}
-
-.chipReading {
-    background: var(--info-100);
-    border-color: var(--info-300);
-    color: var(--info-700);
-}
-
-.chipVocabulary {
-    background: var(--teal-100);
-    border-color: var(--teal-300);
-    color: var(--teal-700);
-}
-
-.chipWriting {
-    background: var(--sun-100);
-    border-color: var(--sun-300);
-    color: var(--sun-700);
-}
-
-.chipLesson {
-    background: var(--brand-100);
-    border-color: var(--brand-300);
-    color: var(--brand-700);
-}
-
-.assignmentDue {
-    background: var(--surface-2);
-    border-radius: var(--radius-pill);
-    color: var(--ink-700);
-    flex-shrink: 0;
-    font-size: var(--text-xs);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    padding: var(--space-1) var(--space-3);
-    white-space: nowrap;
-}
-
-.assignmentDue[data-overdue='true'] {
-    background: var(--danger-100);
-    color: var(--danger-700);
-}
-
-@media (max-width: 1024px) {
-    .grid {
-        gap: var(--space-6);
+@media (max-width: 640px) {
+    .page {
+        gap: 20px;
+        padding-top: 4px;
     }
 
-    .leftColumn,
-    .rightColumn {
-        gap: var(--space-6);
-    }
-
-    .hero {
-        padding: var(--space-6);
-    }
-}
-
-@media (max-width: 900px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 720px) {
-    .taskCard {
+    .pageHead {
+        align-items: stretch;
         flex-direction: column;
     }
 
-    .taskVisual {
-        min-height: 8.5rem;
-        min-width: 100%;
+    .secondaryButton {
+        justify-content: center;
+    }
+
+    .columns,
+    .mainColumn,
+    .sideColumn {
+        gap: 16px;
     }
 }

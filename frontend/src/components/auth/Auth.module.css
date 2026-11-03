@@ -1,0 +1,437 @@
+/* Form on the start side, brand panel on the end side (mirrors in Hebrew). */
+.page {
+    background: var(--surface-0);
+    display: grid;
+    font-family: var(--font-ui);
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ─── Form side ────────────────────────────────────────── */
+
+.formSide {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 20px clamp(16px, 4vw, 48px) 32px;
+}
+
+.top {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+}
+
+.topActions {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    margin-inline-start: auto;
+}
+
+/* Only on phones, where the brand panel is hidden. */
+.smallBrand {
+    align-items: center;
+    color: var(--hub-ink);
+    display: none;
+    font-size: 17px;
+    font-weight: 700;
+    gap: 10px;
+    min-height: 44px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.smallMark {
+    align-items: center;
+    background: var(--hub-accent);
+    border-radius: 8px;
+    color: #ffffff;
+    display: inline-flex;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+}
+
+.language {
+    align-items: center;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: 999px;
+    color: var(--hub-ink);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px;
+}
+
+.language:hover {
+    background: var(--hub-hover);
+}
+
+.switch {
+    background: var(--hub-subtle);
+    border: 1px solid var(--hub-border);
+    border-radius: 999px;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+}
+
+.switchLink {
+    align-items: center;
+    border-radius: 999px;
+    color: var(--hub-ink-2);
+    display: inline-flex;
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 0 16px;
+    text-decoration: none;
+    transition:
+        background var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    white-space: nowrap;
+}
+
+.switchLink:hover {
+    color: var(--hub-ink);
+}
+
+.switchActive,
+.switchActive:hover {
+    background: var(--hub-accent-deep);
+    color: #ffffff;
+}
+
+.formWrap {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 18px;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 400px;
+    padding: 40px 0 16px;
+    width: 100%;
+}
+
+.title {
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    font-size: clamp(26px, 3vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.subtitle {
+    color: var(--hub-muted);
+    font-size: 15px;
+    margin: -10px 0 4px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    color: var(--hub-ink);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hint {
+    color: var(--hub-muted);
+    font-size: 13px;
+    margin: -2px 0 2px;
+}
+
+.control {
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+
+.controlIcon {
+    color: var(--hub-placeholder);
+    display: inline-flex;
+    inset-inline-start: 14px;
+    pointer-events: none;
+    position: absolute;
+}
+
+.controlIcon svg {
+    height: 18px;
+    width: 18px;
+}
+
+.input,
+.select {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: 12px;
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    min-height: 48px;
+    min-width: 0;
+    transition:
+        border-color var(--dur-fast) ease,
+        box-shadow var(--dur-fast) ease;
+    width: 100%;
+}
+
+.input {
+    padding-block: 0;
+    padding-inline: 44px 14px;
+}
+
+/* Room for the show/hide button. */
+.control:has(.reveal) .input {
+    padding-inline-end: 48px;
+}
+
+.select {
+    appearance: none;
+    cursor: pointer;
+    overflow: hidden;
+    padding-block: 0;
+    padding-inline: 14px 40px;
+    text-overflow: ellipsis;
+}
+
+.selectChevron {
+    color: var(--hub-muted);
+    inset-inline-end: 14px;
+    pointer-events: none;
+    position: absolute;
+}
+
+.input:focus,
+.select:focus {
+    border-color: var(--hub-accent);
+    box-shadow: var(--hub-focus);
+    outline: none;
+}
+
+.reveal {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--hub-muted);
+    cursor: pointer;
+    display: inline-flex;
+    height: 40px;
+    inset-inline-end: 4px;
+    justify-content: center;
+    position: absolute;
+    width: 40px;
+}
+
+.reveal:hover {
+    background: var(--hub-hover);
+    color: var(--hub-ink);
+}
+
+.submit {
+    align-items: center;
+    background: var(--hub-accent);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 600;
+    justify-content: center;
+    margin-top: 4px;
+    min-height: 48px;
+    padding: 0 20px;
+    transition: background var(--dur-fast) ease;
+}
+
+.submit:hover:not(:disabled) {
+    background: var(--hub-accent-hover);
+}
+
+.submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.error {
+    background: var(--hub-danger-bg);
+    border-radius: 10px;
+    color: var(--hub-danger-fg);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    padding: 10px 12px;
+}
+
+.success {
+    background: var(--hub-ok-bg);
+    border-radius: 12px;
+    color: var(--hub-ok-fg);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0;
+    padding: 14px 16px;
+}
+
+.footer {
+    color: var(--hub-muted);
+    font-size: 14px;
+    margin: 0;
+    text-align: center;
+}
+
+.footer a {
+    color: var(--hub-accent-text);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* ─── Brand side ───────────────────────────────────────── */
+
+.brandSide {
+    background:
+        radial-gradient(55% 45% at 18% 88%, rgba(253, 235, 211, 0.26), transparent 70%),
+        radial-gradient(50% 45% at 88% 12%, rgba(110, 126, 245, 0.55), transparent 70%),
+        linear-gradient(160deg, #1c2675 0%, var(--hub-accent-deep) 48%, #18205e 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow: hidden;
+    padding: 28px clamp(24px, 4vw, 56px);
+    position: relative;
+}
+
+.rings {
+    height: auto;
+    inset-inline-end: -120px;
+    opacity: 0.12;
+    pointer-events: none;
+    position: absolute;
+    top: -120px;
+    width: 520px;
+}
+
+.brandName {
+    align-items: center;
+    display: inline-flex;
+    font-size: 18px;
+    font-weight: 700;
+    gap: 10px;
+    position: relative;
+}
+
+.brandCenter {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 22px;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 560px;
+    padding: 32px 0;
+    position: relative;
+    text-align: center;
+}
+
+.bigMark {
+    align-items: center;
+    background: var(--hub-peach);
+    border-radius: 32px;
+    box-shadow: 0 24px 48px rgba(8, 12, 48, 0.35);
+    color: var(--hub-accent-deep);
+    display: inline-flex;
+    height: 128px;
+    justify-content: center;
+    margin-bottom: 8px;
+    width: 128px;
+}
+
+.headline {
+    font-size: clamp(32px, 3.4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    margin: 0;
+}
+
+.highlight {
+    color: #ffd6a1;
+    display: block;
+}
+
+.tagline {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 17px;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 440px;
+}
+
+/* ─── Narrow screens: form only ────────────────────────── */
+
+@media (max-width: 900px) {
+    .page {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .brandSide {
+        display: none;
+    }
+
+    .smallBrand {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 480px) {
+    .formSide {
+        padding: 12px 16px 24px;
+    }
+
+    /* The bar wraps: logo on its own line, controls under it. */
+    .top {
+        flex-wrap: wrap;
+    }
+
+    .topActions {
+        justify-content: space-between;
+        margin-inline-start: 0;
+        width: 100%;
+    }
+
+    .formWrap {
+        justify-content: flex-start;
+        padding-top: 28px;
+    }
+}

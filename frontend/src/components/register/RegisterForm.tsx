@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useRegister } from '../../hooks/mutations';
-import { LanguageToggle } from '../layout/LanguageToggle';
 import { useTeachers } from '../../hooks/queries';
-import styles from '../../pages/Register/RegisterPage.module.css';
+import styles from '../auth/Auth.module.css';
+import { AuthField, AuthLayout } from '../auth/AuthLayout';
+import { LockIcon, MailIcon, UserIcon } from '../hub/icons';
 import { TeacherSelect } from './TeacherSelect';
 
 interface RegisterFormProps {
@@ -43,96 +44,93 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     };
 
     return (
-        <form
-            className={styles.card}
-            onSubmit={(event) => void handleSubmit(event)}
+        <AuthLayout
+            title={t('auth.registerTitle')}
+            subtitle={t('auth.registerSubtitle')}
         >
-            <LanguageToggle className={styles.languageButton} />
-            <h1 className={styles.title}>{t('app.name')}</h1>
-            <p className={styles.subtitle}>{t('auth.registerSubtitle')}</p>
-
-            <label className={styles.label} htmlFor="name">
-                {t('auth.name')}
-            </label>
-            <input
-                className={styles.input}
-                id="name"
-                onChange={(event) => setName(event.target.value)}
-                required
-                type="text"
-                value={name}
-            />
-
-            <label className={styles.label} htmlFor="email">
-                {t('auth.email')}
-            </label>
-            <input
-                className={styles.input}
-                id="email"
-                onChange={(event) => setEmail(event.target.value)}
-                required
-                type="email"
-                value={email}
-            />
-
-            <label className={styles.label} htmlFor="password">
-                {t('auth.password')}
-            </label>
-            <input
-                className={styles.input}
-                id="password"
-                minLength={8}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-                type="password"
-                value={password}
-            />
-
-            <label className={styles.label} htmlFor="confirmPassword">
-                {t('auth.confirmPassword')}
-            </label>
-            <input
-                className={styles.input}
-                id="confirmPassword"
-                minLength={8}
-                onChange={(event) => {
-                    setConfirmPassword(event.target.value);
-                    setConfirmError('');
-                }}
-                required
-                type="password"
-                value={confirmPassword}
-            />
-            {confirmError ? (
-                <p className={styles.error}>{confirmError}</p>
-            ) : null}
-
-            <TeacherSelect
-                teachers={teachers}
-                isLoading={teachersLoading}
-                value={teacherId}
-                onChange={setTeacherId}
-            />
-
-            <button
-                className={styles.button}
-                disabled={registerMutation.isPending}
-                type="submit"
+            <form
+                className={styles.form}
+                onSubmit={(event) => void handleSubmit(event)}
             >
-                {registerMutation.isPending
-                    ? t('auth.creatingAccount')
-                    : t('auth.register')}
-            </button>
+                <AuthField
+                    id="name"
+                    label={t('auth.name')}
+                    icon={<UserIcon />}
+                    autoComplete="name"
+                    required
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                />
+                <AuthField
+                    id="email"
+                    label={t('auth.email')}
+                    icon={<MailIcon />}
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                />
+                <AuthField
+                    id="password"
+                    label={t('auth.password')}
+                    hint={t('auth.passwordHint')}
+                    icon={<LockIcon />}
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                />
+                <AuthField
+                    id="confirmPassword"
+                    label={t('auth.confirmPassword')}
+                    icon={<LockIcon />}
+                    type="password"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                    value={confirmPassword}
+                    onChange={(event) => {
+                        setConfirmPassword(event.target.value);
+                        setConfirmError('');
+                    }}
+                />
+                {confirmError ? (
+                    <p className={styles.error} role="alert">
+                        {confirmError}
+                    </p>
+                ) : null}
 
-            {registerMutation.isError ? (
-                <p className={styles.error}>
-                    {(registerMutation.error as Error).message}
-                </p>
-            ) : null}
+                <TeacherSelect
+                    teachers={teachers}
+                    isLoading={teachersLoading}
+                    value={teacherId}
+                    onChange={setTeacherId}
+                />
 
-            <Link className={styles.navLink} to="/login">
-                {t('auth.haveAccount')}
-            </Link>
-        </form>
+                {registerMutation.isError ? (
+                    <p className={styles.error} role="alert">
+                        {(registerMutation.error as Error).message}
+                    </p>
+                ) : null}
+
+                <button
+                    className={styles.submit}
+                    disabled={registerMutation.isPending}
+                    type="submit"
+                >
+                    {registerMutation.isPending
+                        ? t('auth.creatingAccount')
+                        : t('auth.register')}
+                </button>
+            </form>
+
+            <p className={styles.footer}>
+                {t('auth.haveAccountPrompt')}{' '}
+                <Link to="/login">{t('auth.login')}</Link>
+            </p>
+        </AuthLayout>
     );
 }

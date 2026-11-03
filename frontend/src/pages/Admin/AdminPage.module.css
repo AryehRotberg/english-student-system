@@ -1,130 +1,109 @@
 /* ─── Admin Shell Layout ──────────────────────────────────── */
 
+/* The app frame supplies the sidebar and the page padding. */
 .shell {
-    display: flex;
-    flex: 1;
     width: 100%;
-    min-height: calc(100vh - 68px);
-}
-
-.sidebar {
-    width: 256px;
-    flex-shrink: 0;
-    background: var(--surface-2);
-    border-inline-end: 1px solid var(--line);
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebarBrand {
-    padding: var(--space-6) var(--space-6) var(--space-4);
-    border-bottom: 1px solid var(--line);
-}
-
-.sidebarTitle {
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--ink-900);
-    margin: 0 0 var(--space-1);
-}
-
-.sidebarSub {
-    font-size: var(--text-xs);
-    color: var(--ink-500);
-    font-weight: 600;
-    margin: 0;
-}
-
-.sidebarNav {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    padding: var(--space-3);
-    flex: 1;
-}
-
-.navItem {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    width: 100%;
-    padding: var(--space-3) var(--space-4);
-    border: none;
-    background: transparent;
-    color: var(--ink-700);
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: var(--radius-pill);
-    text-align: start;
-    transition:
-        background var(--dur) var(--ease-out),
-        color var(--dur) var(--ease-out),
-        transform var(--dur) var(--ease-out);
-}
-
-.navItem:hover {
-    background: var(--surface-3);
-    color: var(--ink-900);
-    transform: translateX(3px);
-}
-
-.navItemActive {
-    background: var(--brand-500);
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: var(--shadow-sm);
-}
-
-.navItemActive:hover {
-    background: var(--brand-600);
-    color: #ffffff;
-}
-
-.navIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: inherit;
 }
 
 /* ─── Main Content ───────────────────────────────────────── */
 
 .main {
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
+    gap: 20px;
     min-width: 0;
-    overflow-y: auto;
 }
 
+/* Page hero: what this section is, plus its main action. */
 .mainHeader {
-    padding: var(--space-8) var(--space-8) var(--space-5);
-    border-bottom: 1px solid var(--line);
+    align-items: flex-end;
+    background: var(--hub-accent-deep);
+    border-radius: var(--hub-radius-lg);
+    color: #ffffff;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: var(--font-ui);
+    gap: 20px;
+    justify-content: space-between;
+    overflow: hidden;
+    padding: clamp(24px, 3vw, 32px);
+    position: relative;
+}
+
+.heroRings {
+    inset-inline-end: -60px;
+    opacity: 0.16;
+    pointer-events: none;
+    position: absolute;
+    top: -150px;
+}
+
+.heroText {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 600px;
+    position: relative;
+}
+
+.breadcrumb {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .mainTitle {
-    font-family: var(--font-display);
-    font-size: var(--text-3xl);
-    font-weight: 600;
-    color: var(--ink-900);
-    margin: 0 0 var(--space-2);
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 700;
     letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0;
 }
 
 .mainDesc {
-    font-size: var(--text-sm);
-    color: var(--ink-500);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
     margin: 0;
-    max-width: 60ch;
+}
+
+.heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: relative;
+}
+
+.heroPrimary {
+    align-items: center;
+    background: #ffffff;
+    border: none;
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-accent-deep);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 20px;
+    transition: background var(--dur-fast) ease;
+}
+
+.heroPrimary:hover {
+    background: var(--hub-accent-soft);
+}
+
+.mainHeader :focus-visible {
+    outline-color: #ffffff;
 }
 
 .mainContent {
-    padding: var(--space-6) var(--space-8) var(--space-12);
     flex: 1;
+    min-width: 0;
 }
 
 .accessDenied {
@@ -154,13 +133,15 @@
 
 .subjectFilter {
     background: var(--surface-0);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-pill);
-    color: var(--ink-800);
-    font-family: var(--font-body);
-    font-weight: 700;
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
     margin-inline-start: auto;
-    padding: var(--space-2) var(--space-4);
+    min-height: 44px;
+    padding: 0 12px;
 }
 
 .hintText {
@@ -229,53 +210,58 @@
 /* ─── Button styles ────────────────────────────────────── */
 
 .addButton {
-    padding: var(--space-2) var(--space-5);
-    border: 2px solid var(--brand-500);
-    background: transparent;
-    color: var(--brand-600);
-    font-family: var(--font-display);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    border-radius: var(--radius-pill);
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
     transition:
-        background var(--dur) var(--ease-out),
-        color var(--dur) var(--ease-out),
-        transform var(--dur) var(--ease-bounce);
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    color: var(--hub-ink);
+    font-size: 14px;
+    min-height: 44px;
+    padding: 0 16px;
 }
 
 .addButton:hover {
-    background: var(--brand-500);
-    color: #fff;
-    transform: translateY(-2px);
+    background: var(--hub-hover);
 }
 
 .submitButton {
-    padding: var(--space-3) var(--space-8);
-    background: var(--brand-500);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-pill);
-    box-shadow: 0 4px 0 0 var(--brand-700);
-    font-family: var(--font-display);
-    font-size: var(--text-sm);
-    font-weight: 600;
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
     transition:
-        transform var(--dur) var(--ease-bounce),
-        box-shadow var(--dur) var(--ease-out),
-        opacity var(--dur) var(--ease-out);
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
     align-self: flex-start;
+    background: var(--hub-accent);
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    min-height: 44px;
+    padding: 0 20px;
 }
 
 .submitButton:hover:not(:disabled) {
-    box-shadow: 0 6px 0 0 var(--brand-700);
-    transform: translateY(-2px);
+    background: var(--hub-accent-hover);
 }
 
 .submitButton:active:not(:disabled) {
-    box-shadow: 0 1px 0 0 var(--brand-700);
-    transform: translateY(3px);
+    background: var(--hub-accent-hover);
 }
 
 .submitButton:disabled {
@@ -285,22 +271,28 @@
 }
 
 .editBtn {
-    padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--line-strong);
-    background: var(--surface-0);
-    color: var(--ink-700);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    border-radius: var(--radius-pill);
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
     transition:
-        background var(--dur) var(--ease-out),
-        border-color var(--dur) var(--ease-out);
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    background: var(--hub-accent-soft);
+    border: none;
+    color: var(--hub-accent-text);
+    font-size: 13px;
+    min-height: 36px;
+    padding: 0 12px;
 }
 
 .editBtn:hover:not(:disabled) {
-    background: var(--brand-50);
-    border-color: var(--brand-300);
+    background: var(--hub-accent-line);
 }
 
 .editBtn:disabled {
@@ -309,23 +301,30 @@
 }
 
 .deleteBtn {
-    padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--danger-100);
-    background: var(--danger-100);
-    color: var(--danger-700);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    border-radius: var(--radius-pill);
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
     transition:
-        background var(--dur) var(--ease-out),
-        color var(--dur) var(--ease-out);
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    color: var(--hub-danger-fg);
+    font-size: 13px;
+    min-height: 36px;
+    padding: 0 12px;
     white-space: nowrap;
 }
 
 .deleteBtn:hover:not(:disabled) {
-    background: var(--danger-500);
-    color: #fff;
+    background: var(--hub-danger-bg);
+    border-color: var(--hub-danger-bg);
 }
 
 .deleteBtn:disabled {
@@ -334,54 +333,79 @@
 }
 
 .saveBtn {
-    padding: var(--space-1) var(--space-3);
-    background: var(--brand-500);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-pill);
-    font-size: var(--text-xs);
-    font-weight: 700;
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
-    transition: background var(--dur) var(--ease-out);
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
+    transition:
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    background: var(--hub-accent);
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    min-height: 36px;
+    padding: 0 12px;
 }
 
 .saveBtn:hover {
-    background: var(--brand-600);
+    background: var(--hub-accent-hover);
 }
 
 .cancelBtn {
-    padding: var(--space-1) var(--space-3);
-    background: var(--surface-3);
-    color: var(--ink-700);
-    border: none;
-    border-radius: var(--radius-pill);
-    font-size: var(--text-xs);
-    font-weight: 700;
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
-    transition: background var(--dur) var(--ease-out);
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
+    transition:
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    color: var(--hub-ink);
+    font-size: 14px;
+    min-height: 36px;
+    padding: 0 14px;
 }
 
 .cancelBtn:hover {
-    background: var(--line-strong);
+    background: var(--hub-hover);
 }
 
 .addOptionBtn {
-    padding: var(--space-2) var(--space-4);
-    background: var(--teal-500);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-pill);
-    font-size: var(--text-sm);
-    font-weight: 700;
+    align-items: center;
+    border-radius: var(--hub-radius-sm);
     cursor: pointer;
-    white-space: nowrap;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    gap: 6px;
+    justify-content: center;
     transition:
-        background var(--dur) var(--ease-out),
-        opacity var(--dur) var(--ease-out);
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+    background: var(--hub-accent);
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    min-height: 40px;
+    padding: 0 14px;
+    white-space: nowrap;
 }
 
 .addOptionBtn:hover:not(:disabled) {
-    background: var(--teal-600);
+    background: var(--hub-accent-hover);
 }
 
 .addOptionBtn:disabled {
@@ -392,13 +416,14 @@
 /* ─── Forms ────────────────────────────────────────────── */
 
 .form {
-    background: var(--surface-1);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    padding: var(--space-6);
+    background: var(--hub-subtle);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
     display: flex;
     flex-direction: column;
+    font-family: var(--font-ui);
     gap: var(--space-4);
+    padding: clamp(16px, 2.5vw, 24px);
 }
 
 .fieldRow {
@@ -416,35 +441,34 @@
 }
 
 .field label {
-    font-size: var(--text-xs);
-    font-weight: 700;
-    color: var(--ink-500);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    color: var(--hub-ink-3);
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .field input,
 .field select,
 .field textarea {
-    padding: var(--space-3) var(--space-4);
-    border: 2px solid var(--line);
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-    color: var(--ink-900);
     background: var(--surface-0);
-    font-family: inherit;
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    min-height: 44px;
+    padding: 10px 12px;
     resize: vertical;
     transition:
-        border-color var(--dur) var(--ease-out),
-        box-shadow var(--dur) var(--ease-out);
+        border-color var(--dur-fast) ease,
+        box-shadow var(--dur-fast) ease;
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
+    border-color: var(--hub-accent);
+    box-shadow: var(--hub-focus);
     outline: none;
-    border-color: var(--brand-400);
-    box-shadow: var(--shadow-focus);
 }
 
 .field input[type='file'] {
@@ -456,14 +480,15 @@
 }
 
 .inlineForm {
-    display: flex;
     align-items: center;
-    gap: var(--space-2);
+    background: var(--hub-subtle);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-sm);
+    display: flex;
     flex-wrap: wrap;
-    padding: var(--space-3);
-    background: var(--surface-2);
-    border-radius: var(--radius-md);
+    gap: var(--space-2);
     margin-top: var(--space-2);
+    padding: var(--space-3);
 }
 
 .inlineForm input[type='text'],
@@ -525,17 +550,17 @@
 
 .item {
     background: var(--surface-0);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-sm);
     padding: var(--space-4) var(--space-5);
     transition:
-        border-color var(--dur) var(--ease-out),
-        box-shadow var(--dur) var(--ease-out);
+        border-color var(--dur-fast) ease,
+        box-shadow var(--dur-fast) ease;
 }
 
 .item:hover {
-    border-color: var(--brand-200);
-    box-shadow: var(--shadow-sm);
+    border-color: var(--hub-border-strong);
+    box-shadow: var(--hub-shadow-hover);
 }
 
 .expandable {
@@ -591,15 +616,15 @@
 }
 
 .typeBadge {
+    background: var(--hub-violet-bg);
+    border-radius: 999px;
+    color: var(--hub-violet-fg);
     display: inline-block;
-    padding: var(--space-1) var(--space-3);
-    background: var(--grape-100);
-    color: var(--grape-700);
-    font-size: var(--text-xs);
-    font-weight: 700;
-    border-radius: var(--radius-pill);
-    white-space: nowrap;
     flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 10px;
+    white-space: nowrap;
 }
 
 .correctBadge {
@@ -614,9 +639,8 @@
 }
 
 .empty {
-    font-size: var(--text-sm);
-    color: var(--ink-400);
-    font-style: italic;
+    color: var(--hub-muted);
+    font-size: 14px;
     padding: var(--space-2) 0;
 }
 
@@ -688,7 +712,7 @@
 
 .studentGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
     gap: var(--space-5);
 }
 
@@ -857,14 +881,18 @@
     font-size: var(--text-sm);
 }
 
+/* The buttons drop under the text when the row runs out of room. */
 .subItemRow {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
 }
 
 .subItemRow span:first-child {
-    flex: 1;
+    flex: 1 1 12rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
     color: var(--ink-700);
 }
 
@@ -964,6 +992,7 @@
 
 .studentDetailHeader {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-4);
     margin-bottom: var(--space-6);
@@ -981,21 +1010,6 @@
 
 /* ─── Mobile bottom nav (hidden on desktop) ────────────── */
 
-.mobileTabStrip {
-    display: none;
-}
-
-.mobileMenuToggle {
-    display: none;
-}
-
-.mobileNavDrawer {
-    display: none;
-}
-
-.mobileNavOverlay {
-    display: none;
-}
 
 .mainHeaderRow {
     display: flex;
@@ -1004,25 +1018,19 @@
 }
 
 @media (max-width: 768px) {
-    .shell {
-        flex-direction: column;
-        padding-bottom: 0;
-    }
-
-    .sidebar {
-        display: none;
+    .main {
+        gap: 16px;
     }
 
     .mainHeader {
-        padding: var(--space-5) var(--space-4) var(--space-3);
+        align-items: stretch;
+        flex-direction: column;
+        padding: 20px;
     }
 
-    .mainTitle {
-        font-size: var(--text-2xl);
-    }
-
-    .mainContent {
-        padding: var(--space-4) var(--space-4) var(--space-8);
+    .heroPrimary {
+        justify-content: center;
+        width: 100%;
     }
 
     .sectionHeader {
@@ -1049,42 +1057,6 @@
         flex-wrap: wrap;
     }
 
-    /* Icon-only sticky tab strip */
-    .mobileTabStrip {
-        display: flex;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: var(--surface-0);
-        border-bottom: 1px solid var(--line);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .mobileTabItem {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: var(--space-3) 0;
-        border: none;
-        background: transparent;
-        color: var(--ink-400);
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-        transition:
-            color var(--dur) var(--ease-out),
-            background var(--dur) var(--ease-out);
-    }
-
-    .mobileTabItem svg {
-        width: 22px;
-        height: 22px;
-    }
-
-    .mobileTabItemActive {
-        color: var(--brand-600);
-        background: var(--brand-50);
-    }
 }
 
 /* ─── Pending Students Section ──────────────────────────── */
@@ -1427,4 +1399,93 @@
 
 .formActions .submitButton {
     align-self: auto;
+}
+
+/* ─── Student detail: narrow screens ──────────────────── */
+
+/* Name and email take the room left by the avatar; the delete button
+   drops below them when it no longer fits beside. */
+.studentDetailInfo {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.studentDetailName,
+.studentDetailInfo .meta {
+    overflow-wrap: anywhere;
+}
+
+.studentDeleteConfirm {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.inlineForm select {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    max-width: 100%;
+    min-height: 40px;
+    min-width: 0;
+    padding: 0 10px;
+}
+
+.inlineForm select:disabled {
+    color: var(--hub-muted);
+    cursor: not-allowed;
+}
+
+.attemptGrid {
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+}
+
+.assignmentTop,
+.assignmentItemRow {
+    flex-wrap: wrap;
+}
+
+.assignmentTitleGroup {
+    flex: 1 1 10rem;
+}
+
+.assignmentTitle,
+.assignmentDescription {
+    overflow-wrap: anywhere;
+}
+
+.assignmentItemBody {
+    flex: 1 1 8rem;
+}
+
+.assignmentItemActions {
+    flex-wrap: wrap;
+    margin-inline-start: auto;
+}
+
+.addItemSelect {
+    flex: 1 1 150px;
+    max-width: 100%;
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .assignmentCard {
+        padding: var(--space-4);
+    }
+
+    /* Item buttons get their own full-width line under the title. */
+    .assignmentItemActions {
+        flex-basis: 100%;
+    }
+
+    .assignmentItemActions > button {
+        flex: 1;
+        justify-content: center;
+        min-height: 40px;
+    }
 }
