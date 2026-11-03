@@ -1,0 +1,726 @@
+/* Night-blue hero and footer (the wordmark's gradient); light sections between. */
+.page {
+    background: var(--surface-0);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+}
+
+.page section[id],
+.heroBody,
+.subjectCard {
+    scroll-margin-top: 24px;
+}
+
+.flipRtl {
+    flex-shrink: 0;
+}
+
+:global([dir='rtl']) .flipRtl {
+    transform: scaleX(-1);
+}
+
+/* ─── Hero ────────────────────────────────────────────── */
+
+.hero {
+    background: var(--wp-gradient);
+    color: #ffffff;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 20px clamp(16px, 4vw, 48px) clamp(56px, 9vw, 104px);
+    position: relative;
+}
+
+.rings {
+    height: auto;
+    inset-inline-start: -160px;
+    opacity: 0.1;
+    pointer-events: none;
+    position: absolute;
+    top: -140px;
+    width: 560px;
+    z-index: -1;
+}
+
+.glowMark {
+    bottom: -180px;
+    color: #ffffff;
+    inset-inline-end: -140px;
+    opacity: 0.06;
+    pointer-events: none;
+    position: absolute;
+    transform: rotate(18deg);
+    z-index: -1;
+}
+
+.topBar {
+    align-items: center;
+    display: flex;
+    gap: 16px;
+    margin: 0 auto;
+    max-width: 1180px;
+}
+
+.brand {
+    align-items: center;
+    border-radius: 10px;
+    display: inline-flex;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.brandMark {
+    color: #ffffff;
+}
+
+.sectionNav {
+    display: flex;
+    gap: 4px;
+    margin-inline-start: 12px;
+}
+
+.sectionNav a {
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 8px 12px;
+    text-decoration: none;
+    transition:
+        background var(--dur-fast) ease,
+        color var(--dur-fast) ease;
+}
+
+.sectionNav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.topActions {
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    margin-inline-start: auto;
+}
+
+.languageButton,
+.signInLink,
+.registerButton {
+    align-items: center;
+    border-radius: 999px;
+    display: inline-flex;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px;
+    text-decoration: none;
+    transition:
+        background var(--dur-fast) ease,
+        border-color var(--dur-fast) ease;
+    white-space: nowrap;
+}
+
+.languageButton {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.languageButton:hover,
+.signInLink:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.signInLink {
+    color: #ffffff;
+}
+
+.registerButton {
+    background: #ffffff;
+    color: var(--wp-deep);
+}
+
+.registerButton:hover {
+    background: var(--hub-accent-soft);
+}
+
+.heroBody {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 860px;
+    padding-top: clamp(48px, 8vw, 96px);
+    text-align: center;
+}
+
+.wordmark {
+    height: auto;
+    margin-bottom: clamp(24px, 4vw, 40px);
+    max-width: 100%;
+}
+
+.eyebrowLight {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(169, 178, 242, 0.4);
+    border-radius: 999px;
+    color: var(--wp-ring);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 20px;
+    padding: 6px 14px;
+}
+
+/* Title and subtitle share one column, aligned to the reading start. */
+.heroTitle,
+.heroSubtitle {
+    max-width: 720px;
+    text-align: start;
+    width: 100%;
+}
+
+.heroTitle {
+    font-family: var(--font-ui);
+    font-size: clamp(34px, 5.6vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+}
+
+.heroHighlight {
+    background: linear-gradient(90deg, #ffffff 0%, var(--wp-ring) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: block;
+}
+
+.heroSubtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: clamp(16px, 1.6vw, 19px);
+    line-height: 1.6;
+    margin-top: 22px;
+}
+
+.heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.primaryCta,
+.ghostCta {
+    align-items: center;
+    border-radius: 14px;
+    display: inline-flex;
+    font-size: 16px;
+    font-weight: 700;
+    gap: 8px;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 24px;
+    text-decoration: none;
+    transition:
+        background var(--dur-fast) ease,
+        transform var(--dur-fast) ease,
+        box-shadow var(--dur-fast) ease;
+}
+
+.primaryCta {
+    background: #ffffff;
+    box-shadow: 0 10px 30px -10px rgba(4, 20, 224, 0.8);
+    color: var(--wp-deep);
+}
+
+.primaryCta:hover {
+    transform: translateY(-1px);
+}
+
+.ghostCta {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+}
+
+.ghostCta:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.heroSignIn {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin-top: 18px;
+}
+
+.heroSignIn a {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    list-style: none;
+    margin: 40px 0 0;
+    padding: 0;
+}
+
+.chip {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.9);
+    display: inline-flex;
+    font-size: 14px;
+    font-weight: 500;
+    gap: 7px;
+    min-height: 38px;
+    padding: 0 14px;
+    text-decoration: none;
+    transition: background var(--dur-fast) ease;
+}
+
+.chip:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.chip svg {
+    color: var(--wp-ring);
+}
+
+/* ─── Light sections ──────────────────────────────────── */
+
+.section {
+    padding: clamp(64px, 9vw, 112px) clamp(16px, 4vw, 48px);
+}
+
+.sectionTinted {
+    background: linear-gradient(180deg, var(--hub-tint) 0%, var(--surface-0) 100%);
+}
+
+.sectionHeading {
+    margin: 0 auto clamp(36px, 5vw, 56px);
+    max-width: 680px;
+    text-align: center;
+}
+
+.eyebrow {
+    background: linear-gradient(90deg, var(--wp-blue), var(--hub-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.sectionTitle {
+    font-family: var(--font-ui);
+    font-size: clamp(28px, 3.6vw, 42px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+.sectionSubtitle {
+    color: var(--hub-muted);
+    font-size: clamp(16px, 1.5vw, 18px);
+    line-height: 1.6;
+    margin-top: 14px;
+}
+
+/* Subjects */
+
+.subjectGrid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    list-style: none;
+    margin: 0 auto;
+    max-width: 1180px;
+    padding: 0;
+}
+
+.subjectCard {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px;
+    position: relative;
+    transition:
+        border-color var(--dur) ease,
+        box-shadow var(--dur) ease,
+        transform var(--dur) ease;
+}
+
+/* Gradient hairline along the top edge. */
+.subjectCard::before {
+    background: var(--wp-gradient);
+    border-radius: var(--hub-radius-lg) var(--hub-radius-lg) 0 0;
+    content: '';
+    height: 4px;
+    inset-inline: -1px;
+    position: absolute;
+    top: -1px;
+}
+
+.subjectCard:hover {
+    border-color: var(--hub-accent-line);
+    box-shadow: var(--hub-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.subjectHead {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.subjectIcon {
+    align-items: center;
+    background: var(--wp-gradient);
+    border-radius: 14px;
+    box-shadow: 0 8px 18px -8px rgba(0, 8, 184, 0.6);
+    color: #ffffff;
+    display: inline-flex;
+    height: 48px;
+    justify-content: center;
+    width: 48px;
+}
+
+.subjectTag {
+    background: var(--hub-accent-soft);
+    border-radius: 999px;
+    color: var(--hub-accent-text);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+}
+
+.subjectName {
+    font-family: var(--font-ui);
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.subjectDescription {
+    color: var(--hub-muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+.points {
+    border-top: 1px solid var(--hub-divider);
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 16px 0 0;
+}
+
+.points li {
+    align-items: flex-start;
+    color: var(--hub-ink-2);
+    display: flex;
+    font-size: 15px;
+    gap: 10px;
+    line-height: 1.45;
+}
+
+.pointIcon {
+    color: var(--hub-accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Platform features */
+
+.features {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    list-style: none;
+    margin: clamp(40px, 5vw, 56px) auto 0;
+    max-width: 1000px;
+    padding: 0;
+}
+
+.feature {
+    align-items: flex-start;
+    display: flex;
+    gap: 14px;
+}
+
+.featureIcon {
+    align-items: center;
+    background: var(--surface-0);
+    border: 1px solid var(--hub-accent-line);
+    border-radius: 12px;
+    color: var(--hub-accent);
+    display: inline-flex;
+    flex-shrink: 0;
+    height: 42px;
+    justify-content: center;
+    width: 42px;
+}
+
+.featureTitle {
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.featureText {
+    color: var(--hub-muted);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+/* Steps */
+
+.steps {
+    counter-reset: none;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    list-style: none;
+    margin: 0 auto;
+    max-width: 1080px;
+    padding: 0;
+}
+
+.step {
+    background: var(--surface-1);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-lg);
+    padding: 26px;
+}
+
+.stepNumber {
+    align-items: center;
+    background: var(--wp-gradient);
+    border-radius: 50%;
+    color: #ffffff;
+    display: inline-flex;
+    font-size: 17px;
+    font-weight: 800;
+    height: 40px;
+    justify-content: center;
+    margin-bottom: 16px;
+    width: 40px;
+}
+
+.stepTitle {
+    font-family: var(--font-ui);
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.stepText {
+    color: var(--hub-muted);
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+/* Contact */
+
+.contactSection {
+    padding: 0 clamp(16px, 4vw, 48px) clamp(64px, 9vw, 112px);
+}
+
+.contactBand {
+    align-items: center;
+    background: var(--wp-gradient);
+    border-radius: 28px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    isolation: isolate;
+    margin: 0 auto;
+    max-width: 1080px;
+    overflow: hidden;
+    padding: clamp(40px, 6vw, 64px) clamp(20px, 4vw, 48px);
+    position: relative;
+    text-align: center;
+}
+
+.contactRings {
+    height: auto;
+    inset-inline-end: -110px;
+    opacity: 0.12;
+    pointer-events: none;
+    position: absolute;
+    top: -110px;
+    width: 380px;
+    z-index: -1;
+}
+
+.contactTitle {
+    font-family: var(--font-ui);
+    font-size: clamp(26px, 3.4vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.contactSubtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 17px;
+}
+
+.emailRow {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 10px 0 12px;
+}
+
+.emailLink {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 14px;
+    color: #ffffff;
+    display: inline-flex;
+    font-size: clamp(15px, 2vw, 18px);
+    font-weight: 600;
+    gap: 10px;
+    min-height: 52px;
+    overflow-wrap: anywhere;
+    padding: 0 18px;
+    text-decoration: none;
+}
+
+.emailLink:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.copyButton {
+    align-items: center;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 14px;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    height: 52px;
+    justify-content: center;
+    width: 52px;
+}
+
+.copyButton:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.copiedNote {
+    color: var(--wp-ring);
+    flex-basis: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 1.4em;
+}
+
+/* ─── Footer ──────────────────────────────────────────── */
+
+.footer {
+    background: var(--wp-gradient);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 40px clamp(16px, 4vw, 48px) 28px;
+}
+
+.footerInner {
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: 1180px;
+    padding-bottom: 24px;
+}
+
+.footerBrand {
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footerBrand p {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 15px;
+}
+
+.footerLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.footerLinks a {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.footerLinks a:hover {
+    text-decoration: underline;
+}
+
+.copyright {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 13px;
+    margin: 20px auto 0;
+    max-width: 1180px;
+}
+
+/* ─── Narrow screens ──────────────────────────────────── */
+
+@media (max-width: 960px) {
+    .sectionNav {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .signInLink {
+        display: none;
+    }
+
+    .languageButton,
+    .registerButton {
+        padding: 0 12px;
+    }
+
+    .heroActions {
+        align-self: stretch;
+        flex-direction: column;
+    }
+
+    .subjectCard,
+    .step {
+        padding: 20px;
+    }
+}
