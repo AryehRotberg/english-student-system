@@ -102,65 +102,14 @@
     white-space: nowrap;
 }
 
-/* ─── Icon rail ────────────────────────────────────────── */
-
-@media (max-width: 1099px) {
-    .sidebar {
-        align-items: center;
-        gap: 12px;
-        padding: 12px 8px;
-        width: 64px;
-    }
-
-    .heading,
-    .groupLabel {
-        display: none;
-    }
-
-    /* Groups are told apart by a rule instead of their labels. */
-    .group + .group {
-        border-top: 1px solid var(--hub-divider);
-        padding-top: 12px;
-    }
-
-    .item {
-        height: 44px;
-        justify-content: center;
-        padding: 0;
-        width: 44px;
-    }
-
-    .icon svg {
-        height: 20px;
-        width: 20px;
-    }
-
-    /* Hidden but still read out, so each icon keeps its name. */
-    .label {
-        clip: rect(0 0 0 0);
-        height: 1px;
-        overflow: hidden;
-        position: absolute;
-        white-space: nowrap;
-        width: 1px;
-    }
-}
-
-@media (max-width: 480px) {
-    .sidebar {
-        padding: 10px 6px;
-        width: 56px;
-    }
-}
-
-/* ─── Phones: a slide-out drawer ───────────────────────── */
+/* ─── Phones and tablets: a slide-out drawer ───────────── */
 
 .overlay,
 .drawerHead {
     display: none;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
     .overlay {
         background: rgba(15, 23, 42, 0.4);
         display: block;
@@ -243,11 +192,9 @@
         background: var(--hub-hover);
     }
 
-    /* Back to the full, labelled list inside the drawer. */
+    /* The full, labelled list fills the drawer. */
     .sidebar {
-        align-items: stretch;
         flex: 1;
-        gap: 18px;
         height: auto;
         min-height: 0;
         padding: 16px 12px calc(20px + env(safe-area-inset-bottom, 0px));
@@ -255,31 +202,7 @@
         width: auto;
     }
 
-    .heading {
-        display: flex;
-    }
-
-    .groupLabel {
-        display: block;
-    }
-
-    .group + .group {
-        border-top: none;
-        padding-top: 0;
-    }
-
     .item {
-        height: auto;
-        justify-content: flex-start;
         min-height: 48px;
-        padding: 0 12px;
-        width: auto;
-    }
-
-    .label {
-        clip: auto;
-        height: auto;
-        position: static;
-        width: auto;
     }
 }

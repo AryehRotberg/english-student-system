@@ -9,6 +9,13 @@ import type {
 } from '../types/subject';
 import { httpClientService } from './http-client.service';
 
+export type SaveSubjectPayload = {
+    slug: string;
+    nameEn: string;
+    nameHe: string;
+    sortOrder: number;
+};
+
 export type SaveTopicPayload = {
     subjectId: string;
     parentId: string | null;
@@ -28,6 +35,34 @@ class SubjectsService {
     public async findAll(): Promise<Subject[]> {
         const response = await this.httpClient.get<Subject[]>('/subjects');
         return response.data;
+    }
+
+    public async findById(id: string): Promise<Subject> {
+        const response = await this.httpClient.get<Subject>(`/subjects/${id}`);
+        return response.data;
+    }
+
+    public async create(payload: SaveSubjectPayload): Promise<Subject> {
+        const response = await this.httpClient.post<Subject>(
+            '/subjects',
+            payload,
+        );
+        return response.data;
+    }
+
+    public async update(
+        id: string,
+        payload: SaveSubjectPayload,
+    ): Promise<Subject> {
+        const response = await this.httpClient.put<Subject>(
+            `/subjects/${id}`,
+            payload,
+        );
+        return response.data;
+    }
+
+    public async remove(id: string): Promise<void> {
+        await this.httpClient.delete(`/subjects/${id}`);
     }
 
     public async createLevel(

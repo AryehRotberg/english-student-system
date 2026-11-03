@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00002a"/>
+      <stop offset="0.55" stop-color="#000046"/>
+      <stop offset="1" stop-color="#0008b8"/>
+    </linearGradient>
+    <radialGradient id="glow-tl" cx="0.38" cy="0.08" r="0.35">
+      <stop offset="0" stop-color="#0a12a0" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0a12a0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow-br" cx="1" cy="1" r="0.6">
+      <stop offset="0" stop-color="#0414e0" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#0414e0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shade-tr" cx="0.92" cy="0" r="0.4">
+      <stop offset="0" stop-color="#000010" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#000010" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.4"/>
+      <feComposite operator="in" in2="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="2"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#glow-tl)"/>
+  <rect width="1600" height="900" fill="url(#shade-tr)"/>
+  <rect width="1600" height="900" fill="url(#glow-br)"/>
+
+  <g fill="#ffffff" font-family="'DejaVu Sans', Verdana, 'Segoe UI', Arial, sans-serif"
+     font-weight="700" font-style="italic" font-size="146">
+    <text x="285" y="492">w</text>
+    <text x="450" y="492">a</text>
+    <text x="585" y="492">y</text>
+    <text x="720" y="492">p</text>
+    <text x="1005" y="492">i</text>
+    <text x="1098" y="492">n</text>
+    <text x="1245" y="492">t</text>
+  </g>
+
+  <!-- The Waypoint mark standing in for the "o", tilted to match the italic. -->
+  <g transform="translate(910 448) rotate(18) scale(8) translate(-12 -12)" filter="url(#soft)">
+    <circle cx="12" cy="12" r="6.6" fill="none" stroke="#a9b2f2" stroke-width="1.5"/>
+    <circle cx="12" cy="12" r="1.5" fill="#3346d3"/>
+    <path fill="#ffffff" fill-rule="evenodd"
+          d="M12 2.5Q13.1 10.9 21.5 12Q13.1 13.1 12 21.5Q10.9 13.1 2.5 12Q10.9 10.9 12 2.5ZM12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3Z"/>
+  </g>
+</svg>

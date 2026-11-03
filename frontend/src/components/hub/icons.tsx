@@ -1,4 +1,5 @@
 import type { ReactNode, SVGProps } from 'react';
+import { useId } from 'react';
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, 'children'> & {
     size?: number;
@@ -331,6 +332,81 @@ export function WaypointMark({
                 fillRule="evenodd"
                 d="M12 2.5Q13.1 10.9 21.5 12Q13.1 13.1 12 21.5Q10.9 13.1 2.5 12Q10.9 10.9 12 2.5ZM12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3Z"
             />
+        </svg>
+    );
+}
+
+/**
+ * The full "waypoint" wordmark: spaced italic letters with the mark standing
+ * in for the "o". Letters are drawn in currentColor on a transparent ground;
+ * `tone` picks the star's colour for a dark or light surface.
+ */
+export function WaypointWordmark({
+    width = 320,
+    tone = 'dark',
+    className,
+    title,
+}: {
+    width?: number;
+    tone?: 'dark' | 'light';
+    className?: string;
+    title?: string;
+}) {
+    const glowId = useId();
+    const onDark = tone === 'dark';
+
+    return (
+        <svg
+            role={title ? 'img' : undefined}
+            aria-label={title}
+            aria-hidden={title ? undefined : true}
+            focusable="false"
+            className={className}
+            width={width}
+            height={(width * 180) / 1060}
+            viewBox="270 360 1060 180"
+            direction="ltr"
+            fill="none"
+        >
+            <defs>
+                <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                    <feFlood floodColor="#ffffff" floodOpacity="0.4" />
+                    <feComposite operator="in" in2="SourceAlpha" />
+                    <feGaussianBlur stdDeviation="2" />
+                    <feMerge>
+                        <feMergeNode />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+            <g
+                fill="currentColor"
+                fontFamily="'DejaVu Sans', Verdana, 'Segoe UI', Arial, sans-serif"
+                fontWeight="700"
+                fontStyle="italic"
+                fontSize="146"
+            >
+                <text x="285" y="492">w</text>
+                <text x="450" y="492">a</text>
+                <text x="585" y="492">y</text>
+                <text x="720" y="492">p</text>
+                <text x="1005" y="492">i</text>
+                <text x="1098" y="492">n</text>
+                <text x="1245" y="492">t</text>
+            </g>
+            <g
+                transform="translate(910 448) rotate(18) scale(8) translate(-12 -12)"
+                filter={onDark ? `url(#${glowId})` : undefined}
+            >
+                <circle cx="12" cy="12" r="6.6" stroke="#a9b2f2" strokeWidth="1.5" />
+                <circle cx="12" cy="12" r="1.5" fill={onDark ? '#3346d3' : '#ffffff'} />
+                <path
+                    fill={onDark ? '#ffffff' : 'var(--hub-accent)'}
+                    fillRule="evenodd"
+                    d="M12 2.5Q13.1 10.9 21.5 12Q13.1 13.1 12 21.5Q10.9 13.1 2.5 12Q10.9 10.9 12 2.5ZM12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3Z"
+                />
+            </g>
         </svg>
     );
 }

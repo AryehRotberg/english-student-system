@@ -73,8 +73,8 @@ export function LessonForm({
             </div>
             {rows.length === 0 && (
                 <p className={styles.hintText}>
-                    This subject has no topics yet. Add them under Subjects &
-                    Topics first.
+                    This subject has no topics yet. Add them under Topics
+                    first.
                 </p>
             )}
             <div className={styles.field}>

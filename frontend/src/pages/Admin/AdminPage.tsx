@@ -13,6 +13,7 @@ import { QuizzesSection } from '../../components/admin/QuizzesSection';
 import { ReadingsSection } from '../../components/admin/ReadingSection';
 import { StudentsSection } from '../../components/admin/StudentsSection';
 import { SubjectsSection } from '../../components/admin/SubjectsSection';
+import { TopicsSection } from '../../components/admin/TopicsSection';
 import { VocabularySection } from '../../components/admin/VocabularySection';
 import { HeroRings, PlusIcon } from '../../components/hub/icons';
 import { useAuthUser } from '../../hooks/queries';
@@ -21,6 +22,7 @@ import styles from './AdminPage.module.css';
 // The URL param each tab keeps its open item in, and its "new" button.
 const CREATE_ACTIONS: Partial<Record<AdminTab, { param: string; label: string }>> =
     {
+        subjects: { param: 'subject', label: 'New subject' },
         quizzes: { param: 'quiz', label: 'New quiz' },
         lessons: { param: 'lesson', label: 'New lesson' },
         readings: { param: 'text', label: 'New text' },
@@ -92,6 +94,7 @@ export function AdminPage() {
                         <PendingStudentsSection />
                     )}
                     {activeTab === 'subjects' && <SubjectsSection />}
+                    {activeTab === 'topics' && <TopicsSection />}
                     {activeTab === 'lessons' && <LessonsSection />}
                     {activeTab === 'quizzes' && <QuizzesSection />}
                     {activeTab === 'readings' && <ReadingsSection />}

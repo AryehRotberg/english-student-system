@@ -62,12 +62,12 @@ function linkClass({ isActive }: { isActive: boolean }) {
 }
 
 // Matches the breakpoint in Sidebar.module.css where the drawer takes over.
-const DRAWER_QUERY = '(max-width: 767px)';
+const DRAWER_QUERY = '(max-width: 1099px)';
 
 /**
- * The rail on wide screens; on phones a drawer that slides in from the start
- * edge. While open it locks the page scroll and closes on Escape, the
- * backdrop, a link, or the screen growing past the phone breakpoint.
+ * The rail on wide screens; on phones and tablets a drawer that slides in
+ * from the start edge. While open it locks the page scroll and closes on
+ * Escape, the backdrop, a link, or the screen growing past the breakpoint.
  */
 function SidebarFrame({
     open,
@@ -138,8 +138,8 @@ function SidebarFrame({
 }
 
 /**
- * The site's main navigation at the start edge. Wide screens show labels,
- * tablets an icon rail, and phones a drawer opened from the top bar.
+ * The site's main navigation at the start edge. Wide screens show it
+ * alongside the page; phones and tablets in a drawer opened from the top bar.
  */
 export function Sidebar({
     open,
