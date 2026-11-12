@@ -284,6 +284,7 @@ export const he: Translation = {
         pageCounter: '{{current}} / {{total}}',
         zoomIn: 'הגדלה',
         zoomOut: 'הקטנה',
+        fitToScreen: 'התאמה למסך',
         pages_one: 'עמוד אחד',
         pages_other: '{{count}} עמודים',
     },

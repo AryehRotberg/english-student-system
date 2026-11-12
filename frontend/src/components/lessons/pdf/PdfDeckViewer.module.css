@@ -41,12 +41,16 @@
 
 /* The slide fills this box at its own proportions, letterboxed if needed. */
 .stage {
-    align-items: center;
+    /* safe: a zoomed page larger than the box stays scrollable to its edges. */
+    align-items: safe center;
     background: var(--surface-2);
     box-sizing: border-box;
     display: flex;
-    justify-content: center;
+    justify-content: safe center;
     max-height: 75vh;
+    /* Also keeps the box from growing to fit a zoomed page (aspect-ratio
+       boxes otherwise stretch to their content). */
+    overflow: auto;
     padding: var(--space-3);
     touch-action: pan-y;
     width: 100%;
@@ -56,6 +60,11 @@
     flex: 1;
     max-height: none;
     min-height: 0;
+}
+
+/* Zoomed in: drag in any direction to pan, pinch works again. */
+.stageZoomed {
+    touch-action: auto;
 }
 
 .page {
@@ -74,6 +83,7 @@
     align-items: center;
     border-top: 1px solid var(--line);
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-3);
     justify-content: center;
     padding: var(--space-2) var(--space-4);
@@ -111,6 +121,41 @@
     font-weight: 600;
     min-width: 5rem;
     text-align: center;
+}
+
+.navDivider {
+    align-self: stretch;
+    border-inline-start: 1px solid var(--line);
+    margin-block: var(--space-1);
+}
+
+.zoomGroup {
+    align-items: center;
+    display: inline-flex;
+    gap: var(--space-2);
+}
+
+/* Shows the zoom; clicking it fits the page to the screen again. */
+.zoomReset {
+    background: none;
+    border: none;
+    border-radius: var(--radius-pill);
+    color: var(--ink-700);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    min-width: 3.5rem;
+    padding: var(--space-1) var(--space-2);
+}
+
+.zoomReset:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--brand-700);
+}
+
+.zoomReset:disabled {
+    cursor: default;
 }
 
 /* Worksheets and scans: a scrolling column of pages. */

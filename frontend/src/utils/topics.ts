@@ -1,4 +1,5 @@
 import type { Topic } from '../types/subject';
+import type { SearchOption } from './search-options';
 
 export type TopicRow = { topic: Topic; depth: number };
 
@@ -60,4 +61,18 @@ export function descendantIds(topics: Topic[], topicId: string): Set<string> {
     }
 
     return result;
+}
+
+/**
+ * A subject's topics as dropdown options, in tree order, each carrying the
+ * names of the topics above it.
+ */
+export function topicOptions(topics: Topic[]): SearchOption[] {
+    const stack: string[] = [];
+    return flattenTopicTree(topics).map(({ topic, depth }) => {
+        stack.length = depth;
+        const path = [...stack];
+        stack.push(topic.name);
+        return { id: topic.id, label: topic.name, path, depth };
+    });
 }

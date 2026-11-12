@@ -28,6 +28,8 @@ import type { AssignmentItemContentType } from '../../services/assignments.servi
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
 import { lessonTitle } from '../../types/lesson';
+import type { SearchOption } from '../../utils/search-options';
+import { SearchSelect } from './SearchSelect';
 import { isHandwritten, possiblePoints, scorePercent } from '../../utils/exam';
 import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
 import { AttemptGradingPanel } from './AttemptGradingPanel';
@@ -362,10 +364,7 @@ function StudentProgress({ studentId }: { studentId: string }) {
     );
 }
 
-type ContentOptionMap = Record<
-    AssignmentItemContentType,
-    { id: string; label: string }[]
->;
+type ContentOptionMap = Record<AssignmentItemContentType, SearchOption[]>;
 
 function useContentOptions(): ContentOptionMap {
     const { data: quizzes = [] } = useQuizzes();
@@ -382,10 +381,12 @@ function useContentOptions(): ContentOptionMap {
             id: v.id,
             label: v.topic,
         })),
-        // The topic tells apart lessons with the same title in different topics.
+        // The topic, shown under the title, tells apart lessons with the same
+        // title in different topics, and typing a topic finds its lessons.
         lesson: lessons.map((l) => ({
             id: l.id,
-            label: l.title ? `${l.title} · ${l.topicName}` : lessonTitle(l),
+            label: lessonTitle(l),
+            path: l.title ? [l.topicName] : [],
         })),
     };
 }
@@ -419,7 +420,8 @@ function ItemPicker({
     onChange: (draft: DraftItem) => void;
     onRemove: () => void;
 }) {
-    const choices = options[draft.contentType];
+    const typeLabel =
+        CONTENT_TYPES.find((ct) => ct.value === draft.contentType)?.label ?? '';
     return (
         <div className={styles.addItemRow}>
             <select
@@ -439,20 +441,15 @@ function ItemPicker({
                     </option>
                 ))}
             </select>
-            <select
-                className={styles.addItemSelect}
+            <SearchSelect
+                className={styles.addItemSearch}
+                inputClassName={styles.addItemSelect}
+                options={options[draft.contentType]}
                 value={draft.contentId}
-                onChange={(e) =>
-                    onChange({ ...draft, contentId: e.target.value })
-                }
-            >
-                <option value="">Select…</option>
-                {choices.map((choice) => (
-                    <option key={choice.id} value={choice.id}>
-                        {choice.label}
-                    </option>
-                ))}
-            </select>
+                onChange={(contentId) => onChange({ ...draft, contentId })}
+                placeholder={`Find a ${typeLabel.toLowerCase()}…`}
+                ariaLabel={typeLabel}
+            />
             <button
                 type="button"
                 className={styles.deleteBtn}

@@ -23,6 +23,9 @@ type Props = {
 type Loaded = { doc: PDFDocumentProxy; firstPage: PageSize; layout: PdfLayout };
 
 const ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+// Slides start fitted to the screen (1), so there is only zooming in: a
+// portrait A4 page fitted into a wide box is too small to read.
+const SLIDE_ZOOM_STEPS = [1, 1.25, 1.5, 2, 2.5, 3, 4];
 
 // Lazy-loaded (see LessonMaterialViewer), so pdf.js stays out of the main bundle.
 export default function PdfDeckViewer({ url, title, onFail }: Props) {
@@ -181,16 +184,48 @@ function useBoxSize(ref: RefObject<HTMLElement | null>) {
     return size;
 }
 
+// True while the user is typing somewhere; focus must not be taken from there.
+function isEditing(element: Element | null) {
+    return (
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement ||
+        element instanceof HTMLSelectElement ||
+        (element instanceof HTMLElement && element.isContentEditable)
+    );
+}
+
 function SlideView({ doc, firstPage, fullScreen, onFail }: ViewProps) {
     const { t } = useTranslation();
     const [index, setIndex] = useState(0);
+    const [zoomIndex, setZoomIndex] = useState(0);
+    const zoom = SLIDE_ZOOM_STEPS[zoomIndex];
+    const zoomed = zoom > 1;
+    const slidesRef = useRef<HTMLDivElement>(null);
     const stageRef = useRef<HTMLDivElement>(null);
     const box = useBoxSize(stageRef);
+
+    // The arrow keys only reach the slides while they have focus. Take it when
+    // the slides appear (file opened, or switched from document view) and when
+    // full screen starts or ends, since the toolbar button that did it would
+    // otherwise keep focus.
+    useEffect(() => {
+        if (isEditing(document.activeElement)) return;
+        slidesRef.current?.focus({ preventScroll: true });
+    }, [fullScreen]);
     const swipeStart = useRef<number | null>(null);
     const total = doc.numPages;
 
     const go = (delta: number) =>
         setIndex((current) => Math.min(total - 1, Math.max(0, current + delta)));
+    const zoomBy = (delta: number) =>
+        setZoomIndex((current) =>
+            Math.min(SLIDE_ZOOM_STEPS.length - 1, Math.max(0, current + delta)),
+        );
+
+    // A new page starts at its top, not where the last one was scrolled to.
+    useEffect(() => {
+        stageRef.current?.scrollTo({ top: 0 });
+    }, [index]);
 
     // Parse the next page ahead of time so moving forward feels instant.
     useEffect(() => {
@@ -199,6 +234,7 @@ function SlideView({ doc, firstPage, fullScreen, onFail }: ViewProps) {
 
     return (
         <div
+            ref={slidesRef}
             className={styles.slides}
             tabIndex={0}
             aria-roledescription="slides"
@@ -213,15 +249,31 @@ function SlideView({ doc, firstPage, fullScreen, onFail }: ViewProps) {
                     setIndex(0);
                 } else if (event.key === 'End') {
                     setIndex(total - 1);
+                } else if (event.key === '+' || event.key === '=') {
+                    event.preventDefault();
+                    zoomBy(1);
+                } else if (event.key === '-') {
+                    event.preventDefault();
+                    zoomBy(-1);
+                } else if (event.key === '0') {
+                    setZoomIndex(0);
                 }
             }}
         >
             <div
                 ref={stageRef}
-                className={`${styles.stage} ${fullScreen ? styles.stageFull : ''}`}
+                className={`${styles.stage} ${fullScreen ? styles.stageFull : ''} ${
+                    zoomed ? styles.stageZoomed : ''
+                }`}
                 style={fullScreen ? undefined : { aspectRatio: `${firstPage.width} / ${firstPage.height}` }}
                 onPointerDown={(event) => {
-                    if (event.pointerType === 'touch') swipeStart.current = event.clientX;
+                    // Zoomed in, a sideways drag pans the page instead.
+                    if (event.pointerType === 'touch' && !zoomed) {
+                        swipeStart.current = event.clientX;
+                    }
+                }}
+                onPointerCancel={() => {
+                    swipeStart.current = null;
                 }}
                 onPointerUp={(event) => {
                     if (swipeStart.current === null) return;
@@ -234,7 +286,7 @@ function SlideView({ doc, firstPage, fullScreen, onFail }: ViewProps) {
                     <PdfPageCanvas
                         doc={doc}
                         pageNumber={index + 1}
-                        fit={{ mode: 'contain', box }}
+                        fit={{ mode: 'contain', box, zoom }}
                         estimate={firstPage}
                         onError={onFail}
                     />
@@ -264,7 +316,87 @@ function SlideView({ doc, firstPage, fullScreen, onFail }: ViewProps) {
                 >
                     ›
                 </button>
+                <span className={styles.navDivider} aria-hidden="true" />
+                <ZoomControls
+                    onZoomOut={() => zoomBy(-1)}
+                    onZoomIn={() => zoomBy(1)}
+                    canZoomOut={zoomIndex > 0}
+                    canZoomIn={zoomIndex < SLIDE_ZOOM_STEPS.length - 1}
+                >
+                    <button
+                        type="button"
+                        className={styles.zoomReset}
+                        onClick={() => setZoomIndex(0)}
+                        disabled={!zoomed}
+                        title={t('lessons.fitToScreen')}
+                        aria-label={`${Math.round(zoom * 100)}% · ${t('lessons.fitToScreen')}`}
+                    >
+                        {Math.round(zoom * 100)}%
+                    </button>
+                </ZoomControls>
             </div>
+        </div>
+    );
+}
+
+function MagnifierIcon({ plus }: { plus: boolean }) {
+    return (
+        <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+        >
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <path d="M15.5 15.5 20 20" />
+            <path d="M7.5 10.5h6" />
+            {plus && <path d="M10.5 7.5v6" />}
+        </svg>
+    );
+}
+
+// Magnifier − / + around whatever shows the current zoom.
+function ZoomControls({
+    onZoomOut,
+    onZoomIn,
+    canZoomOut,
+    canZoomIn,
+    children,
+}: {
+    onZoomOut: () => void;
+    onZoomIn: () => void;
+    canZoomOut: boolean;
+    canZoomIn: boolean;
+    children: React.ReactNode;
+}) {
+    const { t } = useTranslation();
+    return (
+        <div className={styles.zoomGroup}>
+            <button
+                type="button"
+                className={styles.navButton}
+                onClick={onZoomOut}
+                disabled={!canZoomOut}
+                aria-label={t('lessons.zoomOut')}
+                title={t('lessons.zoomOut')}
+            >
+                <MagnifierIcon plus={false} />
+            </button>
+            {children}
+            <button
+                type="button"
+                className={styles.navButton}
+                onClick={onZoomIn}
+                disabled={!canZoomIn}
+                aria-label={t('lessons.zoomIn')}
+                title={t('lessons.zoomIn')}
+            >
+                <MagnifierIcon plus />
+            </button>
         </div>
     );
 }
@@ -306,29 +438,18 @@ function DocumentView({ doc, firstPage, fullScreen, onFail }: ViewProps) {
                     ))}
             </div>
             <div className={styles.nav} dir="ltr">
-                <button
-                    type="button"
-                    className={styles.navButton}
-                    onClick={() => setZoomIndex((i) => Math.max(0, i - 1))}
-                    disabled={zoomIndex === 0}
-                    aria-label={t('lessons.zoomOut')}
-                >
-                    −
-                </button>
-                <span className={styles.counter}>
-                    {Math.round(zoom * 100)}% · {t('lessons.pages', { count: doc.numPages })}
-                </span>
-                <button
-                    type="button"
-                    className={styles.navButton}
-                    onClick={() =>
+                <ZoomControls
+                    onZoomOut={() => setZoomIndex((i) => Math.max(0, i - 1))}
+                    onZoomIn={() =>
                         setZoomIndex((i) => Math.min(ZOOM_STEPS.length - 1, i + 1))
                     }
-                    disabled={zoomIndex === ZOOM_STEPS.length - 1}
-                    aria-label={t('lessons.zoomIn')}
+                    canZoomOut={zoomIndex > 0}
+                    canZoomIn={zoomIndex < ZOOM_STEPS.length - 1}
                 >
-                    +
-                </button>
+                    <span className={styles.counter}>
+                        {Math.round(zoom * 100)}% · {t('lessons.pages', { count: doc.numPages })}
+                    </span>
+                </ZoomControls>
             </div>
         </>
     );

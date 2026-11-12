@@ -286,6 +286,7 @@ export const en = {
         pageCounter: '{{current}} / {{total}}',
         zoomIn: 'Zoom in',
         zoomOut: 'Zoom out',
+        fitToScreen: 'Fit to screen',
         pages_one: '{{count}} page',
         pages_other: '{{count}} pages',
     },

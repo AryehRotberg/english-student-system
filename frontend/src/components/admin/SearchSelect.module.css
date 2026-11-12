@@ -1,0 +1,80 @@
+.picker {
+    position: relative;
+}
+
+/* Matches the admin form fields; room on the end side for the chevron.
+   Two classes so this outranks the form's `.field input` padding. */
+.picker .input {
+    box-sizing: border-box;
+    cursor: pointer;
+    padding-inline-end: 32px;
+    width: 100%;
+}
+
+.picker .input:focus {
+    cursor: text;
+}
+
+.chevron {
+    color: var(--hub-ink-3);
+    inset-inline-end: 12px;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.list {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    box-shadow: var(--shadow-md, 0 8px 24px rgb(0 0 0 / 12%));
+    inset-inline: 0;
+    list-style: none;
+    margin: 4px 0 0;
+    max-height: min(320px, 50vh);
+    overflow-y: auto;
+    padding: 4px 0;
+    position: absolute;
+    top: 100%;
+    z-index: 20;
+}
+
+.option {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+}
+
+.optionActive {
+    background: var(--hub-subtle);
+}
+
+/* The topic currently chosen: an accent bar on the side the text starts. */
+.optionSelected {
+    border-inline-start: 3px solid var(--hub-accent);
+}
+
+.rootName {
+    font-weight: 600;
+}
+
+/* "Calculus › Derivatives" under a search result. */
+.path {
+    color: var(--hub-ink-3);
+    font-size: var(--text-xs);
+}
+
+.mark {
+    background: color-mix(in srgb, var(--hub-accent) 22%, transparent);
+    border-radius: 2px;
+    color: inherit;
+}
+
+.empty {
+    color: var(--hub-ink-3);
+    font-size: var(--text-sm);
+    padding: 8px 12px;
+}

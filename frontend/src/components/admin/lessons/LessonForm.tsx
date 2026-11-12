@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTopics } from '../../../hooks/queries';
 import styles from '../../../pages/Admin/AdminPage.module.css';
 import type { Lesson, SaveLessonPayload } from '../../../types/lesson';
-import { flattenTopicTree } from '../../../utils/topics';
+import { TopicPicker } from '../TopicPicker';
 
 type Props = {
     subjectId: string;
@@ -24,7 +24,6 @@ export function LessonForm({
     onCancel,
 }: Props) {
     const { data: topics = [] } = useTopics(subjectId);
-    const rows = flattenTopicTree(topics);
     const [topicId, setTopicId] = useState(lesson?.topicId ?? '');
     const [title, setTitle] = useState(lesson?.title ?? '');
     const [sortOrder, setSortOrder] = useState(lesson?.sortOrder ?? 0);
@@ -46,20 +45,13 @@ export function LessonForm({
             <div className={styles.fieldRow}>
                 <div className={styles.field}>
                     <label htmlFor="lesson-topic">Topic *</label>
-                    <select
+                    <TopicPicker
                         id="lesson-topic"
+                        topics={topics}
                         value={topicId}
-                        onChange={(e) => setTopicId(e.target.value)}
+                        onChange={setTopicId}
                         required
-                    >
-                        <option value="">— Choose a topic —</option>
-                        {rows.map(({ topic, depth }) => (
-                            <option key={topic.id} value={topic.id}>
-                                {'— '.repeat(depth)}
-                                {topic.name}
-                            </option>
-                        ))}
-                    </select>
+                    />
                 </div>
                 <div className={styles.field} style={{ maxWidth: 120 }}>
                     <label htmlFor="lesson-order">Order</label>
@@ -71,7 +63,7 @@ export function LessonForm({
                     />
                 </div>
             </div>
-            {rows.length === 0 && (
+            {topics.length === 0 && (
                 <p className={styles.hintText}>
                     This subject has no topics yet. Add them under Topics
                     first.
