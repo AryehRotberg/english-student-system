@@ -28,7 +28,10 @@ import type {
 } from '../services/subjects.service';
 import { subjectsService } from '../services/subjects.service';
 import { readingsService } from '../services/readings.service';
+import type { StudentBillingPayload } from '../services/users.service';
 import { usersService } from '../services/users.service';
+import type { CreateReceiptPayload } from '../services/billing.service';
+import { billingService } from '../services/billing.service';
 import { vocabularyService } from '../services/vocabulary.service';
 import type { SaveLessonPayload } from '../types/lesson';
 import type { UiLanguage } from '../types/subject';
@@ -872,6 +875,31 @@ export function useRemoveStudent() {
             queryClient.invalidateQueries({ queryKey: ['pending-students'] });
             queryClient.invalidateQueries({ queryKey: ['all-students'] });
         },
+    });
+}
+
+export function useUpdateStudentBilling() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            studentId,
+            billing,
+        }: {
+            studentId: string;
+            billing: StudentBillingPayload;
+        }) => usersService.updateBilling(studentId, billing),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['all-students'] }),
+    });
+}
+
+export function useCreateReceipt() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: CreateReceiptPayload) =>
+            billingService.createReceipt(payload),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ['receipts'] }),
     });
 }
 

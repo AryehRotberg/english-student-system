@@ -21,6 +21,8 @@ export function StudentsSection() {
 
     const setStudentId = (id: string | null) => {
         const next = new URLSearchParams(searchParams);
+        // Each student opens on their first tab.
+        next.delete('view');
         if (id) {
             next.set('studentId', id);
         } else {

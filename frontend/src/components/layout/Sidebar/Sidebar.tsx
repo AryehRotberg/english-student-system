@@ -57,6 +57,25 @@ const subjectGroups: SidebarGroup[] = [
     },
 ];
 
+// Teacher shortcut to issue a receipt.
+const receiptIcon = (
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z" />
+        <line x1="9" y1="8" x2="15" y2="8" />
+        <line x1="9" y1="12" x2="15" y2="12" />
+    </svg>
+);
+
 function linkClass({ isActive }: { isActive: boolean }) {
     return isActive ? `${styles.item} ${styles.itemActive}` : styles.item;
 }
@@ -165,6 +184,17 @@ export function Sidebar({
                 <div className={styles.heading}>
                     <span className={styles.title}>Admin panel</span>
                     <span className={styles.subtitle}>Curator controls</span>
+                </div>
+                <div className={styles.group}>
+                    <NavLink
+                        to="/receipt"
+                        className={linkClass}
+                        title="New receipt"
+                        onClick={onClose}
+                    >
+                        <span className={styles.icon}>{receiptIcon}</span>
+                        <span className={styles.label}>New receipt</span>
+                    </NavLink>
                 </div>
                 {adminTabGroups.map((group) => (
                     <div key={group.id} className={styles.group}>
