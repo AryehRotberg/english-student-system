@@ -138,7 +138,7 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
                 <label className={styles.field}>
                     <span className={styles.label}>Payment date</span>
                     <input
-                        className={styles.input}
+                        className={`${styles.input} ${styles.dateInput}`}
                         type="date"
                         max={today}
                         value={paymentDate}
@@ -168,7 +168,15 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
                     : 'The receipt will not be emailed.'}
             </p>
 
-            {/* Receipts are legal documents, so issuing takes a second, explicit tap. */}
+            {/* Receipts are legal documents, so issuing takes a second, explicit tap.
+                The details sit above the buttons so the button text stays short. */}
+            {confirming && (
+                <p className={styles.confirmSummary}>
+                    Issue a receipt for <strong>{formatShekels(parsedAmount)}</strong> paid
+                    by <strong>{methodLabel(method)}</strong>
+                    {paidToday ? ' today' : <> on <strong>{formatDate(paymentDate)}</strong></>}?
+                </p>
+            )}
             <div className={styles.actions}>
                 {confirming ? (
                     <>
@@ -178,11 +186,7 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
                             disabled={createReceipt.isPending}
                             onClick={() => void submit()}
                         >
-                            {createReceipt.isPending
-                                ? 'Issuing…'
-                                : `Confirm ${formatShekels(parsedAmount)} · ${methodLabel(method)}${
-                                      paidToday ? '' : ` · paid ${formatDate(paymentDate)}`
-                                  }`}
+                            {createReceipt.isPending ? 'Issuing…' : 'Confirm'}
                         </button>
                         <button
                             type="button"

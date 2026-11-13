@@ -37,6 +37,7 @@
 /* 16px text keeps iOS Safari from zooming into the field on focus. */
 .input,
 .select {
+    box-sizing: border-box;
     background: var(--surface-0);
     border: 1px solid var(--hub-border-strong);
     border-radius: var(--hub-radius-sm);
@@ -46,6 +47,30 @@
     min-height: 48px;
     padding: 0 12px;
     width: 100%;
+}
+
+/* iOS Safari gives date inputs a native min-width and look that ignore the card's
+   width; reset them so the field fits its column like the other inputs. */
+.dateInput {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    text-align: start;
+}
+
+.dateInput::-webkit-date-and-time-value {
+    text-align: start;
+}
+
+.confirmSummary {
+    background: var(--hub-subtle);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    margin: 0;
+    padding: var(--space-3);
 }
 
 .amountInput {
