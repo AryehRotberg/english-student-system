@@ -15,6 +15,7 @@ import { LoginPage } from './pages/Login/LoginPage';
 import { QuizPage } from './pages/Quiz/QuizPage';
 import { QuizListPage } from './pages/QuizList/QuizListPage';
 import { ReadingPage } from './pages/Reading/ReadingPage';
+import { ReceiptPage } from './pages/Receipt/ReceiptPage';
 import { ReadingTextPage } from './pages/Reading/ReadingTextPage';
 import { RegisterPage } from './pages/Register/RegisterPage';
 import { VocabPage } from './pages/Vocab/VocabPage';
@@ -173,6 +174,16 @@ function App() {
                 }
             />
             <Route path="/admin" element={<AdminProtectedPage />} />
+            <Route
+                path="/receipt"
+                element={
+                    <ProtectedRoute>
+                        <AppFrame>
+                            <ReceiptPage />
+                        </AppFrame>
+                    </ProtectedRoute>
+                }
+            />
             <Route path="/landing-page" element={<LandingPage />} />
             <Route
                 path="*"

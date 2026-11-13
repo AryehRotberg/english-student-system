@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     useAllStudents,
     useAnswerFiles,
@@ -26,6 +27,7 @@ import {
 import styles from '../../pages/Admin/AdminPage.module.css';
 import type { AssignmentItemContentType } from '../../services/assignments.service';
 import type { AssignmentApiItem } from '../../types/api-items/assignment';
+import type { AuthUser } from '../../types/auth';
 import type { AssignmentItemApiItem } from '../../types/api-items/assignment-item';
 import { lessonTitle } from '../../types/lesson';
 import type { SearchOption } from '../../utils/search-options';
@@ -34,6 +36,9 @@ import { isHandwritten, possiblePoints, scorePercent } from '../../utils/exam';
 import { QuizResultsDisplay } from '../quiz/QuizResultsDisplay';
 import { AttemptGradingPanel } from './AttemptGradingPanel';
 import { StudentSubjectsEditor } from './StudentSubjectsEditor';
+import { StudentBillingEditor } from '../billing/StudentBillingEditor';
+import { StudentBillingSection } from '../billing/StudentBillingSection';
+import tabStyles from './StudentDetailTabs.module.css';
 
 type Props = {
     studentId: string;
@@ -58,6 +63,95 @@ const CONTENT_TYPES: { value: AssignmentItemContentType; label: string }[] = [
     { value: 'vocabulary', label: 'Vocabulary topic' },
     { value: 'lesson', label: 'Lesson' },
 ];
+
+// The student page is split into tabs; the open one is kept in the URL (?view=).
+const STUDENT_VIEWS = [
+    { id: 'progress', label: 'Progress' },
+    { id: 'assignments', label: 'Assignments' },
+    { id: 'receipts', label: 'Receipts' },
+    { id: 'settings', label: 'Settings' },
+] as const;
+
+type StudentView = (typeof STUDENT_VIEWS)[number]['id'];
+
+function resolveStudentView(value: string | null): StudentView {
+    return STUDENT_VIEWS.find((v) => v.id === value)?.id ?? 'progress';
+}
+
+function StudentTabs({ student }: { student: AuthUser }) {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const active = resolveStudentView(searchParams.get('view'));
+    const baseId = useId();
+
+    const select = (view: StudentView) => {
+        const next = new URLSearchParams(searchParams);
+        next.set('view', view);
+        setSearchParams(next, { replace: true });
+    };
+
+    // Arrow keys move between tabs (WAI-ARIA tabs pattern).
+    const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        const index = STUDENT_VIEWS.findIndex((v) => v.id === active);
+        const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        const target =
+            e.key === 'Home'
+                ? 0
+                : e.key === 'End'
+                  ? STUDENT_VIEWS.length - 1
+                  : step !== undefined
+                    ? (index + step + STUDENT_VIEWS.length) % STUDENT_VIEWS.length
+                    : null;
+        if (target === null) return;
+        e.preventDefault();
+        select(STUDENT_VIEWS[target].id);
+        document.getElementById(`${baseId}-tab-${STUDENT_VIEWS[target].id}`)?.focus();
+    };
+
+    return (
+        <>
+            <div
+                className={tabStyles.tabList}
+                role="tablist"
+                aria-label="Student sections"
+                onKeyDown={onKeyDown}
+            >
+                {STUDENT_VIEWS.map((view) => (
+                    <button
+                        key={view.id}
+                        id={`${baseId}-tab-${view.id}`}
+                        type="button"
+                        role="tab"
+                        className={tabStyles.tab}
+                        aria-selected={view.id === active}
+                        aria-controls={`${baseId}-panel`}
+                        tabIndex={view.id === active ? 0 : -1}
+                        onClick={() => select(view.id)}
+                    >
+                        {view.label}
+                    </button>
+                ))}
+            </div>
+            <div
+                id={`${baseId}-panel`}
+                role="tabpanel"
+                aria-labelledby={`${baseId}-tab-${active}`}
+                className={tabStyles.panel}
+            >
+                {active === 'progress' && <StudentProgress studentId={student.id} />}
+                {active === 'assignments' && (
+                    <StudentAssignments studentId={student.id} />
+                )}
+                {active === 'receipts' && <StudentBillingSection student={student} />}
+                {active === 'settings' && (
+                    <>
+                        <StudentBillingEditor key={student.id} student={student} />
+                        <StudentSubjectsEditor studentId={student.id} />
+                    </>
+                )}
+            </div>
+        </>
+    );
+}
 
 function BackChevron() {
     return (
@@ -146,9 +240,7 @@ export function StudentDetailPanel({ studentId, onBack, onDeleted }: Props) {
                         )}
                     </div>
 
-                    <StudentSubjectsEditor studentId={studentId} />
-                    <StudentProgress studentId={studentId} />
-                    <StudentAssignments studentId={studentId} />
+                    <StudentTabs student={student} />
                 </>
             )}
         </div>

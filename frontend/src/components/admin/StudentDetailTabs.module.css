@@ -1,0 +1,50 @@
+.tabList {
+    border-bottom: 1px solid var(--hub-border);
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tabList::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--hub-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: -1px;
+    min-height: 44px;
+    padding: 0 var(--space-3);
+    transition:
+        color var(--dur-fast) ease,
+        border-color var(--dur-fast) ease;
+}
+
+.tab:hover {
+    color: var(--hub-ink);
+}
+
+.tab[aria-selected='true'] {
+    border-bottom-color: var(--hub-accent);
+    color: var(--hub-ink);
+}
+
+.tab:focus-visible {
+    border-radius: var(--hub-radius-sm);
+    outline: 2px solid var(--hub-focus);
+    outline-offset: -2px;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}

@@ -1,4 +1,6 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
+import { billingService } from '../services/billing.service';
+import type { MorningClient, Receipt } from '../types/receipt';
 import type { AnswerFile } from '../services/answer-files.service';
 import { answerFilesService } from '../services/answer-files.service';
 import type { VocabAudioType } from '../services/audio.service';
@@ -408,4 +410,25 @@ export function useQuestionAudio(questionId: string) {
             audioService.fetchQuestionAudio(questionId),
         ),
     );
+}
+
+// ─── Billing ──────────────────────────────────────────────────────────────────
+
+/** The teacher's latest receipts; for one student when studentId is given. */
+export function useReceipts(studentId?: string) {
+    return useQuery<Receipt[]>({
+        queryKey: ['receipts', studentId ?? 'all'],
+        queryFn: () => billingService.findReceipts(studentId),
+    });
+}
+
+/** Morning clients matching a name; runs once at least 2 characters are typed. */
+export function useMorningClientSearch(search: string) {
+    const term = search.trim();
+    return useQuery<MorningClient[]>({
+        queryKey: ['morning-clients', term],
+        queryFn: () => billingService.searchMorningClients(term),
+        enabled: term.length >= 2,
+        staleTime: 60_000,
+    });
 }

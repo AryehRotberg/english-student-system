@@ -1,0 +1,217 @@
+.card {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-4);
+}
+
+.heading {
+    color: var(--hub-ink);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    margin: 0;
+}
+
+.fields {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.label {
+    color: var(--hub-ink-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+/* 16px text keeps iOS Safari from zooming into the field on focus. */
+.input,
+.select {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ink);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    min-height: 48px;
+    padding: 0 12px;
+    width: 100%;
+}
+
+.amountInput {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.hint {
+    color: var(--hub-muted);
+    font-size: var(--text-sm);
+    margin: 0;
+}
+
+.linkButton {
+    background: none;
+    border: none;
+    color: var(--hub-accent-text);
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.primary,
+.secondary {
+    border-radius: var(--hub-radius-sm);
+    cursor: pointer;
+    flex: 1 1 160px;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 700;
+    min-height: 52px;
+    padding: 0 16px;
+}
+
+.primary {
+    background: var(--hub-accent);
+    border: none;
+    color: #fff;
+}
+
+.primary:hover:not(:disabled) {
+    background: var(--hub-accent-hover);
+}
+
+.secondary {
+    background: var(--surface-0);
+    border: 1px solid var(--hub-border-strong);
+    color: var(--hub-ink);
+}
+
+.primary:disabled,
+.secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.success {
+    background: var(--hub-ok-bg);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-ok-fg);
+    font-weight: 600;
+    margin: 0;
+    padding: var(--space-3);
+}
+
+.warning {
+    background: var(--hub-amber-bg);
+    border-radius: var(--hub-radius-sm);
+    color: var(--hub-amber-fg);
+    margin: 0;
+    padding: var(--space-3);
+}
+
+.error {
+    color: var(--danger-700);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    margin: 0;
+}
+
+.results {
+    border: 1px solid var(--hub-border);
+    border-radius: var(--hub-radius-sm);
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.result {
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--hub-divider);
+    color: var(--hub-ink);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font: inherit;
+    gap: 2px;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    text-align: start;
+    width: 100%;
+}
+
+.result:hover {
+    background: var(--hub-hover);
+}
+
+.linked {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: space-between;
+}
+
+.receiptList {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.receiptRow {
+    align-items: baseline;
+    border-bottom: 1px solid var(--hub-divider);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+}
+
+.receiptRow:last-child {
+    border-bottom: none;
+}
+
+.receiptAmount {
+    color: var(--hub-ink);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0 auto;
+    max-width: 560px;
+    width: 100%;
+}
