@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { useCreateReceipt } from '../../hooks/mutations';
 import type { AuthUser } from '../../types/auth';
 import {
+    formatDate,
     formatShekels,
     methodLabel,
+    todayIso,
     PAYMENT_METHODS,
     type PaymentMethod,
     type Receipt,
@@ -23,6 +25,8 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
     const defaultAmount = student.suggestedLessonPrice ?? null;
     const [amount, setAmount] = useState(defaultAmount?.toString() ?? '');
     const [method, setMethod] = useState<PaymentMethod>('bit');
+    const today = todayIso();
+    const [paymentDate, setPaymentDate] = useState(today);
     const [confirming, setConfirming] = useState(false);
     const [issued, setIssued] = useState<Receipt | null>(null);
     const createReceipt = useCreateReceipt();
@@ -46,6 +50,10 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
         parsedAmount > 0 &&
         parsedAmount <= MAX_AMOUNT;
 
+    // ISO dates (yyyy-mm-dd) compare correctly as strings.
+    const paymentDateValid = paymentDate !== '' && paymentDate <= today;
+    const paidToday = paymentDate === today;
+
     const edit = (apply: () => void) => {
         apply();
         setConfirming(false);
@@ -58,17 +66,19 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
             studentId: student.id,
             amount: parsedAmount,
             paymentMethod: method,
+            paymentDate,
         });
         setIssued(receipt);
         setConfirming(false);
         setAmount(defaultAmount?.toString() ?? '');
+        setPaymentDate(today);
     };
 
     return (
         <div className={styles.card}>
             <p className={styles.hint}>
                 Receipt to <strong>{student.morningClientName ?? 'Morning client'}</strong>{' '}
-                for {student.name}, dated today.
+                for {student.name}. The receipt is dated today.
             </p>
 
             <div className={styles.fields}>
@@ -124,6 +134,32 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
                         ))}
                     </select>
                 </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Payment date</span>
+                    <input
+                        className={styles.input}
+                        type="date"
+                        max={today}
+                        value={paymentDate}
+                        onChange={(e) => edit(() => setPaymentDate(e.target.value))}
+                    />
+                    {!paymentDateValid ? (
+                        <span className={styles.error}>
+                            Choose a date that isn't in the future.
+                        </span>
+                    ) : (
+                        !paidToday && (
+                            <button
+                                type="button"
+                                className={`${styles.hint} ${styles.linkButton}`}
+                                onClick={() => edit(() => setPaymentDate(today))}
+                            >
+                                Reset to today
+                            </button>
+                        )
+                    )}
+                </label>
             </div>
 
             <p className={styles.hint}>
@@ -144,7 +180,9 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
                         >
                             {createReceipt.isPending
                                 ? 'Issuing…'
-                                : `Confirm ${formatShekels(parsedAmount)} · ${methodLabel(method)}`}
+                                : `Confirm ${formatShekels(parsedAmount)} · ${methodLabel(method)}${
+                                      paidToday ? '' : ` · paid ${formatDate(paymentDate)}`
+                                  }`}
                         </button>
                         <button
                             type="button"
@@ -159,7 +197,7 @@ export function ReceiptForm({ student }: { student: AuthUser }) {
                     <button
                         type="button"
                         className={styles.primary}
-                        disabled={!amountValid}
+                        disabled={!amountValid || !paymentDateValid}
                         onClick={() => {
                             setIssued(null);
                             setConfirming(true);

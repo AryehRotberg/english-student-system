@@ -1,11 +1,6 @@
 import { useReceipts } from '../../hooks/queries';
-import { formatShekels, methodLabel } from '../../types/receipt';
+import { formatDate, formatShekels, methodLabel } from '../../types/receipt';
 import styles from './Billing.module.css';
-
-function formatDate(isoDate: string): string {
-    const [year, month, day] = isoDate.split('-');
-    return `${day}/${month}/${year}`;
-}
 
 /** Latest receipts issued from the app; for one student when studentId is given. */
 export function RecentReceipts({ studentId }: { studentId?: string }) {
@@ -33,6 +28,9 @@ export function RecentReceipts({ studentId }: { studentId?: string }) {
                             </span>
                             <span className={styles.hint}>
                                 {methodLabel(receipt.paymentMethod)}
+                                {receipt.paymentDate !== receipt.documentDate
+                                    ? ` · paid ${formatDate(receipt.paymentDate)}`
+                                    : ''}
                                 {receipt.morningDocumentNumber
                                     ? ` · #${receipt.morningDocumentNumber}`
                                     : ''}

@@ -6,6 +6,8 @@ export type CreateReceiptPayload = {
     studentId: string;
     amount: number;
     paymentMethod: PaymentMethod;
+    /** yyyy-mm-dd; when the money was received. Defaults to today on the server. */
+    paymentDate?: string;
 };
 
 class BillingService {
