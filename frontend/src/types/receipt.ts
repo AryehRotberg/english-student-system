@@ -35,8 +35,16 @@ export type Receipt = {
     documentDate: string;
     paymentDate: string;
     morningDocumentNumber: string | null;
+    /** Morning download links; null when missing or expired (fetch with getReceiptLinks). */
+    originalUrl: string | null;
+    copyUrl: string | null;
     emailedTo: string | null;
     createdAt: string;
+};
+
+export type ReceiptLinks = {
+    originalUrl: string;
+    copyUrl: string;
 };
 
 export type MorningClient = {
