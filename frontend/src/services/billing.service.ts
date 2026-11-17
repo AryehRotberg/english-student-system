@@ -1,5 +1,10 @@
 import type { AxiosInstance } from 'axios';
-import type { MorningClient, PaymentMethod, Receipt } from '../types/receipt';
+import type {
+    MorningClient,
+    PaymentMethod,
+    Receipt,
+    ReceiptLinks,
+} from '../types/receipt';
 import { httpClientService } from './http-client.service';
 
 export type CreateReceiptPayload = {
@@ -29,6 +34,14 @@ class BillingService {
         const response = await this.httpClient.get<Receipt[]>('/billing/receipts', {
             params: { studentId, limit },
         });
+        return response.data;
+    }
+
+    /** Current download links; the server refreshes them from Morning when expired. */
+    public async getReceiptLinks(receiptId: string): Promise<ReceiptLinks> {
+        const response = await this.httpClient.get<ReceiptLinks>(
+            `/billing/receipts/${receiptId}/links`,
+        );
         return response.data;
     }
 

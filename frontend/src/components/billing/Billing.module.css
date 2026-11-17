@@ -226,6 +226,27 @@
     font-weight: 700;
 }
 
+/* Own line under the row's details; 44px tap targets for phones. */
+.receiptLinks {
+    align-items: center;
+    display: flex;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.receiptLinks .linkButton {
+    align-items: center;
+    display: inline-flex;
+    font-size: var(--text-sm);
+    min-height: 44px;
+}
+
+.receiptLinks .linkButton:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}
+
 .section {
     display: flex;
     flex-direction: column;
